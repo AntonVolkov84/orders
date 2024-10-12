@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "604190082036",
+    "firebase_url": "https://orders-78c1c-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "orders-78c1c",
+    "storage_bucket": "orders-78c1c.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:604190082036:android:7236079cb21c892ddaefa1",
+        "android_client_info": {
+          "package_name": "com.ant_volkov.orders"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBrEBe88bLrtVmRKyeLL6OrS_H1nM1uj18"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

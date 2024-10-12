@@ -1,0 +1,54 @@
+{
+  "expo": {
+    "name": "orders",
+    "slug": "orders",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "permissions": ["android.permission.RECORD_AUDIO"],
+      "package": "com.ant_volkov.orders"
+    },
+    "web": {
+      "config": {
+        "firebase": {
+          "apiKey": "AIzaSyASSrM0qPoWRnB7lZE5-Hl98yb6Mo9XYYc",
+          "authDomain": "orders-78c1c.firebaseapp.com",
+          "databaseURL": "https://orders-78c1c-default-rtdb.europe-west1.firebasedatabase.app",
+          "projectId": "orders-78c1c",
+          "storageBucket": "orders-78c1c.appspot.com",
+          "messagingSenderId": "604190082036",
+          "appId": "1:604190082036:web:505488318b424555daefa1",
+          "measurementId": "G-3P0YBJ9FP6"
+        }
+      },
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "NSPhotoLibraryUsageDescription"
+        }
+      ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "41fe81db-34c9-48d4-a398-49d367f1cbc3"
+      }
+    }
+  }
+}
