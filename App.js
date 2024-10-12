@@ -3,18 +3,26 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import RegistrationScreen from "./screens/RegistrationScreen";
 import LoginScreen from "./screens/LoginScreen";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import DashboardScreen from "./screens/DashboardScreen.jsx";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 
 const Stack = createNativeStackNavigator();
 
 export default function App() {
-  const [initializing, setInitializing] = useState(false);
-  const [user, setUser] = useState();
+  const [initializing, setInitializing] = useState(true);
+  const [user, setUser] = useState("");
+  const auth = getAuth();
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      setUser(user);
+      const uid = user.uid;
+      console.log("App authState", uid);
+    } else {
+      console.log("No user in app");
+    }
+  });
 
-  if (initializing) {
-    return null;
-  }
   if (!user) {
     return (
       <NavigationContainer>

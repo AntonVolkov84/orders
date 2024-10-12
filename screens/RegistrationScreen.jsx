@@ -7,7 +7,9 @@ import { StatusBar } from "expo-status-bar";
 import * as NavigationBar from "expo-navigation-bar";
 import styled from "styled-components";
 import { getDownloadURL, getStorage, ref, uploadBytes, uploadBytesResumable } from "firebase/storage";
-import { auth, db, app } from "../firebaseConfig";
+import { db, app } from "../firebaseConfig";
+import { collection, doc, addDoc, setDoc, serverTimestamp } from "firebase/firestore";
+import { getAuth, createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 
 const TitleText = styled.Text`
   font-size: 50px;
@@ -45,14 +47,26 @@ const AvatarText = styled.Text`
   text-align: center;
   color: ${colors.titleText};
 `;
+const RegisterButton = styled.TouchableOpacity`
+  width: 200px;
+  height: 100px;
+  background-color: green;
+  border-radius: 50px;
+  margin: 0 auto;
+  margin-top: 15%;
+`;
+const RegisterButtonText = styled.Text`
+  color: ${colors.titleText};
+  font-size: 25px;
+`;
 
 export default function RegistrationScreen({ navigation }) {
-  const [image, setImage] = useState(null);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [avatar, setAvatar] = useState("");
   const [photoURL, setPhotoURL] = useState(null);
+  const [nikname, setNikname] = useState("");
   const storage = getStorage(app);
+  const auth = getAuth();
 
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -105,6 +119,36 @@ export default function RegistrationScreen({ navigation }) {
       console.log(error);
     }
   };
+  const addToUsers = async (userId) => {
+    try {
+      const user = {
+        timestamp: serverTimestamp(),
+        nikname: nikname,
+        photoURL: photoURL,
+        email: email,
+        userId: userId,
+      };
+      await setDoc(doc(db, "users", email), user);
+    } catch (error) {
+      console.log("add to users", error);
+    }
+  };
+
+  const handleRegister = (email, password) => {
+    createUserWithEmailAndPassword(auth, email, password)
+      .then((userCredential) => {
+        const user = userCredential.user;
+        const userId = user.uid;
+        if (user.uid) {
+          updateProfile(auth.currentUser, { photoURL: photoURL });
+          addToUsers(userId);
+        }
+      })
+
+      .catch((error) => {
+        console.log("handleRegistre", error);
+      });
+  };
 
   const customNavigationBar = async () => {
     await NavigationBar.setBackgroundColorAsync("#1E2322");
@@ -137,7 +181,7 @@ export default function RegistrationScreen({ navigation }) {
           onChangeText={setEmail}
         ></InputField>
         <InputField secureTextEntry={true} placeholder={"Type your password"} onChangeText={setPassword}></InputField>
-        <InputField placeholder={"Type your Nikname"} onChangeText={setPassword}></InputField>
+        <InputField placeholder={"Type your Nikname"} onChangeText={setNikname}></InputField>
       </BlockInput>
       <AvatarBlock onPress={pickImage}>
         {photoURL ? (
@@ -149,6 +193,17 @@ export default function RegistrationScreen({ navigation }) {
           <AvatarText>Add avatar</AvatarText>
         )}
       </AvatarBlock>
+
+      <RegisterButton onPress={() => handleRegister(email, password)}>
+        <LinearGradient
+          colors={[colors.buttonStartColorForGradient, colors.buttonEndColorForGradient]}
+          start={{ x: 0.0, y: 0.0 }}
+          end={{ x: 1.0, y: 1.0 }}
+          style={{ height: "100%", width: "100%", justifyContent: "center", alignItems: "center", borderRadius: 50 }}
+        >
+          <RegisterButtonText>Registration..</RegisterButtonText>
+        </LinearGradient>
+      </RegisterButton>
     </LinearGradient>
   );
 }
