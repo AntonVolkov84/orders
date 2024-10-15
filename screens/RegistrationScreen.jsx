@@ -9,7 +9,7 @@ import styled from "styled-components";
 import { getDownloadURL, getStorage, ref, uploadBytes, uploadBytesResumable } from "firebase/storage";
 import { db, app } from "../firebaseConfig";
 import { collection, doc, addDoc, setDoc, serverTimestamp } from "firebase/firestore";
-import { getAuth, createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
+import { getAuth, signOut, sendEmailVerification, createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 
 const TitleText = styled.Text`
   font-size: 50px;
@@ -61,10 +61,10 @@ const RegisterButtonText = styled.Text`
 `;
 
 export default function RegistrationScreen({ navigation }) {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("antvolkov84@gmail.com");
+  const [password, setPassword] = useState("123456");
   const [photoURL, setPhotoURL] = useState(null);
-  const [nikname, setNikname] = useState("");
+  const [nikname, setNikname] = useState("Anton");
   const storage = getStorage(app);
   const auth = getAuth();
 
@@ -80,6 +80,12 @@ export default function RegistrationScreen({ navigation }) {
       const uriForStorage = result.assets[0].uri;
       addToFirebaseStorage(storageRef, uriForStorage);
     }
+  };
+
+  const logOut = () => {
+    signOut(auth).catch((error) => {
+      console.log(error);
+    });
   };
 
   const addToFirebaseStorage = async (storageRef, uriForStorage) => {
@@ -140,16 +146,26 @@ export default function RegistrationScreen({ navigation }) {
         const user = userCredential.user;
         const userId = user.uid;
         if (user.uid) {
+          sendEmailVerification(auth.currentUser).then(() => {
+            Alert.alert("You may recived a mail with link for authorization");
+          });
           updateProfile(auth.currentUser, { photoURL: photoURL });
           addToUsers(userId);
+          clearForm();
         }
+        logOut();
       })
 
       .catch((error) => {
         console.log("handleRegistre", error);
       });
   };
-
+  const clearForm = () => {
+    setEmail("");
+    setPassword("");
+    setPhotoURL(Null);
+    setNikname("");
+  };
   const customNavigationBar = async () => {
     await NavigationBar.setBackgroundColorAsync("#1E2322");
     await NavigationBar.setButtonStyleAsync("light");

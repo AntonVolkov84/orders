@@ -1,7 +1,8 @@
-import { View, Text, Button, TouchableOpacity, TextInput } from "react-native";
+import { View, Alert, Text, Button, TouchableOpacity, TextInput } from "react-native";
 import React, { useState } from "react";
 import { firebase } from "../firebaseConfig.js";
 import styled from "styled-components";
+import { getAuth, signOut, signInWithEmailAndPassword } from "firebase/auth";
 
 const BlockButton = styled.TouchableOpacity`
   width: 50px;
@@ -18,19 +19,29 @@ const BlockInput = styled.TextInput`
 const BlockButtonText = styled.Text`
   color: red;
 `;
-
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
-  const loginUser = async (email, password) => {
-    try {
-      await firebase.auth().signInWithEmailAndPassword(email, password);
-    } catch (error) {
-      console.log("Error in LoginUser", error);
-    }
+  const auth = getAuth();
+  const logOut = () => {
+    signOut(auth).catch((error) => {
+      console.log(error);
+    });
   };
-
+  const loginUser = () => {
+    signInWithEmailAndPassword(auth, email, password)
+      .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        console.log("error in loginUser", errorCode, errorMessage);
+      })
+      .then(() => {
+        if (!auth.currentUser.emailVerified) {
+          Alert.alert("Mail is not Verified");
+          logOut();
+        }
+      });
+  };
   return (
     <View>
       <Text>LoginScreen</Text>

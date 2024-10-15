@@ -14,19 +14,18 @@ export default function App() {
   const [user, setUser] = useState("");
   const auth = getAuth();
   onAuthStateChanged(auth, (user) => {
-    if (user) {
+    if (user && auth.currentUser.emailVerified) {
       setUser(user);
       const uid = user.uid;
-      console.log("App authState", uid);
     } else {
-      console.log("No user in app");
+      setUser("");
     }
   });
 
   if (!user) {
     return (
       <NavigationContainer>
-        <Stack.Navigator initialRouteName="Registration">
+        <Stack.Navigator initialRouteName="Login">
           <Stack.Screen
             name="Login"
             component={LoginScreen}
