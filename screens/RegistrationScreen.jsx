@@ -16,6 +16,7 @@ const TitleText = styled.Text`
   color: ${colors.titleText};
   display: block;
   margin: 0 auto;
+  margin-top: 5%;
 `;
 const BlockInput = styled.View`
   width: 100%;
@@ -23,29 +24,27 @@ const BlockInput = styled.View`
 `;
 const InputField = styled.TextInput`
   width: 90%;
+  height: 80px;
   margin-top: 5%;
   padding-left: 5%;
   margin-left: 5%;
   border-radius: 10px;
   background-color: ${colors.backgroundColorInput};
   border: none;
-  color: ${colors.titleText};
+  color: ${colors.colorTextInput};
   font-size: 30px;
-  text-decoration: none;
 `;
 const AvatarBlock = styled.TouchableOpacity`
   width: 200px;
   height: 200px;
-  background-color: grey;
   align-self: center;
-  border-radius: 100px;
   margin-top: 5%;
   justify-content: center;
 `;
 const AvatarText = styled.Text`
   font-size: 25px;
   text-align: center;
-  color: ${colors.titleText};
+  color: ${colors.colorTextInput};
 `;
 const RegisterButton = styled.TouchableOpacity`
   width: 200px;
@@ -56,15 +55,15 @@ const RegisterButton = styled.TouchableOpacity`
   margin-top: 15%;
 `;
 const RegisterButtonText = styled.Text`
-  color: ${colors.titleText};
+  color: ${colors.buttonRegistrationColor};
   font-size: 25px;
 `;
 
 export default function RegistrationScreen({ navigation }) {
-  const [email, setEmail] = useState("antvolkov84@gmail.com");
-  const [password, setPassword] = useState("123456");
-  const [photoURL, setPhotoURL] = useState(null);
-  const [nikname, setNikname] = useState("Anton");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [photoURL, setPhotoURL] = useState("");
+  const [nikname, setNikname] = useState("");
   const storage = getStorage(app);
   const auth = getAuth();
 
@@ -80,12 +79,6 @@ export default function RegistrationScreen({ navigation }) {
       const uriForStorage = result.assets[0].uri;
       addToFirebaseStorage(storageRef, uriForStorage);
     }
-  };
-
-  const logOut = () => {
-    signOut(auth).catch((error) => {
-      console.log(error);
-    });
   };
 
   const addToFirebaseStorage = async (storageRef, uriForStorage) => {
@@ -146,26 +139,20 @@ export default function RegistrationScreen({ navigation }) {
         const user = userCredential.user;
         const userId = user.uid;
         if (user.uid) {
+          updateProfile(auth.currentUser, { photoURL: photoURL });
+          addToUsers(userId);
           sendEmailVerification(auth.currentUser).then(() => {
             Alert.alert("You may recived a mail with link for authorization");
           });
-          updateProfile(auth.currentUser, { photoURL: photoURL });
-          addToUsers(userId);
-          clearForm();
+          signOut(auth);
+          navigation.navigate("Login");
         }
-        logOut();
       })
-
       .catch((error) => {
         console.log("handleRegistre", error);
       });
   };
-  const clearForm = () => {
-    setEmail("");
-    setPassword("");
-    setPhotoURL(Null);
-    setNikname("");
-  };
+
   const customNavigationBar = async () => {
     await NavigationBar.setBackgroundColorAsync("#1E2322");
     await NavigationBar.setButtonStyleAsync("light");
@@ -200,14 +187,27 @@ export default function RegistrationScreen({ navigation }) {
         <InputField placeholder={"Type your Nikname"} onChangeText={setNikname}></InputField>
       </BlockInput>
       <AvatarBlock onPress={pickImage}>
-        {photoURL ? (
-          <Image
-            style={{ width: "100%", height: "100%", objectfit: "cover", borderRadius: 100 }}
-            source={{ uri: photoURL }}
-          ></Image>
-        ) : (
-          <AvatarText>Add avatar</AvatarText>
-        )}
+        <LinearGradient
+          colors={[colors.backgrountAvatarStartColoForGradient, colors.backgrountAvatarEndColoForGradient]}
+          start={{ x: 0.0, y: 0.0 }}
+          end={{ x: 1.0, y: 1.0 }}
+          style={{
+            height: "100%",
+            width: "100%",
+            borderRadius: 100,
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          {photoURL ? (
+            <Image
+              style={{ width: "100%", height: "100%", objectfit: "cover", borderRadius: 100 }}
+              source={{ uri: photoURL }}
+            ></Image>
+          ) : (
+            <AvatarText>Add avatar</AvatarText>
+          )}
+        </LinearGradient>
       </AvatarBlock>
 
       <RegisterButton onPress={() => handleRegister(email, password)}>
@@ -217,7 +217,7 @@ export default function RegistrationScreen({ navigation }) {
           end={{ x: 1.0, y: 1.0 }}
           style={{ height: "100%", width: "100%", justifyContent: "center", alignItems: "center", borderRadius: 50 }}
         >
-          <RegisterButtonText>Registration..</RegisterButtonText>
+          <RegisterButtonText>Registration</RegisterButtonText>
         </LinearGradient>
       </RegisterButton>
     </LinearGradient>

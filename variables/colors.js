@@ -1,7 +1,11 @@
 export const startColorForGradient = "#098b9d";
 export const endColorForGradient = "#2e3279";
-export const titleText = "#f5f7f7";
-export const backgroundColorInput = "#a28db8";
+export const titleText = "#ffffff";
+export const backgroundColorInput = "#a8dce7";
+export const colorTextInput = "#101422";
+export const backgrountAvatarStartColoForGradient = "#272b3b";
+export const backgrountAvatarEndColoForGradient = "#a8dce7";
 export const buttonTextColor = "#f2ebfa";
-export const buttonStartColorForGradient = "#d9bdfc";
-export const buttonEndColorForGradient = "#9079ad";
+export const buttonStartColorForGradient = "#272b3b";
+export const buttonEndColorForGradient = "#101422";
+export const buttonRegistrationColor = "#989fed";
