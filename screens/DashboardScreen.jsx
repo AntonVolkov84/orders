@@ -4,6 +4,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import styled from "styled-components";
 import * as colors from "../variables/colors";
 import { getAuth, signOut } from "firebase/auth";
+import { GoogleSignin } from "@react-native-google-signin/google-signin";
 
 const LogOutButton = styled.TouchableOpacity`
   width: 200px;
@@ -26,8 +27,10 @@ export default function DashboardScreen({ navigation }) {
     signOut(auth).catch((error) => {
       console.log(error);
     });
+    GoogleSignin.revokeAccess();
+    GoogleSignin.signOut();
   };
-
+  console.log("Console User from dashboard", auth.currentUser);
   return (
     <LogOutButton
       onPress={() => {

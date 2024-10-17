@@ -7,6 +7,8 @@ import { LinearGradient } from "expo-linear-gradient";
 import { StatusBar } from "expo-status-bar";
 import * as NavigationBar from "expo-navigation-bar";
 import * as colors from "../variables/colors.js";
+import { GoogleSignin, GoogleSigninButton } from "@react-native-google-signin/google-signin";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const TitleText = styled.Text`
   font-size: 50px;
@@ -53,15 +55,31 @@ const ButtonRegistrationText = styled.Text`
   font-size: 25px;
   color: ${colors.buttonRegistrationColor};
 `;
+const ButtonGoogle = styled.TouchableOpacity`
+  width: 250px;
+  height: 100px;
+  border-radius: 50px;
+  margin: 5% auto;
+`;
+const ButtonGoogleText = styled.Text`
+  font-size: 25px;
+  color: ${colors.titleText};
+`;
 
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [userInfo, setUserInfo] = useState(null);
+  const [error, setError] = useState(null);
   const auth = getAuth();
+
   const logOut = () => {
     signOut(auth).catch((error) => {
       console.log(error);
     });
+    setUserInfo();
+    GoogleSignin.revokeAccess();
+    GoogleSignin.signOut();
   };
   const loginUser = () => {
     signInWithEmailAndPassword(auth, email, password)
@@ -77,13 +95,30 @@ export default function LoginScreen({ navigation }) {
         }
       });
   };
+
   const customNavigationBar = async () => {
     await NavigationBar.setBackgroundColorAsync("#1E2322");
     await NavigationBar.setButtonStyleAsync("light");
   };
   useEffect(() => {
+    GoogleSignin.configure({
+      webClientId: "604190082036-2hogegaj8kj52vmqj0uo975d3hfgklg5.apps.googleusercontent.com",
+    });
     customNavigationBar();
   }, []);
+
+  const signin = async () => {
+    try {
+      await GoogleSignin.hasPlayServices();
+      const user = await GoogleSignin.signIn();
+      setUserInfo(user);
+      setError();
+      console.log("googlo services", user);
+    } catch (e) {
+      setError(e);
+    }
+  };
+
   return (
     <LinearGradient
       colors={[
@@ -117,9 +152,30 @@ export default function LoginScreen({ navigation }) {
           <LoginButtonText onPress={() => loginUser(email, password)}>Login</LoginButtonText>
         </LinearGradient>
       </LoginButton>
+      <ButtonGoogle>
+        <LinearGradient
+          colors={[colors.buttonStartColorForGradient, colors.buttonEndColorForGradient]}
+          start={{ x: 0.0, y: 0.0 }}
+          end={{ x: 1.0, y: 1.0 }}
+          style={{ height: "100%", width: "100%", justifyContent: "center", alignItems: "center", borderRadius: 50 }}
+        >
+          <ButtonGoogleText
+            onPress={() => {
+              logOut();
+            }}
+          >
+            Logout Google
+          </ButtonGoogleText>
+        </LinearGradient>
+      </ButtonGoogle>
       <ButtonRegistration onPress={() => navigation.navigate("Registration")}>
         <ButtonRegistrationText>Registration</ButtonRegistrationText>
       </ButtonRegistration>
+      <GoogleSigninButton
+        onPress={() => signin()}
+        size={GoogleSigninButton.Size.Standard}
+        color={GoogleSigninButton.Color.Dark}
+      />
     </LinearGradient>
   );
 }
