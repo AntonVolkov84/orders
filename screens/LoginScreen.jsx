@@ -1,14 +1,17 @@
 import { View, Alert, Text, Button, TouchableOpacity, TextInput } from "react-native";
 import React, { useState, useEffect } from "react";
-import { firebase } from "../firebaseConfig.js";
 import styled from "styled-components";
-import { getAuth, signOut, signInWithEmailAndPassword } from "firebase/auth";
+import { getAuth, GoogleAuthProvider, signInWithCredential, signOut, signInWithEmailAndPassword } from "firebase/auth";
 import { LinearGradient } from "expo-linear-gradient";
 import { StatusBar } from "expo-status-bar";
 import * as NavigationBar from "expo-navigation-bar";
 import * as colors from "../variables/colors.js";
 import { GoogleSignin, GoogleSigninButton } from "@react-native-google-signin/google-signin";
+import { db, app } from "../firebaseConfig";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { collection, doc, addDoc, setDoc, serverTimestamp } from "firebase/firestore";
+
+const provider = new GoogleAuthProvider();
 
 const TitleText = styled.Text`
   font-size: 50px;
@@ -57,9 +60,11 @@ const ButtonRegistrationText = styled.Text`
 `;
 const ButtonGoogle = styled.TouchableOpacity`
   width: 250px;
-  height: 100px;
+  height: 80px;
   border-radius: 50px;
   margin: 5% auto;
+  font-size: 20px;
+  border-radius: 15px;
 `;
 const ButtonGoogleText = styled.Text`
   font-size: 25px;
@@ -69,18 +74,7 @@ const ButtonGoogleText = styled.Text`
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [userInfo, setUserInfo] = useState(null);
-  const [error, setError] = useState(null);
   const auth = getAuth();
-
-  const logOut = () => {
-    signOut(auth).catch((error) => {
-      console.log(error);
-    });
-    setUserInfo();
-    GoogleSignin.revokeAccess();
-    GoogleSignin.signOut();
-  };
   const loginUser = () => {
     signInWithEmailAndPassword(auth, email, password)
       .catch((error) => {
@@ -96,6 +90,21 @@ export default function LoginScreen({ navigation }) {
       });
   };
 
+  const addToUsers = async (nikname, photoURL, email, userId) => {
+    try {
+      const user = {
+        timestamp: serverTimestamp(),
+        nikname: nikname,
+        photoURL: photoURL,
+        email: email,
+        userId: userId,
+      };
+      await setDoc(doc(db, "users", email), user);
+    } catch (error) {
+      console.log("add to users", error);
+    }
+  };
+
   const customNavigationBar = async () => {
     await NavigationBar.setBackgroundColorAsync("#1E2322");
     await NavigationBar.setButtonStyleAsync("light");
@@ -109,11 +118,18 @@ export default function LoginScreen({ navigation }) {
 
   const signin = async () => {
     try {
-      await GoogleSignin.hasPlayServices();
+      await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
       const user = await GoogleSignin.signIn();
-      setUserInfo(user);
-      setError();
-      console.log("googlo services", user);
+      const idToken = user.data.idToken;
+      const googleCredential = GoogleAuthProvider.credential(idToken);
+      signInWithCredential(auth, googleCredential).then((result) => {
+        const currentUser = result.user;
+        const nikname = result._tokenResponse.firstName;
+        const photoURL = currentUser.photoURL;
+        const email = currentUser.email;
+        const userId = currentUser.uid;
+        addToUsers(nikname, photoURL, email, userId);
+      });
     } catch (e) {
       setError(e);
     }
@@ -153,29 +169,22 @@ export default function LoginScreen({ navigation }) {
         </LinearGradient>
       </LoginButton>
       <ButtonGoogle>
-        <LinearGradient
-          colors={[colors.buttonStartColorForGradient, colors.buttonEndColorForGradient]}
-          start={{ x: 0.0, y: 0.0 }}
-          end={{ x: 1.0, y: 1.0 }}
-          style={{ height: "100%", width: "100%", justifyContent: "center", alignItems: "center", borderRadius: 50 }}
-        >
-          <ButtonGoogleText
-            onPress={() => {
-              logOut();
-            }}
-          >
-            Logout Google
-          </ButtonGoogleText>
-        </LinearGradient>
+        <GoogleSigninButton
+          style={{
+            justifySelf: "center",
+            alignSelf: "center",
+            marginTop: "10%",
+            width: "100%",
+            height: "100%",
+          }}
+          onPress={() => signin()}
+          size={GoogleSigninButton.Size.Wide}
+          color={GoogleSigninButton.Color.Dark}
+        />
       </ButtonGoogle>
       <ButtonRegistration onPress={() => navigation.navigate("Registration")}>
         <ButtonRegistrationText>Registration</ButtonRegistrationText>
       </ButtonRegistration>
-      <GoogleSigninButton
-        onPress={() => signin()}
-        size={GoogleSigninButton.Size.Standard}
-        color={GoogleSigninButton.Color.Dark}
-      />
     </LinearGradient>
   );
 }

@@ -16,7 +16,6 @@ export default function App() {
   onAuthStateChanged(auth, (user) => {
     if (user && auth.currentUser.emailVerified) {
       setUser(user);
-      const uid = user.uid;
     } else {
       setUser("");
     }

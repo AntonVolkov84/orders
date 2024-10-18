@@ -30,7 +30,7 @@ export default function DashboardScreen({ navigation }) {
     GoogleSignin.revokeAccess();
     GoogleSignin.signOut();
   };
-  console.log("Console User from dashboard", auth.currentUser);
+
   return (
     <LogOutButton
       onPress={() => {
