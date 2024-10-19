@@ -1,17 +1,15 @@
 import { View, Alert, Text, Button, TouchableOpacity, TextInput } from "react-native";
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
-import { getAuth, GoogleAuthProvider, signInWithCredential, signOut, signInWithEmailAndPassword } from "firebase/auth";
+import { getAuth, GoogleAuthProvider, signInWithCredential, signInWithEmailAndPassword } from "firebase/auth";
 import { LinearGradient } from "expo-linear-gradient";
 import { StatusBar } from "expo-status-bar";
 import * as NavigationBar from "expo-navigation-bar";
 import * as colors from "../variables/colors.js";
 import { GoogleSignin, GoogleSigninButton } from "@react-native-google-signin/google-signin";
-import { db, app } from "../firebaseConfig";
+import { db } from "../firebaseConfig";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { collection, doc, addDoc, setDoc, serverTimestamp } from "firebase/firestore";
-
-const provider = new GoogleAuthProvider();
+import { doc, setDoc, serverTimestamp } from "firebase/firestore";
 
 const TitleText = styled.Text`
   font-size: 50px;
@@ -65,10 +63,6 @@ const ButtonGoogle = styled.TouchableOpacity`
   margin: 5% auto;
   font-size: 20px;
   border-radius: 15px;
-`;
-const ButtonGoogleText = styled.Text`
-  font-size: 25px;
-  color: ${colors.titleText};
 `;
 
 export default function LoginScreen({ navigation }) {
@@ -130,8 +124,8 @@ export default function LoginScreen({ navigation }) {
         const userId = currentUser.uid;
         addToUsers(nikname, photoURL, email, userId);
       });
-    } catch (e) {
-      setError(e);
+    } catch (error) {
+      console.log("signin", error);
     }
   };
 
