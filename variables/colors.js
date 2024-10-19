@@ -16,3 +16,5 @@ export const menuProfileText = "#101422";
 export const modalNiknameBackground = "#101422";
 export const modalNiknameBackgroundWindow = "#a8dce7";
 export const modalNiknameBtnText = "#272b3b";
+export const modalNiknameInput = "#ffffff";
+export const backgroundLogoutBtn = "#2b85cf";

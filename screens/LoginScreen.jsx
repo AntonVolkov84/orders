@@ -9,7 +9,7 @@ import * as colors from "../variables/colors.js";
 import { GoogleSignin, GoogleSigninButton } from "@react-native-google-signin/google-signin";
 import { db } from "../firebaseConfig";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { doc, setDoc, serverTimestamp } from "firebase/firestore";
+import { doc, setDoc, serverTimestamp, getDoc } from "firebase/firestore";
 
 const TitleText = styled.Text`
   font-size: 50px;

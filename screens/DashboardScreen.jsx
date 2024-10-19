@@ -6,15 +6,17 @@ import * as colors from "../variables/colors";
 import { getAuth, signOut } from "firebase/auth";
 import { StatusBar } from "expo-status-bar";
 import * as NavigationBar from "expo-navigation-bar";
-import { db } from "../firebaseConfig";
+import { db, app } from "../firebaseConfig";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import { getDoc, doc, setDoc } from "firebase/firestore";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
+import * as ImagePicker from "expo-image-picker";
+import { getDownloadURL, getStorage, ref, uploadBytes, uploadBytesResumable, deleteObject } from "firebase/storage";
 
 const BlockMenuProfile = styled.TouchableOpacity`
   width: 98%;
-  height: 5%;
+  height: 7%;
   background-color: ${colors.blockMenuProfile};
   flex-direction: row;
   justify-content: flex-start;
@@ -23,7 +25,7 @@ const BlockMenuProfile = styled.TouchableOpacity`
 `;
 const BlockMenuProfileText = styled.Text`
   color: ${colors.blockMenuFrofileText};
-  font-size: 30px;
+  font-size: 40px;
   margin-left: 5%;
 `;
 const BlockProfile = styled.TouchableOpacity`
@@ -31,7 +33,7 @@ const BlockProfile = styled.TouchableOpacity`
   height: 70%;
   position: absolute;
   background-color: ${colors.menuProfile};
-  top: 10%;
+  top: 11%;
   margin-left: 1%;
 `;
 const BlockProfileSectionNikname = styled.TouchableOpacity`
@@ -118,10 +120,20 @@ const BlockProfileSectionAvatar = styled.TouchableOpacity`
 `;
 const BlockProfileText = styled.Text`
   color: ${colors.menuFrofileText};
-  font-size: 30px;
+  font-size: 40px;
   margin-left: 5%;
 `;
-
+const ButtonLogout = styled.TouchableOpacity`
+  width: 100%;
+  height: 10%;
+  background-color: ${colors.backgroundLogoutBtn};
+  justify-content: center;
+  align-items: center;
+`;
+const ButtonLogoutText = styled.Text`
+  color: ${colors.titleText};
+  font-size: 35px;
+`;
 const auth = getAuth();
 
 export default function DashboardScreen({ navigation }) {
@@ -129,6 +141,79 @@ export default function DashboardScreen({ navigation }) {
   const [visibilityMenu, setVisibilityMenu] = useState(false);
   const [changeNiknameModal, setChangeNiknameModal] = useState(false);
   const [newNikname, setNewNikname] = useState("");
+  const [newPhotoURL, setNewPhotoURL] = useState(null);
+  const [fileName, setFileName] = useState(null);
+  const storage = getStorage(app);
+
+  const pickImage = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      allowsEditing: true,
+      aspect: [3, 3],
+      quality: 1,
+    });
+    if (result) {
+      const fileToDel = result.assets[0].fileName;
+      setFileName(fileToDel);
+      const storageRef = ref(storage, `avatar/${result.assets[0].fileName}`);
+      const uriForStorage = result.assets[0].uri;
+      addToFirebaseStorage(storageRef, uriForStorage, fileToDel);
+    }
+  };
+
+  const delFileFromStorage = async () => {
+    if (!userProfileData.file && !fileName) {
+      return;
+    }
+    const desertRef = ref(storage, `avatar/${userProfileData.file || fileName}`);
+    deleteObject(desertRef)
+      .then(() => {
+        console.log("File delete!");
+      })
+      .catch((error) => {
+        console.log("del file from storage", error);
+      });
+  };
+
+  const addToFirebaseStorage = async (storageRef, uriForStorage, fileToDel) => {
+    try {
+      const response = await fetch(uriForStorage);
+      if (!response) {
+        console.log("Failed to fetch file");
+      }
+      const mediaBlob = await response.blob();
+      const uploadToStorage = uploadBytesResumable(storageRef, mediaBlob);
+
+      uploadToStorage.on(
+        "state_changed",
+        (snapshot) => {
+          const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          console.log("Upload is " + progress + "% done");
+          switch (snapshot.state) {
+            case "paused":
+              console.log("Upload is paused");
+              break;
+            case "running":
+              console.log("Upload is running");
+              break;
+          }
+        },
+        (error) => {
+          console.log(error);
+        },
+        () => {
+          getDownloadURL(uploadToStorage.snapshot.ref).then((downloadURL) => {
+            console.log("File available at", downloadURL);
+            setNewPhotoURL(downloadURL);
+            handleChangeAvatar(fileToDel, downloadURL);
+          });
+        }
+      );
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const logOut = () => {
     signOut(auth).catch((error) => {
       console.log(error);
@@ -157,8 +242,20 @@ export default function DashboardScreen({ navigation }) {
   const handleChangeNikname = async () => {
     const cityRef = doc(db, "users", auth.currentUser.email);
     await setDoc(cityRef, { nikname: newNikname }, { merge: true });
+    getUserProfile();
   };
-
+  const handleChangeAvatar = async (fileToDel, downloadURL) => {
+    getUserProfile();
+    delFileFromStorage();
+    const cityRef = doc(db, "users", auth.currentUser.email);
+    await setDoc(
+      cityRef,
+      { photoURL: downloadURL, file: fileToDel, nikname: newNikname || userProfileData.nikname },
+      { merge: true }
+    );
+  };
+  console.log("Three", userProfileData);
+  console.log("Three", userProfileData);
   return (
     <LinearGradient
       colors={[
@@ -209,11 +306,11 @@ export default function DashboardScreen({ navigation }) {
         <BlockProfile>
           <BlockProfileSectionEmail>
             <BlockProfileText>Email:</BlockProfileText>
-            <BlockProfileText>{userProfileData.email}</BlockProfileText>
+            <BlockProfileText>{auth.currentUser.email}</BlockProfileText>
           </BlockProfileSectionEmail>
           <BlockProfileSectionNikname>
             <BlockProfileText>Nikname:</BlockProfileText>
-            <BlockProfileText>{newNikname || userProfileData.nikname}</BlockProfileText>
+            <BlockProfileText>{userProfileData.nikname || newNikname}</BlockProfileText>
             <ChangeNikname
               onPress={() => {
                 setNewNikname("");
@@ -223,18 +320,20 @@ export default function DashboardScreen({ navigation }) {
               <FontAwesome6 name="edit" size={40} color={colors.menuProfileText} />
             </ChangeNikname>
           </BlockProfileSectionNikname>
-          <BlockProfileSectionAvatar>
+          <BlockProfileSectionAvatar onPress={() => pickImage()}>
             <Image
               style={{ width: "50%", aspectRatio: 1, objectfit: "cover", borderRadius: 180 }}
-              source={{ uri: userProfileData.photoURL }}
+              source={{ uri: newPhotoURL || userProfileData.photoURL }}
             />
           </BlockProfileSectionAvatar>
-          <Button
+          <ButtonLogout
             onPress={() => {
               logOut();
             }}
             title="Logout"
-          />
+          >
+            <ButtonLogoutText>Logout</ButtonLogoutText>
+          </ButtonLogout>
         </BlockProfile>
       ) : null}
     </LinearGradient>

@@ -64,6 +64,7 @@ export default function RegistrationScreen({ navigation }) {
   const [password, setPassword] = useState("");
   const [photoURL, setPhotoURL] = useState("");
   const [nikname, setNikname] = useState("");
+  const [fileName, setFileName] = useState("");
   const storage = getStorage(app);
   const auth = getAuth();
 
@@ -75,6 +76,7 @@ export default function RegistrationScreen({ navigation }) {
       quality: 1,
     });
     if (result) {
+      setFileName(result.assets[0].fileName);
       const storageRef = ref(storage, `avatar/${result.assets[0].fileName}`);
       const uriForStorage = result.assets[0].uri;
       addToFirebaseStorage(storageRef, uriForStorage);
@@ -126,6 +128,7 @@ export default function RegistrationScreen({ navigation }) {
         photoURL: photoURL,
         email: email,
         userId: userId,
+        file: fileName,
       };
       await setDoc(doc(db, "users", email), user);
     } catch (error) {
