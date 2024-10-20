@@ -23,3 +23,4 @@ export const orderChartColor = "#ffffff";
 export const blockOrderCreateBackgroundColor = "#272b3b";
 export const startColorForGradientButton = "#a8dce7";
 export const endColorForGradientButton = "#ffffff";
+export const APBorderColor = "#a8dce7";

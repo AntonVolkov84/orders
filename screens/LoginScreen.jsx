@@ -57,8 +57,8 @@ const ButtonRegistrationText = styled.Text`
   color: ${colors.buttonRegistrationColor};
 `;
 const ButtonGoogle = styled.TouchableOpacity`
-  width: 250px;
-  height: 80px;
+  width: 300px;
+  height: 100px;
   border-radius: 50px;
   margin: 5% auto;
   font-size: 20px;
