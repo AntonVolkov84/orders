@@ -6,7 +6,7 @@ import { StatusBar } from "expo-status-bar";
 import Proffile from "../components/Proffile";
 import OrderIcon from "../components/OrderIcon";
 import CreatingOrder from "../components/CreatingOrder";
-import AddingParticipamt from "../components/AddingParticipamt";
+import AddingParticipant from "../components/AddingParticipant";
 import Button from "../components/Button";
 import styled from "styled-components";
 
@@ -59,7 +59,7 @@ export default function DashboardScreen({ navigation }) {
         <>
           <BlockOrderCreate>
             <BlockAddingParticipant>
-              <AddingParticipamt />
+              <AddingParticipant />
             </BlockAddingParticipant>
             <BlockAddingOrder>
               <CreatingOrder />

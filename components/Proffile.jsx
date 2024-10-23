@@ -107,6 +107,7 @@ const ModalNiknameBtnOk = styled.TouchableOpacity`
 `;
 const ModalNiknameBtnText = styled.Text`
   color: ${colors.modalNiknameBtnText};
+  font-size: 30px;
 `;
 const BlockProfileSectionAvatar = styled.TouchableOpacity`
   width: 100%;
@@ -136,6 +137,7 @@ const auth = getAuth();
 
 export default function DashboardScreen({ navigation }) {
   const [userProfileData, setUserProfileData] = useState(null);
+  const [loadingUserProfileData, setLoadingUserProfileData] = useState(true);
   const [visibilityMenu, setVisibilityMenu] = useState(false);
   const [changeNiknameModal, setChangeNiknameModal] = useState(false);
   const [newNikname, setNewNikname] = useState("");
@@ -228,6 +230,7 @@ export default function DashboardScreen({ navigation }) {
     const docSnap = await getDoc(docRef);
     if (docSnap.exists()) {
       setUserProfileData(docSnap.data());
+      setLoadingUserProfileData(false);
     } else {
       console.log("Couldn`t download user profile");
     }
@@ -292,11 +295,15 @@ export default function DashboardScreen({ navigation }) {
         <BlockProfile>
           <BlockProfileSectionEmail>
             <BlockProfileText>Email:</BlockProfileText>
-            <BlockProfileText>{auth.currentUser.email}</BlockProfileText>
+            <BlockProfileText>
+              {loadingUserProfileData ? <Text>Loading...</Text> : auth.currentUser.email}
+            </BlockProfileText>
           </BlockProfileSectionEmail>
           <BlockProfileSectionNikname>
             <BlockProfileText>Nikname:</BlockProfileText>
-            <BlockProfileText>{userProfileData.nikname || newNikname}</BlockProfileText>
+            <BlockProfileText>
+              {loadingUserProfileData ? <Text>Loading...</Text> : userProfileData.nikname || newNikname}
+            </BlockProfileText>
             <ChangeNikname
               onPress={() => {
                 setNewNikname("");
@@ -309,7 +316,9 @@ export default function DashboardScreen({ navigation }) {
           <BlockProfileSectionAvatar onPress={() => pickImage()}>
             <Image
               style={{ width: "50%", aspectRatio: 1, objectfit: "cover", borderRadius: 180 }}
-              source={{ uri: newPhotoURL || userProfileData.photoURL }}
+              source={{
+                uri: loadingUserProfileData ? <Text>Loading...</Text> : newPhotoURL || userProfileData.photoURL,
+              }}
             />
           </BlockProfileSectionAvatar>
           <ButtonLogout
