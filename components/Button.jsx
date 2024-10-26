@@ -12,6 +12,7 @@ const BlockButton = styled.View`
 `;
 const BlockButtonText = styled.Text`
   font-size: 25px;
+  color: ${colors.BlockButtonText};
 `;
 
 export default function Button({ children }) {

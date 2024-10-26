@@ -3,15 +3,16 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import RegistrationScreen from "./screens/RegistrationScreen";
 import LoginScreen from "./screens/LoginScreen";
-import { useState, useEffect } from "react";
+import { useState, createContext } from "react";
 import DashboardScreen from "./screens/DashboardScreen.jsx";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 
 const Stack = createNativeStackNavigator();
+export const AppContext = createContext(null);
 
 export default function App() {
-  const [initializing, setInitializing] = useState(true);
   const [user, setUser] = useState("");
+  const [participants, setParticipants] = useState("");
   const auth = getAuth();
   onAuthStateChanged(auth, (user) => {
     if (user && auth.currentUser.emailVerified) {

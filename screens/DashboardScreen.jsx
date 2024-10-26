@@ -1,5 +1,5 @@
 import { View, Text, TouchableOpacity, Image, TextInput } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { LinearGradient } from "expo-linear-gradient";
 import * as colors from "../variables/colors";
 import { StatusBar } from "expo-status-bar";
@@ -7,7 +7,7 @@ import Proffile from "../components/Proffile";
 import OrderIcon from "../components/OrderIcon";
 import CreatingOrder from "../components/CreatingOrder";
 import AddingParticipant from "../components/AddingParticipant";
-import Button from "../components/Button";
+
 import styled from "styled-components";
 
 const BlockOrderIcon = styled.TouchableOpacity`
@@ -24,24 +24,27 @@ const BlockOrderCreate = styled.View`
   height: 100%;
   border-top-left-radius: 12px;
   border-top-right-radius: 12px;
-  padding-top: 5%;
+  padding-top: 3%;
   background-color: ${colors.blockOrderCreateBackgroundColor};
 `;
 const BlockAddingParticipant = styled.View`
   width: 100%;
-  height: 15%;
+  height: 180px;
   padding-left: 3%;
   padding-right: 3%;
-  margin-bottom: 1%;
 `;
 const BlockAddingOrder = styled.View`
   width: 100%;
-  height: 70%;
+  height: 90%;
   margin-bottom: 1%;
+  padding-left: 3%;
+  padding-right: 3%;
 `;
 
 export default function DashboardScreen({ navigation }) {
   const [createOrderModal, setCreateOrderModal] = useState(false);
+  const [participants, setParticipants] = useState([]);
+
   return (
     <LinearGradient
       colors={[
@@ -59,19 +62,11 @@ export default function DashboardScreen({ navigation }) {
         <>
           <BlockOrderCreate>
             <BlockAddingParticipant>
-              <AddingParticipant />
+              <AddingParticipant participants={participants} setParticipants={setParticipants} />
             </BlockAddingParticipant>
             <BlockAddingOrder>
-              <CreatingOrder />
+              <CreatingOrder participants={participants} setCreateOrderModal={setCreateOrderModal} />
             </BlockAddingOrder>
-            <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-around" }}>
-              <TouchableOpacity onPress={() => setCreateOrderModal(false)} style={{ width: "25%", height: 80 }}>
-                <Button children="Cansel" />
-              </TouchableOpacity>
-              <View style={{ width: "25%", height: 80 }}>
-                <Button children="Make order" />
-              </View>
-            </View>
           </BlockOrderCreate>
         </>
       ) : (

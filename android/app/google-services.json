@@ -15,7 +15,15 @@
       },
       "oauth_client": [
         {
-          "client_id": "604190082036-2sjghfd1394eelnl04u0ekg6im11crli.apps.googleusercontent.com",
+          "client_id": "604190082036-lav85uoad3heh7ngbjm8u4h5lb314jvt.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.ant_volkov.orders",
+            "certificate_hash": "bfccdcb81daa40c4bfd307a675ec34d7627f38f6"
+          }
+        },
+        {
+          "client_id": "604190082036-2hogegaj8kj52vmqj0uo975d3hfgklg5.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
@@ -28,7 +36,7 @@
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "604190082036-2sjghfd1394eelnl04u0ekg6im11crli.apps.googleusercontent.com",
+              "client_id": "604190082036-2hogegaj8kj52vmqj0uo975d3hfgklg5.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

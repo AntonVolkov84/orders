@@ -1,5 +1,5 @@
 import { View, Text, TouchableOpacity, Alert, Image, TextInput, ScrollView, SafeAreaView } from "react-native";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import styled from "styled-components";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import * as colors from "../variables/colors";
@@ -7,7 +7,7 @@ import { doc, addDoc, setDoc, collection, serverTimestamp, getDoc, getDocs } fro
 import { getAuth } from "firebase/auth";
 import Button from "./Button";
 import { db } from "../firebaseConfig";
-import { SwipeListView } from "react-native-swipe-list-view";
+import { AppContext } from "../App";
 
 const BlockAdding = styled.View`
   width: 100%;
@@ -16,7 +16,7 @@ const BlockAdding = styled.View`
   align-items: center;
 `;
 const BlockIcon = styled.TouchableOpacity`
-  height: 80%;
+  height: 90%;
   aspect-ratio: 1;
   border: 2px solid;
   border-color: ${colors.APBorderColor};
@@ -72,15 +72,12 @@ const ModalButtonBtn = styled.TouchableOpacity`
   height: 100%;
 `;
 
-export default function AddingParticipamt() {
+export default function AddingParticipamt({ setParticipants, participants }) {
   const auth = getAuth();
   const [inputEmail, setInputEmail] = useState("");
   const [loadingData, setLoadingData] = useState(true);
-  const [loadingParticipant, setLoadingParticipant] = useState(true);
-  const [allParticipants, setAllParticipants] = useState([]);
   const [allParticipantsData, setAllParticipantsData] = useState([]);
   const [addingParticipantModal, setAddingParticipantModal] = useState(false);
-  const arrAllParticipantData = [];
 
   const verificationInputMail = async (email) => {
     try {
@@ -111,11 +108,8 @@ export default function AddingParticipamt() {
     const currentEmail = auth.currentUser.email;
     try {
       const querySnapshot = await getDocs(collection(db, "AllParticipants", currentEmail, "PersonalParticipant"));
-      // querySnapshot.docs.map((doc) => doc.data().email);
       const arr = querySnapshot.docs.map((doc) => doc.data().email);
-
       if (arr) {
-        setAllParticipants(arr);
         getdata(arr);
       }
     } catch (error) {
@@ -125,7 +119,6 @@ export default function AddingParticipamt() {
   useEffect(() => {
     gettAllParticipants();
   }, []);
-
   const getdata = async (arr) => {
     const newArr = [];
     for (i = 0; i < arr.length; i++) {
@@ -137,7 +130,12 @@ export default function AddingParticipamt() {
       }
     }
   };
-
+  const addParticipantsToOrder = (participant) => {
+    const dublicate = participants.some((e) => e.email === participant.email);
+    if (!dublicate) {
+      setParticipants((prevParticipants) => [...prevParticipants, { ...participant }]);
+    }
+  };
   return (
     <>
       {addingParticipantModal ? (
@@ -175,7 +173,7 @@ export default function AddingParticipamt() {
               ) : (
                 <>
                   {allParticipantsData.map((participant) => (
-                    <BlockParticipant key={participant.index}>
+                    <BlockParticipant onPress={() => addParticipantsToOrder(participant)} key={participant.userId}>
                       <BlockParticipantAvatar
                         source={{
                           uri: `${participant.photoURL}`,
