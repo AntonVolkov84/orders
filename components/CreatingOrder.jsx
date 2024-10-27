@@ -68,10 +68,15 @@ const BlockResultBtn = styled.TouchableOpacity`
   width: 100%;
 `;
 
-export default function CreatingOrder({ participants, setCreateOrderModal }) {
+export default function CreatingOrder({ participants, setCreateOrderModal, setParticipants }) {
   const [name, setName] = useState("");
   const [quantity, setQuantity] = useState("");
   const orders = [];
+
+  const delFronArrayOfParticipants = (participant) => {
+    const newArray = participants.filter((e) => e.email !== participant.email);
+    setParticipants(newArray);
+  };
 
   return (
     <BlockAddingOrder>
@@ -89,7 +94,16 @@ export default function CreatingOrder({ participants, setCreateOrderModal }) {
               fontSize: 35,
             }}
           >
-            {participants.map((e) => e.nikname + " ")}
+            {participants.map((e) => (
+              <Text
+                key={e.userId}
+                onPress={() => {
+                  delFronArrayOfParticipants(e);
+                }}
+              >
+                {e.nikname + " "}
+              </Text>
+            ))}
           </Text>
         ) : null}
       </BlockAddingOrderParticipants>

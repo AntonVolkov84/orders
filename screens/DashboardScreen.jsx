@@ -65,7 +65,11 @@ export default function DashboardScreen({ navigation }) {
               <AddingParticipant participants={participants} setParticipants={setParticipants} />
             </BlockAddingParticipant>
             <BlockAddingOrder>
-              <CreatingOrder participants={participants} setCreateOrderModal={setCreateOrderModal} />
+              <CreatingOrder
+                participants={participants}
+                setParticipants={setParticipants}
+                setCreateOrderModal={setCreateOrderModal}
+              />
             </BlockAddingOrder>
           </BlockOrderCreate>
         </>
