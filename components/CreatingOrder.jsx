@@ -1,10 +1,12 @@
 import { View, Text, TouchableOpacity, TextInput, ScrollView, SafeAreaView } from "react-native";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import * as colors from "../variables/colors";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import Button from "../components/Button";
-import { AppContext } from "../App";
+import Feather from "@expo/vector-icons/Feather";
+import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { db, auth } from "../firebaseConfig";
 
 const BlockAddingOrder = styled.View`
   width: 100%;
@@ -14,6 +16,17 @@ const BlockAddingOrderTitle = styled.Text`
   color: ${colors.titleText};
   font-size: 35px;
   align-self: center;
+`;
+const BlockAddingOrderDate = styled.TouchableOpacity`
+  color: ${colors.titleText};
+  font-size: 35px;
+  align-self: center;
+`;
+const BlockAddingOrderDateText = styled.Text`
+  color: ${colors.titleText};
+  font-size: 35px;
+  align-self: center;
+  margin-left: 2%;
 `;
 const BlockAddingOrderParticipants = styled.View`
   color: ${colors.titleText};
@@ -28,6 +41,7 @@ const BlockInput = styled.View`
   width: 100%;
   height: 80px;
   padding-top: 1%;
+  font-size: 25px;
   flex-direction: row;
 `;
 const Input = styled.TextInput`
@@ -38,7 +52,7 @@ const Input = styled.TextInput`
   padding-left: 1%;
   padding-right: 1%;
   color: ${colors.creatingOrderText};
-  font-size: 25px;
+  font-size: 30px;
 `;
 const BlockInputQnt = styled.TextInput`
   width: 20%;
@@ -47,7 +61,7 @@ const BlockInputQnt = styled.TextInput`
   border-radius: 5px;
   margin-left: 1%;
   color: ${colors.creatingOrderText};
-  font-size: 25px;
+  font-size: 30px;
   text-align: center;
 `;
 const BlockInputBtn = styled.TouchableOpacity`
@@ -59,23 +73,64 @@ const BlockInputBtn = styled.TouchableOpacity`
   justify-content: center;
   align-items: center;
 `;
+const BlockDelOrderBtn = styled.TouchableOpacity`
+  width: 12%;
+  position: absolute;
+  right: 0;
+  justify-content: center;
+  align-items: center;
+`;
 const BlockResultBtn = styled.TouchableOpacity`
   flex-direction: row;
   justify-content: space-around;
   align-items: center;
   position: absolute;
-  bottom: 10%;
+  top: 800px;
   width: 100%;
 `;
 
 export default function CreatingOrder({ participants, setCreateOrderModal, setParticipants }) {
   const [name, setName] = useState("");
   const [quantity, setQuantity] = useState("");
-  const orders = [];
+  const [dateForOrder, setDateForOrder] = useState(new Date());
+  const [orders, setOrders] = useState([]);
 
   const delFronArrayOfParticipants = (participant) => {
     const newArray = participants.filter((e) => e.email !== participant.email);
     setParticipants(newArray);
+  };
+
+  const addingToChart = () => {
+    setOrders((prevOrders) => [...prevOrders, { name, quantity, id: Date.parse(new Date()) }]);
+    setName("");
+    setQuantity("");
+  };
+  const delFromChart = (id) => {
+    const newOrders = orders.filter((order) => order.id !== id);
+    setOrders(newOrders);
+  };
+  const fetchOrders = async () => {
+    const currentEmail = auth.currentUser.email;
+    const arrOfParicipantsEmail = [currentEmail];
+    participants.map((e) => arrOfParicipantsEmail.push(e.email));
+    try {
+      const order = {
+        timestamp: serverTimestamp(),
+        participants: arrOfParicipantsEmail,
+        order: [...orders],
+        orderId: Date.parse(new Date()),
+      };
+      await addDoc(collection(db, "orders", currentEmail, "personal orders"), order);
+    } catch (error) {
+      console.log("add to users", error);
+    }
+  };
+
+  const makeOrder = async () => {
+    fetchOrders()
+      .then(() => setParticipants([]))
+      .then(() => setOrders([]))
+      .then(() => setCreateOrderModal(false));
   };
 
   return (
@@ -107,12 +162,49 @@ export default function CreatingOrder({ participants, setCreateOrderModal, setPa
           </Text>
         ) : null}
       </BlockAddingOrderParticipants>
+      <BlockAddingOrderParticipants>
+        <BlockAddingOrderParticipantsText>Order date:</BlockAddingOrderParticipantsText>
+        <BlockAddingOrderDate
+          onPress={() => {
+            console.log(dateForOrder);
+          }}
+        >
+          <BlockAddingOrderDateText>{new Date(dateForOrder).toLocaleDateString("en-GB")}</BlockAddingOrderDateText>
+        </BlockAddingOrderDate>
+      </BlockAddingOrderParticipants>
       <SafeAreaView>
-        <ScrollView>
+        <ScrollView style={{ height: 450 }}>
+          {Boolean(orders.length) ? (
+            <>
+              {orders.map((order, index) => (
+                <BlockAddingOrderParticipants key={index}>
+                  <BlockAddingOrderParticipantsText>{order.name}</BlockAddingOrderParticipantsText>
+                  <BlockAddingOrderDateText>{order.quantity}</BlockAddingOrderDateText>
+                  <BlockDelOrderBtn
+                    onPress={() => {
+                      delFromChart(order.id);
+                    }}
+                  >
+                    <Feather name="delete" size={35} color={colors.titleText} />
+                  </BlockDelOrderBtn>
+                </BlockAddingOrderParticipants>
+              ))}
+            </>
+          ) : null}
           <BlockInput>
-            <Input onChangeText={setName} maxLength={30} placeholder="Name of product or business"></Input>
-            <BlockInputQnt onChangeText={setQuantity} maxLength={7} placeholder="Quantity"></BlockInputQnt>
-            <BlockInputBtn>
+            <Input onChangeText={setName} value={name} maxLength={25} placeholder="Name of product or business"></Input>
+            <BlockInputQnt
+              onChangeText={setQuantity}
+              value={quantity}
+              maxLength={7}
+              keyboardType="numeric"
+              placeholder="Quantity"
+            ></BlockInputQnt>
+            <BlockInputBtn
+              onPress={() => {
+                addingToChart();
+              }}
+            >
               <MaterialIcons name="shopping-cart-checkout" size={45} color={colors.creatingOrderIcon} />
             </BlockInputBtn>
           </BlockInput>
@@ -122,9 +214,14 @@ export default function CreatingOrder({ participants, setCreateOrderModal, setPa
         <TouchableOpacity onPress={() => setCreateOrderModal(false)} style={{ width: "25%", height: 80 }}>
           <Button children="Cansel" />
         </TouchableOpacity>
-        <View style={{ width: "25%", height: 80 }}>
+        <TouchableOpacity
+          onPress={() => {
+            makeOrder();
+          }}
+          style={{ width: "25%", height: 80 }}
+        >
           <Button children="Make order" />
-        </View>
+        </TouchableOpacity>
       </BlockResultBtn>
     </BlockAddingOrder>
   );

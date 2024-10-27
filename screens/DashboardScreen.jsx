@@ -1,5 +1,5 @@
 import { View, Text, TouchableOpacity, Image, TextInput } from "react-native";
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import { LinearGradient } from "expo-linear-gradient";
 import * as colors from "../variables/colors";
 import { StatusBar } from "expo-status-bar";
@@ -7,8 +7,9 @@ import Proffile from "../components/Proffile";
 import OrderIcon from "../components/OrderIcon";
 import CreatingOrder from "../components/CreatingOrder";
 import AddingParticipant from "../components/AddingParticipant";
-
 import styled from "styled-components";
+import { db } from "../firebaseConfig";
+import { collection, getDocs } from "firebase/firestore";
 
 const BlockOrderIcon = styled.TouchableOpacity`
   width: 20%;
@@ -44,6 +45,19 @@ const BlockAddingOrder = styled.View`
 export default function DashboardScreen({ navigation }) {
   const [createOrderModal, setCreateOrderModal] = useState(false);
   const [participants, setParticipants] = useState([]);
+
+  useEffect(() => {
+    fetchAllOrders();
+  }, []);
+
+  const fetchAllOrders = async () => {
+    try {
+      const querySnapshot = await getDocs(collection(db, "orders"));
+      querySnapshot.docs.map((doc) => console.log(doc.data()));
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
 
   return (
     <LinearGradient
