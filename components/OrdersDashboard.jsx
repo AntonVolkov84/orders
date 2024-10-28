@@ -6,10 +6,9 @@ import { db } from "../firebaseConfig";
 import { getDoc, doc } from "firebase/firestore";
 
 const BlockOrderShow = styled.TouchableOpacity`
-  width: 98%;
-  margin-left: 1%;
+  width: 100%;
   background-color: ${colors.blockMenuProfile};
-  height: 20%;
+  height: 250px;
   margin-top: 1%;
 `;
 const BlockOrder = styled.View`
@@ -48,7 +47,7 @@ const BlockOrderCreatorName = styled.Text`
   font-size: 30px;
 `;
 
-export default function OrdersDashboard({ fetchedOrders }) {
+export default function OrdersDashboard({ item }) {
   const [orderCreatorProfile, setOrderCreatorProfile] = useState(null);
   const [loadingOrderCreatorProfile, setLoadingOrderCreatorProfile] = useState(false);
 
@@ -57,7 +56,7 @@ export default function OrdersDashboard({ fetchedOrders }) {
   }, []);
 
   const getOrderCreatorProfile = async () => {
-    const email = fetchedOrders[0].participants[0];
+    const email = item.participants[0];
     const docRef = doc(db, "users", email);
     const docSnap = await getDoc(docRef);
     if (docSnap.exists()) {
@@ -67,14 +66,22 @@ export default function OrdersDashboard({ fetchedOrders }) {
       console.log("Couldn`t download user profile");
     }
   };
-  const dateForOrder = new Date(fetchedOrders[0].dateForOrder.seconds);
+  const dateForOrder = new Date(item.dateForOrder.seconds);
 
   return (
-    <BlockOrderShow>
+    <BlockOrderShow
+      onPress={() => {
+        console.log(item);
+      }}
+    >
       {loadingOrderCreatorProfile ? (
         <BlockOrder>
           <BlockOrderCreator>
-            <BlockOrderCreatorAvatar source={{ uri: orderCreatorProfile.photoURL }}></BlockOrderCreatorAvatar>
+            <BlockOrderCreatorAvatar
+              source={{
+                uri: orderCreatorProfile.photoURL,
+              }}
+            ></BlockOrderCreatorAvatar>
             <BlockOrderCreatorName>{orderCreatorProfile.nikname}</BlockOrderCreatorName>
           </BlockOrderCreator>
           <BlockOrderInfo>

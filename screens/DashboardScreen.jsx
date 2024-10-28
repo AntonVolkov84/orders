@@ -11,6 +11,7 @@ import styled from "styled-components";
 import { db, auth } from "../firebaseConfig";
 import { collection, onSnapshot, where, orderBy, query, getDocs } from "firebase/firestore";
 import OrdersDashboard from "../components/OrdersDashboard";
+import { SafeAreaView, SafeAreaProvider } from "react-native-safe-area-context";
 
 const BlockOrderIcon = styled.TouchableOpacity`
   width: 20%;
@@ -42,17 +43,25 @@ const BlockAddingOrder = styled.View`
   padding-left: 3%;
   padding-right: 3%;
 `;
+const BlockOrdersShow = styled.View`
+  height: 90%;
+  width: 98%;
+  margin-left: 1%;
+  margin-right: 1%;
+  margin-top: 1%;
+`;
 
 export default function DashboardScreen({ navigation }) {
   const [createOrderModal, setCreateOrderModal] = useState(false);
   const [participants, setParticipants] = useState([]);
   const [fetchedOrders, setFetchedOrders] = useState([]);
+  const [isLoaded, setIsLoaded] = useState(false);
   const currentEmail = auth.currentUser.email;
 
   useEffect(() => {
     fetchAllOrders();
   }, []);
-  console.log(fetchedOrders);
+
   const fetchAllOrders = async () => {
     try {
       const querySnapshot = await getDocs(
@@ -64,6 +73,7 @@ export default function DashboardScreen({ navigation }) {
       );
       const arr = querySnapshot.docs.map((doc) => doc.data());
       setFetchedOrders(arr);
+      setIsLoaded(true);
     } catch (error) {
       console.log(error.message);
     }
@@ -100,7 +110,21 @@ export default function DashboardScreen({ navigation }) {
       ) : (
         <>
           <Proffile />
-          <OrdersDashboard fetchedOrders={fetchedOrders} />
+          <BlockOrdersShow>
+            {isLoaded ? (
+              <SafeAreaProvider>
+                <SafeAreaView style={{ height: "100%" }}>
+                  <FlatList
+                    data={fetchedOrders}
+                    onRefresh={fetchAllOrders}
+                    refreshing={!isLoaded}
+                    renderItem={({ item }) => <OrdersDashboard item={item} />}
+                    keyExtractor={(item) => item.orderId}
+                  />
+                </SafeAreaView>
+              </SafeAreaProvider>
+            ) : null}
+          </BlockOrdersShow>
           <BlockOrderIcon onPress={() => setCreateOrderModal(true)}>
             <OrderIcon />
           </BlockOrderIcon>

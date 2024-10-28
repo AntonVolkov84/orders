@@ -28,7 +28,7 @@ const BlockMenuProfileText = styled.Text`
 `;
 const BlockProfile = styled.TouchableOpacity`
   width: 98%;
-  height: 70%;
+  height: 90%;
   position: absolute;
   background-color: ${colors.menuProfile};
   top: 11%;
