@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, Image, TextInput } from "react-native";
+import { View, Text, TouchableOpacity, Image, TextInput, FlatList } from "react-native";
 import React, { useState, useEffect } from "react";
 import { LinearGradient } from "expo-linear-gradient";
 import * as colors from "../variables/colors";
@@ -8,8 +8,9 @@ import OrderIcon from "../components/OrderIcon";
 import CreatingOrder from "../components/CreatingOrder";
 import AddingParticipant from "../components/AddingParticipant";
 import styled from "styled-components";
-import { db } from "../firebaseConfig";
-import { collection, getDocs } from "firebase/firestore";
+import { db, auth } from "../firebaseConfig";
+import { collection, onSnapshot, where, orderBy, query, getDocs } from "firebase/firestore";
+import OrdersDashboard from "../components/OrdersDashboard";
 
 const BlockOrderIcon = styled.TouchableOpacity`
   width: 20%;
@@ -45,15 +46,24 @@ const BlockAddingOrder = styled.View`
 export default function DashboardScreen({ navigation }) {
   const [createOrderModal, setCreateOrderModal] = useState(false);
   const [participants, setParticipants] = useState([]);
+  const [fetchedOrders, setFetchedOrders] = useState([]);
+  const currentEmail = auth.currentUser.email;
 
   useEffect(() => {
     fetchAllOrders();
   }, []);
-
+  console.log(fetchedOrders);
   const fetchAllOrders = async () => {
     try {
-      const querySnapshot = await getDocs(collection(db, "orders"));
-      querySnapshot.docs.map((doc) => console.log(doc.data()));
+      const querySnapshot = await getDocs(
+        query(
+          collection(db, "orders"),
+          where("participants", "array-contains", currentEmail),
+          orderBy("dateForOrder", "desc")
+        )
+      );
+      const arr = querySnapshot.docs.map((doc) => doc.data());
+      setFetchedOrders(arr);
     } catch (error) {
       console.log(error.message);
     }
@@ -90,6 +100,7 @@ export default function DashboardScreen({ navigation }) {
       ) : (
         <>
           <Proffile />
+          <OrdersDashboard fetchedOrders={fetchedOrders} />
           <BlockOrderIcon onPress={() => setCreateOrderModal(true)}>
             <OrderIcon />
           </BlockOrderIcon>

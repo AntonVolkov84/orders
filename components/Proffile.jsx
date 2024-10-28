@@ -33,6 +33,7 @@ const BlockProfile = styled.TouchableOpacity`
   background-color: ${colors.menuProfile};
   top: 11%;
   margin-left: 1%;
+  z-index: 2;
 `;
 const BlockProfileSectionNikname = styled.TouchableOpacity`
   width: 100%;

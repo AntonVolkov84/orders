@@ -116,11 +116,12 @@ export default function CreatingOrder({ participants, setCreateOrderModal, setPa
     try {
       const order = {
         timestamp: serverTimestamp(),
+        dateForOrder: dateForOrder,
         participants: arrOfParicipantsEmail,
         order: [...orders],
         orderId: Date.parse(new Date()),
       };
-      await addDoc(collection(db, "orders", currentEmail, "personal orders"), order);
+      await addDoc(collection(db, "orders"), order);
     } catch (error) {
       console.log("add to users", error);
     }
