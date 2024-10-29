@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, TextInput } from "react-native";
+import { View, Text, TouchableOpacity, TextInput, FlatList } from "react-native";
 import React, { useState, useEffect } from "react";
 import { LinearGradient } from "expo-linear-gradient";
 import * as colors from "../variables/colors";
@@ -30,6 +30,13 @@ const BlockOrderItem = styled.View`
   background-color: ${colors.orderScreenItemBackground};
   margin-bottom: 1%;
 `;
+const BlockOrderItemOk = styled.View`
+  flex-direction: row;
+  height: 110px;
+  align-items: center;
+  background-color: ${colors.orderScreenItemBackgroundOk};
+  margin-bottom: 1%;
+`;
 const BlockOrderItemName = styled.Text`
   width: 80%;
   font-size: 30px;
@@ -37,6 +44,17 @@ const BlockOrderItemName = styled.Text`
   margin-left: 2%;
 `;
 const BlockOrderItemQuantity = styled.Text`
+  font-size: 30px;
+  color: ${colors.orderScreenItemText};
+  margin-left: 2%;
+`;
+const BlockOrderItemNameOk = styled.Text`
+  width: 80%;
+  font-size: 30px;
+  color: ${colors.orderScreenItemText};
+  margin-left: 2%;
+`;
+const BlockOrderItemQuantityOk = styled.Text`
   font-size: 30px;
   color: ${colors.orderScreenItemText};
   margin-left: 2%;
@@ -124,7 +142,6 @@ export default function OrderScreen({ route }) {
   const documentId = item.docId;
 
   const updateOrder = async () => {
-    const orderId = dataItem.id;
     const updatingOrder = {
       id: Date.parse(new Date()),
       made: false,
@@ -140,6 +157,26 @@ export default function OrderScreen({ route }) {
       order: arrayRemove(dataItem),
     });
     setModalUpdate(false);
+  };
+
+  const okOrder = async () => {
+    console.log(dataItem);
+    const updatingOrder = {
+      id: Date.parse(new Date()),
+      made: true,
+      madeBy: currentUserEmail,
+      name: dataItem.name,
+      quantity: dataItem.quantity,
+    };
+    const firebaseRef = doc(db, "orders", documentId);
+    await updateDoc(firebaseRef, {
+      order: arrayUnion(updatingOrder),
+    });
+    await updateDoc(firebaseRef, {
+      order: arrayRemove(dataItem),
+    });
+    setModalUpdate(false);
+    fetchOrders();
   };
 
   useEffect(() => {
@@ -201,42 +238,62 @@ export default function OrderScreen({ route }) {
               </ModalBlockBtn>
             </ModalBlock>
           ) : (
-            <>
+            <View>
+              <View style={{ marginBottom: " 5%" }}>
+                {ordersLoaded ? (
+                  <FlatList
+                    data={orders.order.filter((e) => e.made === true)}
+                    onRefresh={fetchOrders}
+                    refreshing={!ordersLoaded}
+                    renderItem={({ item }) => (
+                      <BlockOrderItemOk>
+                        <BlockOrderItemNameOk>{item.name}</BlockOrderItemNameOk>
+                        <BlockOrderItemQuantityOk>{item.quantity}</BlockOrderItemQuantityOk>
+                      </BlockOrderItemOk>
+                    )}
+                    keyExtractor={(item) => item.orderId}
+                  />
+                ) : null}
+              </View>
+
               {ordersLoaded ? (
-                <SwipeListView
-                  style={{ width: "100%", height: "100%" }}
-                  data={orders.order}
-                  renderItem={(data, rowMap) => (
-                    <BlockOrderItem>
-                      <BlockOrderItemName>{data.item.name}</BlockOrderItemName>
-                      <BlockOrderItemQuantity>{data.item.quantity}</BlockOrderItemQuantity>
-                    </BlockOrderItem>
-                  )}
-                  renderHiddenItem={(data, rowMap) => (
-                    <Hiden>
-                      <HidenUpdate
-                        onPress={() => {
-                          setName(data.item.name);
-                          setQuantity(data.item.quantity);
-                          setDataItem(data.item);
-                          setModalUpdate(true);
-                        }}
-                      >
-                        <Ionicons color="white" size={40} name="create"></Ionicons>
-                      </HidenUpdate>
-                      <HidenOk
-                        onPress={() => {
-                          console.log(del);
-                        }}
-                      >
-                        <Entypo name="check" size={40} color="white" />
-                      </HidenOk>
-                    </Hiden>
-                  )}
-                  rightOpenValue={-230}
-                ></SwipeListView>
+                <>
+                  <SwipeListView
+                    style={{ width: "100%", height: "100%" }}
+                    data={orders.order.filter((e) => e.made !== true)}
+                    renderItem={(data, rowMap) => (
+                      <BlockOrderItem>
+                        <BlockOrderItemName>{data.item.name}</BlockOrderItemName>
+                        <BlockOrderItemQuantity>{data.item.quantity}</BlockOrderItemQuantity>
+                      </BlockOrderItem>
+                    )}
+                    renderHiddenItem={(data, rowMap) => (
+                      <Hiden>
+                        <HidenUpdate
+                          onPress={() => {
+                            setName(data.item.name);
+                            setQuantity(data.item.quantity);
+                            setDataItem(data.item);
+                            setModalUpdate(true);
+                          }}
+                        >
+                          <Ionicons color="white" size={40} name="create"></Ionicons>
+                        </HidenUpdate>
+                        <HidenOk
+                          onPress={() => {
+                            setDataItem(data.item);
+                            okOrder();
+                          }}
+                        >
+                          <Entypo name="check" size={40} color="white" />
+                        </HidenOk>
+                      </Hiden>
+                    )}
+                    rightOpenValue={-230}
+                  ></SwipeListView>
+                </>
               ) : null}
-            </>
+            </View>
           )}
         </BlockSafeAreaView>
       </Container>
