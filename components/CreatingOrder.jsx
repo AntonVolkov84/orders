@@ -213,7 +213,7 @@ export default function CreatingOrder({ participants, setCreateOrderModal, setPa
       </SafeAreaView>
       <BlockResultBtn>
         <TouchableOpacity onPress={() => setCreateOrderModal(false)} style={{ width: "25%", height: 80 }}>
-          <Button children="Cansel" />
+          <Button children="Cancel" />
         </TouchableOpacity>
         <TouchableOpacity
           onPress={() => {

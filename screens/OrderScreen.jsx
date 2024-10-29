@@ -1,15 +1,161 @@
-import { View, Text } from "react-native";
-import React from "react";
+import { View, Text, TouchableOpacity, TextInput } from "react-native";
+import React, { useState, useEffect } from "react";
 import { LinearGradient } from "expo-linear-gradient";
 import * as colors from "../variables/colors";
 import { StatusBar } from "expo-status-bar";
 import styled from "styled-components";
 import { db, auth } from "../firebaseConfig";
-import { collection, onSnapshot, where, orderBy, query, getDocs } from "firebase/firestore";
+import { doc, onSnapshot, updateDoc, arrayUnion, arrayRemove, where } from "firebase/firestore";
+import { SwipeListView } from "react-native-swipe-list-view";
+import { Ionicons } from "@expo/vector-icons";
+import Entypo from "@expo/vector-icons/Entypo";
+import Button from "../components/Button";
+
+const Container = styled.View`
+  width: 100%;
+  height: 100%;
+  padding: 1%;
+`;
+const OrderName = styled.Text`
+  font-size: 30px;
+  color: ${colors.titleText};
+  justify-self: center;
+  align-self: center;
+  margin-bottom: 2%;
+`;
+const BlockOrderItem = styled.View`
+  flex-direction: row;
+  height: 110px;
+  align-items: center;
+  background-color: ${colors.orderScreenItemBackground};
+  margin-bottom: 1%;
+`;
+const BlockOrderItemName = styled.Text`
+  width: 80%;
+  font-size: 30px;
+  color: ${colors.orderScreenItemText};
+  margin-left: 2%;
+`;
+const BlockOrderItemQuantity = styled.Text`
+  font-size: 30px;
+  color: ${colors.orderScreenItemText};
+  margin-left: 2%;
+`;
+const BlockSafeAreaView = styled.View`
+  width: 100%;
+  height: 100%;
+`;
+
+const HidenOk = styled.TouchableOpacity`
+  background-color: ${colors.orderScreenHiddenUpdate};
+  width: 45%;
+  aspect-ratio: 1;
+  justify-content: center;
+  align-items: center;
+  border-radius: 8px;
+`;
+
+const HidenUpdate = styled.TouchableOpacity`
+  background-color: ${colors.orderScreenHiddenOk};
+  width: 45%;
+  aspect-ratio: 1;
+  justify-content: center;
+  align-items: center;
+  border-radius: 8px;
+`;
+
+const Hiden = styled.View`
+  height: 100%;
+  width: 30%;
+  flex-direction: row;
+  position: absolute;
+  justify-content: space-around;
+  align-items: center;
+  right: 0;
+`;
+const ModalBlock = styled.View`
+  width: 100%;
+  height: 95%;
+`;
+const ModalBlockBtn = styled.View`
+  width: 100%;
+  height: 100px;
+  flex-direction: row;
+  justify-content: space-around;
+`;
+const ModalBlockInput = styled.View`
+  width: 100%;
+  height: 500px;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+`;
+const ModalButton = styled.TouchableOpacity`
+  width: 25%;
+  height: 80px;
+`;
+const InputFieldName = styled.TextInput`
+  width: 70%;
+  height: 100px;
+  background-color: ${colors.orderScreenModalInputBackgroung};
+  border-radius: 18px;
+  padding-left: 2%;
+  font-size: 30px;
+`;
+const InputFieldQuantity = styled.TextInput`
+  width: 25%;
+  height: 100px;
+  background-color: ${colors.orderScreenModalInputBackgroung};
+  margin-left: 5%;
+  border-radius: 12px;
+  padding-left: 2%;
+  font-size: 30px;
+`;
 
 export default function OrderScreen({ route }) {
+  const [name, setName] = useState("");
+  const [quantity, setQuantity] = useState("");
+  const [ordersLoaded, setOrdersLoaded] = useState(false);
+  const [modalUpdate, setModalUpdate] = useState(false);
+  const [orders, setOrders] = useState(null);
+  const [dataItem, setDataItem] = useState(null);
   const { item } = route.params;
-  console.log(item);
+  const currentUserEmail = auth.currentUser.email;
+  const documentId = item.docId;
+
+  const updateOrder = async () => {
+    const orderId = dataItem.id;
+    const updatingOrder = {
+      id: Date.parse(new Date()),
+      made: false,
+      madeBy: currentUserEmail,
+      name: name,
+      quantity: quantity,
+    };
+    const firebaseRef = doc(db, "orders", documentId);
+    await updateDoc(firebaseRef, {
+      order: arrayUnion(updatingOrder),
+    });
+    await updateDoc(firebaseRef, {
+      order: arrayRemove(dataItem),
+    });
+    setModalUpdate(false);
+  };
+
+  useEffect(() => {
+    fetchOrders();
+  }, []);
+
+  const fetchOrders = async () => {
+    try {
+      const unsub = onSnapshot(doc(db, "orders", documentId), (doc) => {
+        setOrders(doc.data());
+        setOrdersLoaded(true);
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
   return (
     <LinearGradient
       colors={[
@@ -23,9 +169,77 @@ export default function OrderScreen({ route }) {
       style={{ height: "100%", width: "100%", paddingTop: "5%" }}
     >
       <StatusBar style="light" />
-      <View>
-        <Text>OrderScreen</Text>
-      </View>
+      <Container>
+        <OrderName>
+          {ordersLoaded
+            ? new Date(new Date(orders.dateForOrder.seconds)).toLocaleDateString("ru-RU", {
+                month: "long",
+                day: "numeric",
+              })
+            : "loading..."}
+        </OrderName>
+        <BlockSafeAreaView>
+          {modalUpdate ? (
+            <ModalBlock>
+              <ModalBlockInput>
+                <InputFieldName onChangeText={setName} maxLength={25} value={name}></InputFieldName>
+                <InputFieldQuantity
+                  onChangeText={setQuantity}
+                  value={quantity}
+                  maxLength={7}
+                  keyboardType="numeric"
+                ></InputFieldQuantity>
+              </ModalBlockInput>
+
+              <ModalBlockBtn>
+                <ModalButton onPress={() => setModalUpdate(false)}>
+                  <Button children="Cancel" />
+                </ModalButton>
+                <ModalButton onPress={() => updateOrder()}>
+                  <Button children="Update" />
+                </ModalButton>
+              </ModalBlockBtn>
+            </ModalBlock>
+          ) : (
+            <>
+              {ordersLoaded ? (
+                <SwipeListView
+                  style={{ width: "100%", height: "100%" }}
+                  data={orders.order}
+                  renderItem={(data, rowMap) => (
+                    <BlockOrderItem>
+                      <BlockOrderItemName>{data.item.name}</BlockOrderItemName>
+                      <BlockOrderItemQuantity>{data.item.quantity}</BlockOrderItemQuantity>
+                    </BlockOrderItem>
+                  )}
+                  renderHiddenItem={(data, rowMap) => (
+                    <Hiden>
+                      <HidenUpdate
+                        onPress={() => {
+                          setName(data.item.name);
+                          setQuantity(data.item.quantity);
+                          setDataItem(data.item);
+                          setModalUpdate(true);
+                        }}
+                      >
+                        <Ionicons color="white" size={40} name="create"></Ionicons>
+                      </HidenUpdate>
+                      <HidenOk
+                        onPress={() => {
+                          console.log(del);
+                        }}
+                      >
+                        <Entypo name="check" size={40} color="white" />
+                      </HidenOk>
+                    </Hiden>
+                  )}
+                  rightOpenValue={-230}
+                ></SwipeListView>
+              ) : null}
+            </>
+          )}
+        </BlockSafeAreaView>
+      </Container>
     </LinearGradient>
   );
 }
