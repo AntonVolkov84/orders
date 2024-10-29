@@ -71,7 +71,7 @@ export default function DashboardScreen({ navigation }) {
           orderBy("dateForOrder", "desc")
         )
       );
-      const arr = querySnapshot.docs.map((doc) => doc.data());
+      const arr = querySnapshot.docs.map((doc) => ({ docId: doc.id, ...doc.data() }));
       setFetchedOrders(arr);
       setIsLoaded(true);
     } catch (error) {
@@ -118,7 +118,7 @@ export default function DashboardScreen({ navigation }) {
                     data={fetchedOrders}
                     onRefresh={fetchAllOrders}
                     refreshing={!isLoaded}
-                    renderItem={({ item }) => <OrdersDashboard item={item} />}
+                    renderItem={({ item }) => <OrdersDashboard item={item} navigation={navigation} />}
                     keyExtractor={(item) => item.orderId}
                   />
                 </SafeAreaView>

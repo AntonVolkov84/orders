@@ -89,7 +89,7 @@ const BlockResultBtn = styled.TouchableOpacity`
   width: 100%;
 `;
 
-export default function CreatingOrder({ participants, setCreateOrderModal, setParticipants }) {
+export default function CreatingOrder({ participants, setCreateOrderModal, setParticipants, navigation }) {
   const [name, setName] = useState("");
   const [quantity, setQuantity] = useState("");
   const [dateForOrder, setDateForOrder] = useState(new Date());
@@ -101,7 +101,7 @@ export default function CreatingOrder({ participants, setCreateOrderModal, setPa
   };
 
   const addingToChart = () => {
-    setOrders((prevOrders) => [...prevOrders, { name, quantity, id: Date.parse(new Date()) }]);
+    setOrders((prevOrders) => [...prevOrders, { name, quantity, id: Date.parse(new Date()), made: false, madeBy: "" }]);
     setName("");
     setQuantity("");
   };

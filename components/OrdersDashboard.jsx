@@ -47,7 +47,7 @@ const BlockOrderCreatorName = styled.Text`
   font-size: 30px;
 `;
 
-export default function OrdersDashboard({ item }) {
+export default function OrdersDashboard({ item, navigation }) {
   const [orderCreatorProfile, setOrderCreatorProfile] = useState(null);
   const [loadingOrderCreatorProfile, setLoadingOrderCreatorProfile] = useState(false);
 
@@ -71,7 +71,7 @@ export default function OrdersDashboard({ item }) {
   return (
     <BlockOrderShow
       onPress={() => {
-        console.log(item);
+        navigation.navigate("OrderScreen", { item });
       }}
     >
       {loadingOrderCreatorProfile ? (
