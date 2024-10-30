@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import * as colors from "../variables/colors";
 import styled from "styled-components";
 import { db } from "../firebaseConfig";
-import { getDoc, doc, deleteDoc, setDoc } from "firebase/firestore";
+import { getDoc, doc, deleteDoc, addDoc, collection } from "firebase/firestore";
 import Button from "./Button";
 
 const BlockOrderShow = styled.TouchableOpacity`
@@ -66,7 +66,7 @@ const CloseOrderBtn = styled.TouchableOpacity`
 export default function OrdersDashboard({ item, navigation }) {
   const [orderCreatorProfile, setOrderCreatorProfile] = useState(null);
   const [loadingOrderCreatorProfile, setLoadingOrderCreatorProfile] = useState(false);
-  const dateForOrder = new Date(item.dateForOrder.seconds);
+  const dateForOrder = new Date(item.dateForOrder);
 
   useEffect(() => {
     getOrderCreatorProfile();
@@ -91,8 +91,7 @@ export default function OrdersDashboard({ item, navigation }) {
       const data = docSnap.data();
       const validationCloseAllPosition = data.order.some((e) => e.made !== true);
       if (!validationCloseAllPosition) {
-        console.log(data);
-        await setDoc(doc(db, "closed orders", orderCreatorProfile.email), data);
+        await addDoc(collection(db, "closed orders", orderCreatorProfile.email, "personal closed orders"), data);
         await deleteDoc(doc(db, "orders", docId));
         Alert.alert("Order complete and close!");
       } else {

@@ -130,7 +130,20 @@ const InputFieldQuantity = styled.TextInput`
   font-size: 30px;
 `;
 
-export default function OrderScreen({ route }) {
+const BlockButton = styled.View`
+  width: 100%;
+  height: 80px;
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: center;
+  margin-bottom: 2%;
+`;
+const BlockButtonBtn = styled.TouchableOpacity`
+  width: 33%;
+  height: 100%;
+`;
+
+export default function OrderScreen({ route, navigation }) {
   const [name, setName] = useState("");
   const [quantity, setQuantity] = useState("");
   const [ordersLoaded, setOrdersLoaded] = useState(false);
@@ -160,7 +173,6 @@ export default function OrderScreen({ route }) {
   };
 
   const okOrder = async () => {
-    console.log(dataItem);
     const updatingOrder = {
       id: Date.parse(new Date()),
       made: true,
@@ -209,12 +221,28 @@ export default function OrderScreen({ route }) {
       <Container>
         <OrderName>
           {ordersLoaded
-            ? new Date(new Date(orders.dateForOrder.seconds)).toLocaleDateString("ru-RU", {
+            ? new Date(new Date(orders.dateForOrder)).toLocaleDateString("ru-RU", {
                 month: "long",
                 day: "numeric",
               })
             : "loading..."}
         </OrderName>
+        <BlockButton>
+          <BlockButtonBtn
+            onPress={() => {
+              navigation.goBack();
+            }}
+          >
+            <Button children="Go back" />
+          </BlockButtonBtn>
+          <BlockButtonBtn
+            onPress={() => {
+              navigation.navigate("Messaging", { item });
+            }}
+          >
+            <Button children="Messaging" />
+          </BlockButtonBtn>
+        </BlockButton>
         <BlockSafeAreaView>
           {modalUpdate ? (
             <ModalBlock>

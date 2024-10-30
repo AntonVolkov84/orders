@@ -7,6 +7,7 @@ import { useState, createContext } from "react";
 import DashboardScreen from "./screens/DashboardScreen.jsx";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import OrderScreen from "./screens/OrderScreen.jsx";
+import MessagingScreen from "./screens/MessagingScreen.jsx";
 
 const Stack = createNativeStackNavigator();
 export const AppContext = createContext(null);
@@ -59,6 +60,13 @@ export default function App() {
         <Stack.Screen
           name="OrderScreen"
           component={OrderScreen}
+          options={{
+            headerShown: false,
+          }}
+        />
+        <Stack.Screen
+          name="Messaging"
+          component={MessagingScreen}
           options={{
             headerShown: false,
           }}

@@ -116,7 +116,7 @@ export default function CreatingOrder({ participants, setCreateOrderModal, setPa
     try {
       const order = {
         timestamp: serverTimestamp(),
-        dateForOrder: dateForOrder,
+        dateForOrder: Date.parse(dateForOrder),
         participants: arrOfParicipantsEmail,
         order: [...orders],
         orderId: Date.parse(new Date()),

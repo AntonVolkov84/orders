@@ -33,3 +33,7 @@ export const orderScreenItemText = "#101422";
 export const orderScreenHiddenUpdate = "#036603";
 export const orderScreenHiddenOk = "#71ac13";
 export const orderScreenModalInputBackgroung = "#a8dce7";
+export const MessagingInputBackground = "#1c1c1c";
+export const MessagingInputColor = "#FFFFFF";
+export const MessagingIconColor = "#a8dce7";
+export const MessagingPlaceholder = "#a8dce7";
