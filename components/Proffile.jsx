@@ -66,6 +66,7 @@ const ModalNikname = styled.View`
   background-color: ${colors.modalNiknameBackground};
   padding-top: 30%;
   align-items: center;
+  z-index: 3;
 `;
 const ModalNiknameEntry = styled.View`
   width: 98%;

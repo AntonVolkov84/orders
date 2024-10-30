@@ -116,14 +116,19 @@ export default function LoginScreen({ navigation }) {
       const user = await GoogleSignin.signIn();
       const idToken = user.data.idToken;
       const googleCredential = GoogleAuthProvider.credential(idToken);
-      signInWithCredential(auth, googleCredential).then((result) => {
-        const currentUser = result.user;
-        const nikname = result._tokenResponse.firstName;
-        const photoURL = currentUser.photoURL;
-        const email = currentUser.email;
-        const userId = currentUser.uid;
-        addToUsers(nikname, photoURL, email, userId);
-      });
+      const docSnap = await getDoc(doc(db, "users", user.data.user.email));
+      if (docSnap.exists()) {
+        signInWithCredential(auth, googleCredential);
+      } else {
+        signInWithCredential(auth, googleCredential).then((result) => {
+          const currentUser = result.user;
+          const nikname = result._tokenResponse.firstName;
+          const photoURL = currentUser.photoURL;
+          const email = currentUser.email;
+          const userId = currentUser.uid;
+          addToUsers(nikname, photoURL, email, userId);
+        });
+      }
     } catch (error) {
       console.log("signin", error);
     }
