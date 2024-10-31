@@ -1,13 +1,12 @@
 import { View, Text, TouchableOpacity, Alert, Image, TextInput, ScrollView, SafeAreaView } from "react-native";
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import * as colors from "../variables/colors";
-import { doc, addDoc, setDoc, collection, serverTimestamp, getDoc, getDocs } from "firebase/firestore";
+import { doc, addDoc, collection, getDoc, getDocs } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 import Button from "./Button";
 import { db } from "../firebaseConfig";
-import { AppContext } from "../App";
 
 const BlockAdding = styled.View`
   width: 100%;
@@ -80,6 +79,9 @@ export default function AddingParticipamt({ setParticipants, participants }) {
   const [addingParticipantModal, setAddingParticipantModal] = useState(false);
 
   const verificationInputMail = async (email) => {
+    if (email === auth.currentUser.email) {
+      return Alert.alert("Why You are adding Yourself. You are here!");
+    }
     try {
       const docSnap = await getDoc(doc(db, "users", email));
       if (docSnap.exists()) {
@@ -119,6 +121,7 @@ export default function AddingParticipamt({ setParticipants, participants }) {
   useEffect(() => {
     gettAllParticipants();
   }, []);
+
   const getdata = async (arr) => {
     const newArr = [];
     for (i = 0; i < arr.length; i++) {
@@ -140,7 +143,11 @@ export default function AddingParticipamt({ setParticipants, participants }) {
     <>
       {addingParticipantModal ? (
         <Modal>
-          <ModalInput placeholder="Write email of participant" onChangeText={setInputEmail}></ModalInput>
+          <ModalInput
+            placeholder="Write email of participant"
+            value={inputEmail}
+            onChangeText={setInputEmail}
+          ></ModalInput>
           <ModalButton>
             <ModalButtonBtn
               onPress={() => {

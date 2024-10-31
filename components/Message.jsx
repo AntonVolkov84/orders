@@ -1,7 +1,7 @@
 import { View, Text, Image } from "react-native";
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
-import { doc, addDoc, onSnapshot, collection, orderBy, serverTimestamp, query, where } from "firebase/firestore";
+import { doc, onSnapshot } from "firebase/firestore";
 import { auth, db } from "../firebaseConfig";
 import * as colors from "../variables/colors";
 
@@ -9,6 +9,7 @@ const BlockMessage = styled.View`
   width: 100%;
   height: fit-content;
   flex-direction: row;
+  margin-bottom: 1%;
 `;
 const BlockForMessageAuthor = styled.View`
   width: 25%;
@@ -17,12 +18,12 @@ const BlockForMessageAuthor = styled.View`
   align-items: center;
 `;
 const AuthorAvatar = styled.Image`
-  width: 60%;
+  width: 50%;
   border-radius: 50px;
   aspect-ratio: 1;
 `;
 const AuthorName = styled.Text`
-  font-size: 20px;
+  font-size: 25px;
   color: ${colors.titleText};
 `;
 const BlockForMessageText = styled.Text`

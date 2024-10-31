@@ -172,39 +172,31 @@ export default function OrderScreen({ route, navigation }) {
     setModalUpdate(false);
   };
 
-  const okOrder = async () => {
+  const okOrder = async (item) => {
     const updatingOrder = {
       id: Date.parse(new Date()),
       made: true,
       madeBy: currentUserEmail,
-      name: dataItem.name,
-      quantity: dataItem.quantity,
+      name: item.name,
+      quantity: item.quantity,
     };
     const firebaseRef = doc(db, "orders", documentId);
     await updateDoc(firebaseRef, {
-      order: arrayUnion(updatingOrder),
+      order: arrayRemove(item),
     });
     await updateDoc(firebaseRef, {
-      order: arrayRemove(dataItem),
+      order: arrayUnion(updatingOrder),
     });
     setModalUpdate(false);
-    fetchOrders();
   };
 
   useEffect(() => {
-    fetchOrders();
+    onSnapshot(doc(db, "orders", documentId), (snapshot) => {
+      setOrders(snapshot.data());
+      setOrdersLoaded(true);
+    });
   }, []);
 
-  const fetchOrders = async () => {
-    try {
-      const unsub = onSnapshot(doc(db, "orders", documentId), (doc) => {
-        setOrders(doc.data());
-        setOrdersLoaded(true);
-      });
-    } catch (error) {
-      console.log(error);
-    }
-  };
   return (
     <LinearGradient
       colors={[
@@ -271,8 +263,6 @@ export default function OrderScreen({ route, navigation }) {
                 {ordersLoaded ? (
                   <FlatList
                     data={orders.order.filter((e) => e.made === true)}
-                    onRefresh={fetchOrders}
-                    refreshing={!ordersLoaded}
                     renderItem={({ item }) => (
                       <BlockOrderItemOk>
                         <BlockOrderItemNameOk>{item.name}</BlockOrderItemNameOk>
@@ -283,7 +273,6 @@ export default function OrderScreen({ route, navigation }) {
                   />
                 ) : null}
               </View>
-
               {ordersLoaded ? (
                 <>
                   <SwipeListView
@@ -310,7 +299,7 @@ export default function OrderScreen({ route, navigation }) {
                         <HidenOk
                           onPress={() => {
                             setDataItem(data.item);
-                            okOrder();
+                            okOrder(data.item);
                           }}
                         >
                           <Entypo name="check" size={40} color="white" />

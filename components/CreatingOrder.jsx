@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, TextInput, ScrollView, SafeAreaView } from "react-native";
+import { View, Text, TouchableOpacity, TextInput, ScrollView, SafeAreaView, Alert } from "react-native";
 import React, { useState } from "react";
 import styled from "styled-components";
 import * as colors from "../variables/colors";
@@ -32,6 +32,20 @@ const BlockAddingOrderParticipants = styled.View`
   color: ${colors.titleText};
   font-size: 35px;
   flex-direction: row;
+`;
+const BlockAddingOrderAdd = styled.View`
+  color: ${colors.titleText};
+  font-size: 35px;
+  flex-direction: row;
+`;
+const BlockAddingOrderAddText = styled.Text`
+  color: ${colors.titleText};
+  font-size: 36px;
+  width: 74%;
+`;
+const BlockAddingOrderAddQ = styled.Text`
+  color: ${colors.titleText};
+  font-size: 36px;
 `;
 const BlockAddingOrderParticipantsText = styled.Text`
   color: ${colors.titleText};
@@ -101,6 +115,9 @@ export default function CreatingOrder({ participants, setCreateOrderModal, setPa
   };
 
   const addingToChart = () => {
+    if (!Boolean(name) || Boolean(!quantity)) {
+      return Alert.alert("Some input field is empty!");
+    }
     setOrders((prevOrders) => [...prevOrders, { name, quantity, id: Date.parse(new Date()), made: false, madeBy: "" }]);
     setName("");
     setQuantity("");
@@ -128,6 +145,9 @@ export default function CreatingOrder({ participants, setCreateOrderModal, setPa
   };
 
   const makeOrder = async () => {
+    if (orders.length < 1) {
+      return Alert.alert("You can`t make order. There is no one position!");
+    }
     fetchOrders()
       .then(() => setParticipants([]))
       .then(() => setOrders([]))
@@ -178,9 +198,9 @@ export default function CreatingOrder({ participants, setCreateOrderModal, setPa
           {Boolean(orders.length) ? (
             <>
               {orders.map((order, index) => (
-                <BlockAddingOrderParticipants key={index}>
-                  <BlockAddingOrderParticipantsText>{order.name}</BlockAddingOrderParticipantsText>
-                  <BlockAddingOrderDateText>{order.quantity}</BlockAddingOrderDateText>
+                <BlockAddingOrderAdd key={index}>
+                  <BlockAddingOrderAddText>{order.name}</BlockAddingOrderAddText>
+                  <BlockAddingOrderAddQ>{order.quantity}</BlockAddingOrderAddQ>
                   <BlockDelOrderBtn
                     onPress={() => {
                       delFromChart(order.id);
@@ -188,7 +208,7 @@ export default function CreatingOrder({ participants, setCreateOrderModal, setPa
                   >
                     <Feather name="delete" size={35} color={colors.titleText} />
                   </BlockDelOrderBtn>
-                </BlockAddingOrderParticipants>
+                </BlockAddingOrderAdd>
               ))}
             </>
           ) : null}

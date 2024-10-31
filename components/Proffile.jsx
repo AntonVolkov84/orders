@@ -6,7 +6,7 @@ import { getAuth, signOut } from "firebase/auth";
 import * as NavigationBar from "expo-navigation-bar";
 import { db, app } from "../firebaseConfig";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
-import { getDoc, doc, setDoc } from "firebase/firestore";
+import { getDoc, doc, setDoc, onSnapshot } from "firebase/firestore";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import * as ImagePicker from "expo-image-picker";
@@ -238,17 +238,18 @@ export default function DashboardScreen({ navigation }) {
     }
   };
   useEffect(() => {
+    onSnapshot(doc(db, "users", auth.currentUser.email), (snapshot) => {
+      setUserProfileData(snapshot.data());
+    });
+    setLoadingUserProfileData(false);
     customNavigationBar();
-    getUserProfile();
   }, []);
 
   const handleChangeNikname = async () => {
     const cityRef = doc(db, "users", auth.currentUser.email);
     await setDoc(cityRef, { nikname: newNikname }, { merge: true });
-    getUserProfile();
   };
   const handleChangeAvatar = async (fileToDel, downloadURL) => {
-    getUserProfile();
     delFileFromStorage();
     const cityRef = doc(db, "users", auth.currentUser.email);
     await setDoc(

@@ -59,25 +59,18 @@ export default function DashboardScreen({ navigation }) {
   const currentEmail = auth.currentUser.email;
 
   useEffect(() => {
-    fetchAllOrders();
+    onSnapshot(
+      query(
+        collection(db, "orders"),
+        where("participants", "array-contains", currentEmail),
+        orderBy("dateForOrder", "desc")
+      ),
+      (snapshot) => {
+        setFetchedOrders(snapshot.docs.map((doc) => ({ docId: doc.id, ...doc.data() })));
+        setIsLoaded(true);
+      }
+    );
   }, []);
-
-  const fetchAllOrders = async () => {
-    try {
-      const querySnapshot = await getDocs(
-        query(
-          collection(db, "orders"),
-          where("participants", "array-contains", currentEmail),
-          orderBy("dateForOrder", "desc")
-        )
-      );
-      const arr = querySnapshot.docs.map((doc) => ({ docId: doc.id, ...doc.data() }));
-      setFetchedOrders(arr);
-      setIsLoaded(true);
-    } catch (error) {
-      console.log(error.message);
-    }
-  };
 
   return (
     <LinearGradient
@@ -116,8 +109,6 @@ export default function DashboardScreen({ navigation }) {
                 <SafeAreaView style={{ height: "100%" }}>
                   <FlatList
                     data={fetchedOrders}
-                    onRefresh={fetchAllOrders}
-                    refreshing={!isLoaded}
                     renderItem={({ item }) => <OrdersDashboard item={item} navigation={navigation} />}
                     keyExtractor={(item) => item.orderId}
                   />
