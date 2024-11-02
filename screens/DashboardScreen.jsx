@@ -32,13 +32,13 @@ const BlockOrderCreate = styled.View`
 `;
 const BlockAddingParticipant = styled.View`
   width: 100%;
-  height: 180px;
+  height: 150px;
   padding-left: 3%;
   padding-right: 3%;
 `;
 const BlockAddingOrder = styled.View`
   width: 100%;
-  height: 90%;
+  height: 100% - 150px;
   margin-bottom: 1%;
   padding-left: 3%;
   padding-right: 3%;
@@ -82,7 +82,7 @@ export default function DashboardScreen({ navigation }) {
       ]}
       start={{ x: 0.0, y: 0.0 }}
       end={{ x: 1.0, y: 1.0 }}
-      style={{ height: "100%", width: "100%", paddingTop: "5%" }}
+      style={{ height: "100%", width: "100%", paddingTop: "10%" }}
     >
       <StatusBar style="light" />
       {createOrderModal ? (

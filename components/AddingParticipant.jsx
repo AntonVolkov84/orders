@@ -15,7 +15,7 @@ const BlockAdding = styled.View`
   align-items: center;
 `;
 const BlockIcon = styled.TouchableOpacity`
-  height: 90%;
+  height: 70%;
   aspect-ratio: 1;
   border: 2px solid;
   border-color: ${colors.APBorderColor};
@@ -25,7 +25,7 @@ const BlockIcon = styled.TouchableOpacity`
   margin-right: 5%;
 `;
 const BlockParticipant = styled.TouchableOpacity`
-  height: 80%;
+  height: 65%;
   aspect-ratio: 1;
   justify-content: center;
   align-items: center;
@@ -41,7 +41,7 @@ const BlockParticipantAvatar = styled.Image`
 `;
 const BlockParticipantName = styled.Text`
   color: ${colors.APBorderColor};
-  font-size: 24px;
+  font-size: 20px;
   overflow: hidden;
 `;
 const Modal = styled.View`
@@ -51,10 +51,10 @@ const Modal = styled.View`
 `;
 const ModalInput = styled.TextInput`
   width: 100%;
-  height: 100px;
+  height: 70px;
   background-color: ${colors.backgroundColorInput};
   color: ${colors.colorTextInput};
-  font-size: 40px;
+  font-size: 25px;
   padding-left: 2%;
   border-radius: 10px;
 `;
@@ -67,7 +67,7 @@ const ModalButton = styled.View`
   margin-top: 1%;
 `;
 const ModalButtonBtn = styled.TouchableOpacity`
-  width: 20%;
+  width: 25%;
   height: 100%;
 `;
 
@@ -173,7 +173,7 @@ export default function AddingParticipamt({ setParticipants, participants }) {
           <ScrollView horizontal={true}>
             <BlockAdding>
               <BlockIcon onPress={() => setAddingParticipantModal(true)}>
-                <MaterialCommunityIcons name="account-plus-outline" size={80} color={colors.APBorderColor} />
+                <MaterialCommunityIcons name="account-plus-outline" size={60} color={colors.APBorderColor} />
               </BlockIcon>
               {loadingData ? (
                 <Text style={{ color: colors.titleText, fontSize: 25 }}>Loading...</Text>

@@ -15,7 +15,7 @@ const BlockOrder = styled.View`
 export default function OrderIcon() {
   return (
     <BlockOrder>
-      <FontAwesome name="cart-plus" size={60} color={colors.orderChartColor} />
+      <FontAwesome name="cart-plus" size={40} color={colors.orderChartColor} />
     </BlockOrder>
   );
 }

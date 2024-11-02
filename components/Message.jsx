@@ -18,18 +18,18 @@ const BlockForMessageAuthor = styled.View`
   align-items: center;
 `;
 const AuthorAvatar = styled.Image`
-  width: 50%;
+  width: 70%;
   border-radius: 50px;
   aspect-ratio: 1;
 `;
 const AuthorName = styled.Text`
-  font-size: 25px;
+  font-size: 15px;
   color: ${colors.titleText};
 `;
 const BlockForMessageText = styled.Text`
-  width: 280px;
+  width: 200px;
   color: white;
-  font-size: 30px;
+  font-size: 20px;
 `;
 
 export default function Message({ message }) {

@@ -12,11 +12,12 @@ import Message from "../components/Message";
 
 const BlockButton = styled.View`
   width: 100%;
-  height: 80px;
+  height: 50px;
   flex-direction: row;
   justify-content: start;
   align-items: center;
-  margin-bottom: 2%;
+  margin-bottom: 3%;
+  margin-top: 10%;
 `;
 const BlockButtonBtn = styled.TouchableOpacity`
   width: 33%;
@@ -30,7 +31,7 @@ const BoxInput = styled.View`
   background-color: ${colors.MessagingInputBackground};
   padding: 10px;
   width: 99%;
-  height: 100px;
+  height: 70px;
   position: absolute;
   bottom: 40px;
   left: 6%;
@@ -39,23 +40,22 @@ const BoxInput = styled.View`
 `;
 const BoxInputText = styled.TextInput`
   padding: 10px;
-  width: 92%;
+  width: 90%;
   height: 100%;
   color: ${colors.MessagingInputColor};
-  font-size: 30px;
+  font-size: 20px;
 `;
 const BlockIconMessage = styled.TouchableOpacity`
   position: absolute;
-  right: 3%;
+  right: 5%;
   height: 100%;
-  top: 10%;
+  top: 20%;
   justify-content: center;
   align-items: center;
 `;
 const BlockForMessage = styled.View`
   width: 100%;
   height: fit-content;
-
   margin-bottom: 20px;
 `;
 
@@ -142,7 +142,7 @@ export default function MessagingScreen({ route, navigation }) {
           value={message}
         ></BoxInputText>
         <BlockIconMessage onPress={() => sendMessage()}>
-          <FontAwesome name="send" size={35} color={colors.MessagingIconColor} />
+          <FontAwesome name="send" size={20} color={colors.MessagingIconColor} />
         </BlockIconMessage>
       </BoxInput>
     </LinearGradient>

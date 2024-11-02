@@ -15,46 +15,46 @@ const BlockAddingOrder = styled.View`
 `;
 const BlockAddingOrderTitle = styled.Text`
   color: ${colors.titleText};
-  font-size: 35px;
+  font-size: 25px;
   align-self: center;
 `;
 const BlockAddingOrderDate = styled.TouchableOpacity`
   color: ${colors.titleText};
-  font-size: 35px;
+  font-size: 25px;
   align-self: center;
 `;
 const BlockAddingOrderDateText = styled.Text`
   color: ${colors.titleText};
-  font-size: 35px;
+  font-size: 25px;
   align-self: center;
   margin-left: 2%;
 `;
 const BlockAddingOrderParticipants = styled.View`
   color: ${colors.titleText};
-  font-size: 35px;
+  font-size: 25px;
   flex-direction: row;
 `;
 const BlockAddingOrderAdd = styled.View`
   color: ${colors.titleText};
-  font-size: 35px;
+  font-size: 25px;
   flex-direction: row;
 `;
 const BlockAddingOrderAddText = styled.Text`
   color: ${colors.titleText};
-  font-size: 36px;
+  font-size: 25px;
   width: 67%;
 `;
 const BlockAddingOrderAddQ = styled.Text`
   color: ${colors.titleText};
-  font-size: 36px;
+  font-size: 25px;
 `;
 const BlockAddingOrderParticipantsText = styled.Text`
   color: ${colors.titleText};
-  font-size: 36px;
+  font-size: 25px;
 `;
 const BlockInput = styled.View`
   width: 100%;
-  height: 80px;
+  height: 70px;
   padding-top: 1%;
   font-size: 25px;
   flex-direction: row;
@@ -67,7 +67,7 @@ const Input = styled.TextInput`
   padding-left: 1%;
   padding-right: 1%;
   color: ${colors.creatingOrderText};
-  font-size: 30px;
+  font-size: 20px;
 `;
 const BlockInputQnt = styled.TextInput`
   width: 20%;
@@ -76,11 +76,11 @@ const BlockInputQnt = styled.TextInput`
   border-radius: 5px;
   margin-left: 1%;
   color: ${colors.creatingOrderText};
-  font-size: 30px;
+  font-size: 20px;
   text-align: center;
 `;
 const BlockInputBtn = styled.TouchableOpacity`
-  width: 12%;
+  width: 13%;
   height: 100%;
   background-color: ${colors.backgroundColorInput};
   border-radius: 5px;
@@ -100,7 +100,7 @@ const BlockResultBtn = styled.TouchableOpacity`
   justify-content: space-around;
   align-items: center;
   position: absolute;
-  top: 800px;
+  bottom: 200px;
   width: 100%;
 `;
 
@@ -174,7 +174,7 @@ export default function CreatingOrder({ participants, setCreateOrderModal, setPa
               overflow: "wrap",
               marginLeft: "2%",
               color: colors.titleText,
-              fontSize: 35,
+              fontSize: 25,
             }}
           >
             {participants.map((e) => (
@@ -221,7 +221,7 @@ export default function CreatingOrder({ participants, setCreateOrderModal, setPa
                       delFromChart(order.id);
                     }}
                   >
-                    <Feather name="delete" size={35} color={colors.titleText} />
+                    <Feather name="delete" size={30} color={colors.titleText} />
                   </BlockDelOrderBtn>
                 </BlockAddingOrderAdd>
               ))}
@@ -240,20 +240,20 @@ export default function CreatingOrder({ participants, setCreateOrderModal, setPa
                 addingToChart();
               }}
             >
-              <MaterialIcons name="shopping-cart-checkout" size={45} color={colors.creatingOrderIcon} />
+              <MaterialIcons name="shopping-cart-checkout" size={35} color={colors.creatingOrderIcon} />
             </BlockInputBtn>
           </BlockInput>
         </ScrollView>
       </SafeAreaView>
       <BlockResultBtn>
-        <TouchableOpacity onPress={() => setCreateOrderModal(false)} style={{ width: "25%", height: 80 }}>
+        <TouchableOpacity onPress={() => setCreateOrderModal(false)} style={{ width: "25%", height: 70 }}>
           <Button children="Cancel" />
         </TouchableOpacity>
         <TouchableOpacity
           onPress={() => {
             makeOrder();
           }}
-          style={{ width: "25%", height: 80 }}
+          style={{ width: "25%", height: 70 }}
         >
           <Button children="Make order" />
         </TouchableOpacity>

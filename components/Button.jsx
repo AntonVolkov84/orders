@@ -11,7 +11,7 @@ const BlockButton = styled.View`
   align-items: center;
 `;
 const BlockButtonText = styled.Text`
-  font-size: 25px;
+  font-size: 20px;
   color: ${colors.BlockButtonText};
 `;
 

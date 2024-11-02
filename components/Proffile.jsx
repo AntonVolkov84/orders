@@ -23,13 +23,14 @@ const BlockMenuProfile = styled.TouchableOpacity`
 `;
 const BlockMenuProfileText = styled.Text`
   color: ${colors.blockMenuFrofileText};
-  font-size: 40px;
+  font-size: 30px;
   margin-left: 5%;
 `;
 const BlockProfile = styled.TouchableOpacity`
   width: 98%;
   height: 90%;
   position: absolute;
+  margin-top: 3%;
   background-color: ${colors.menuProfile};
   top: 11%;
   margin-left: 1%;
@@ -70,7 +71,7 @@ const ModalNikname = styled.View`
 `;
 const ModalNiknameEntry = styled.View`
   width: 98%;
-  height: 300px;
+  height: 250px;
   border-radius: 10px;
   background-color: ${colors.modalNiknameBackgroundWindow};
   justify-content: center;
@@ -82,7 +83,7 @@ const ModalNiknameInput = styled.TextInput`
   height: 30%;
   background-color: ${colors.modalNiknameInput};
   padding-left: 5%;
-  font-size: 40px;
+  font-size: 25px;
 `;
 const ModalBlockBtn = styled.View`
   width: 100%;
@@ -90,7 +91,7 @@ const ModalBlockBtn = styled.View`
   justify-content: space-around;
 `;
 const ModalNiknameBtnCancel = styled.TouchableOpacity`
-  width: 15%;
+  width: 20%;
   aspect-ratio: 4/3;
   border-radius: 18px;
   background-color: red;
@@ -99,7 +100,7 @@ const ModalNiknameBtnCancel = styled.TouchableOpacity`
   margin-left: 5%;
 `;
 const ModalNiknameBtnOk = styled.TouchableOpacity`
-  width: 15%;
+  width: 20%;
   aspect-ratio: 4/3;
   border-radius: 18px;
   background-color: green;
@@ -109,7 +110,7 @@ const ModalNiknameBtnOk = styled.TouchableOpacity`
 `;
 const ModalNiknameBtnText = styled.Text`
   color: ${colors.modalNiknameBtnText};
-  font-size: 30px;
+  font-size: 20px;
 `;
 const BlockProfileSectionAvatar = styled.TouchableOpacity`
   width: 100%;
@@ -121,19 +122,19 @@ const BlockProfileSectionAvatar = styled.TouchableOpacity`
 `;
 const BlockProfileText = styled.Text`
   color: ${colors.menuFrofileText};
-  font-size: 40px;
+  font-size: 25px;
   margin-left: 5%;
 `;
 const ButtonLogout = styled.TouchableOpacity`
   width: 100%;
-  height: 10%;
+  height: 7%;
   background-color: ${colors.backgroundLogoutBtn};
   justify-content: center;
   align-items: center;
 `;
 const ButtonLogoutText = styled.Text`
   color: ${colors.titleText};
-  font-size: 35px;
+  font-size: 25px;
 `;
 const auth = getAuth();
 
@@ -265,7 +266,7 @@ export default function DashboardScreen({ navigation }) {
         <MaterialCommunityIcons
           style={{ marginLeft: "5%" }}
           name="menu"
-          size={40}
+          size={30}
           color={colors.BlockMenuProfileText}
         />
         <BlockMenuProfileText>Proffile</BlockMenuProfileText>
@@ -313,7 +314,7 @@ export default function DashboardScreen({ navigation }) {
                 setChangeNiknameModal(true);
               }}
             >
-              <FontAwesome6 name="edit" size={40} color={colors.menuProfileText} />
+              <FontAwesome6 name="edit" size={30} color={colors.menuProfileText} />
             </ChangeNikname>
           </BlockProfileSectionNikname>
           <BlockProfileSectionAvatar onPress={() => pickImage()}>

@@ -12,7 +12,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { doc, setDoc, serverTimestamp, getDoc } from "firebase/firestore";
 
 const TitleText = styled.Text`
-  font-size: 50px;
+  font-size: 40px;
   color: ${colors.titleText};
   display: block;
   margin: 0 auto;
@@ -23,25 +23,25 @@ const BlockInput = styled.View`
   margin-top: 10%;
 `;
 const InputField = styled.TextInput`
-  width: 90%;
-  height: 80px;
+  width: 80%;
+  height: 70px;
   margin-top: 5%;
   padding-left: 5%;
-  margin-left: 5%;
+  margin-left: 10%;
   border-radius: 10px;
   background-color: ${colors.backgroundColorInput};
   border: none;
   color: ${colors.colorTextInput};
-  font-size: 30px;
+  font-size: 25px;
 `;
 
 const LoginButton = styled.TouchableOpacity`
-  width: 200px;
-  height: 100px;
+  width: 150px;
+  height: 70px;
   background-color: green;
   border-radius: 50px;
   margin: 0 auto;
-  margin-top: 10%;
+  margin-top: 15%;
 `;
 const LoginButtonText = styled.Text`
   color: ${colors.titleText};
@@ -50,7 +50,7 @@ const LoginButtonText = styled.Text`
 const ButtonRegistration = styled.TouchableOpacity`
   justify-content: center;
   align-items: center;
-  margin-top: 5%;
+  margin-top: 15%;
 `;
 const ButtonRegistrationText = styled.Text`
   font-size: 25px;
@@ -58,7 +58,7 @@ const ButtonRegistrationText = styled.Text`
 `;
 const ButtonGoogle = styled.TouchableOpacity`
   width: 300px;
-  height: 100px;
+  height: 70px;
   border-radius: 50px;
   margin: 5% auto;
   font-size: 20px;

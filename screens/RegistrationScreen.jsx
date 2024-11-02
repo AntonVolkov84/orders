@@ -12,7 +12,7 @@ import { collection, doc, addDoc, setDoc, serverTimestamp } from "firebase/fires
 import { getAuth, signOut, sendEmailVerification, createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 
 const TitleText = styled.Text`
-  font-size: 50px;
+  font-size: 40px;
   color: ${colors.titleText};
   display: block;
   margin: 0 auto;
@@ -23,22 +23,22 @@ const BlockInput = styled.View`
   margin-top: 10%;
 `;
 const InputField = styled.TextInput`
-  width: 90%;
-  height: 80px;
+  width: 80%;
+  height: 70px;
   margin-top: 5%;
   padding-left: 5%;
-  margin-left: 5%;
+  margin-left: 10%;
   border-radius: 10px;
   background-color: ${colors.backgroundColorInput};
   border: none;
   color: ${colors.colorTextInput};
-  font-size: 30px;
+  font-size: 25px;
 `;
 const AvatarBlock = styled.TouchableOpacity`
-  width: 200px;
-  height: 200px;
+  width: 160px;
+  height: 160px;
   align-self: center;
-  margin-top: 5%;
+  margin-top: 15%;
   justify-content: center;
 `;
 const AvatarText = styled.Text`
@@ -47,8 +47,8 @@ const AvatarText = styled.Text`
   color: ${colors.colorTextInput};
 `;
 const RegisterButton = styled.TouchableOpacity`
-  width: 200px;
-  height: 100px;
+  width: 160px;
+  height: 70px;
   background-color: green;
   border-radius: 50px;
   margin: 0 auto;
@@ -56,7 +56,7 @@ const RegisterButton = styled.TouchableOpacity`
 `;
 const RegisterButtonText = styled.Text`
   color: ${colors.buttonRegistrationColor};
-  font-size: 25px;
+  font-size: 20px;
 `;
 
 export default function RegistrationScreen({ navigation }) {

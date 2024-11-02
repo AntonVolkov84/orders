@@ -15,9 +15,10 @@ const Container = styled.View`
   width: 100%;
   height: 100%;
   padding: 1%;
+  padding-top: 5%;
 `;
 const OrderName = styled.Text`
-  font-size: 30px;
+  font-size: 25px;
   color: ${colors.titleText};
   justify-self: center;
   align-self: center;
@@ -25,37 +26,37 @@ const OrderName = styled.Text`
 `;
 const BlockOrderItem = styled.View`
   flex-direction: row;
-  height: 110px;
+  height: 70px;
   align-items: center;
   background-color: ${colors.orderScreenItemBackground};
   margin-bottom: 1%;
 `;
 const BlockOrderItemOk = styled.View`
   flex-direction: row;
-  height: 110px;
+  height: 70px;
   align-items: center;
   background-color: ${colors.orderScreenItemBackgroundOk};
   margin-bottom: 1%;
 `;
 const BlockOrderItemName = styled.Text`
   width: 80%;
-  font-size: 30px;
+  font-size: 25px;
   color: ${colors.orderScreenItemText};
   margin-left: 2%;
 `;
 const BlockOrderItemQuantity = styled.Text`
-  font-size: 30px;
+  font-size: 25px;
   color: ${colors.orderScreenItemText};
   margin-left: 2%;
 `;
 const BlockOrderItemNameOk = styled.Text`
   width: 80%;
-  font-size: 30px;
+  font-size: 25px;
   color: ${colors.orderScreenItemText};
   margin-left: 2%;
 `;
 const BlockOrderItemQuantityOk = styled.Text`
-  font-size: 30px;
+  font-size: 25px;
   color: ${colors.orderScreenItemText};
   margin-left: 2%;
 `;
@@ -83,7 +84,7 @@ const HidenUpdate = styled.TouchableOpacity`
 `;
 
 const Hiden = styled.View`
-  height: 100%;
+  height: 70px;
   width: 30%;
   flex-direction: row;
   position: absolute;
@@ -97,37 +98,37 @@ const ModalBlock = styled.View`
 `;
 const ModalBlockBtn = styled.View`
   width: 100%;
-  height: 100px;
+  height: 70px;
   flex-direction: row;
   justify-content: space-around;
 `;
 const ModalBlockInput = styled.View`
   width: 100%;
-  height: 500px;
+  height: 300px;
   flex-direction: row;
   justify-content: center;
   align-items: center;
 `;
 const ModalButton = styled.TouchableOpacity`
   width: 25%;
-  height: 80px;
+  height: 70px;
 `;
 const InputFieldName = styled.TextInput`
   width: 70%;
-  height: 100px;
+  height: 70px;
   background-color: ${colors.orderScreenModalInputBackgroung};
   border-radius: 18px;
   padding-left: 2%;
-  font-size: 30px;
+  font-size: 25px;
 `;
 const InputFieldQuantity = styled.TextInput`
   width: 25%;
-  height: 100px;
+  height: 70px;
   background-color: ${colors.orderScreenModalInputBackgroung};
   margin-left: 5%;
   border-radius: 12px;
   padding-left: 2%;
-  font-size: 30px;
+  font-size: 25px;
 `;
 
 const BlockButton = styled.View`
@@ -140,7 +141,7 @@ const BlockButton = styled.View`
 `;
 const BlockButtonBtn = styled.TouchableOpacity`
   width: 33%;
-  height: 100%;
+  height: 50px;
 `;
 
 export default function OrderScreen({ route, navigation }) {
@@ -294,7 +295,7 @@ export default function OrderScreen({ route, navigation }) {
                             setModalUpdate(true);
                           }}
                         >
-                          <Ionicons color="white" size={40} name="create"></Ionicons>
+                          <Ionicons color="white" size={30} name="create"></Ionicons>
                         </HidenUpdate>
                         <HidenOk
                           onPress={() => {
@@ -302,11 +303,11 @@ export default function OrderScreen({ route, navigation }) {
                             okOrder(data.item);
                           }}
                         >
-                          <Entypo name="check" size={40} color="white" />
+                          <Entypo name="check" size={30} color="white" />
                         </HidenOk>
                       </Hiden>
                     )}
-                    rightOpenValue={-230}
+                    rightOpenValue={-130}
                   ></SwipeListView>
                 </>
               ) : null}
