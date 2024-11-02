@@ -120,7 +120,7 @@ export default function OrdersDashboard({ item, navigation }) {
             <BlockOrderInfoDate>
               {new Date(dateForOrder).toLocaleDateString("ru-RU", { month: "long", day: "numeric" })}
             </BlockOrderInfoDate>
-            <BlockOrderInfoArr>{item.order.map((e) => e.name + " ")}</BlockOrderInfoArr>
+            <BlockOrderInfoArr>{item.order.map((e) => e.name + ", ")}</BlockOrderInfoArr>
             <CloseOrderBtn onPress={() => delCompliteOrder(item.docId)}>
               <Button children="Close order" />
             </CloseOrderBtn>

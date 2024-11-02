@@ -7,6 +7,7 @@ import Button from "../components/Button";
 import Feather from "@expo/vector-icons/Feather";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { db, auth } from "../firebaseConfig";
+import DateTimePicker from "@react-native-community/datetimepicker";
 
 const BlockAddingOrder = styled.View`
   width: 100%;
@@ -41,7 +42,7 @@ const BlockAddingOrderAdd = styled.View`
 const BlockAddingOrderAddText = styled.Text`
   color: ${colors.titleText};
   font-size: 36px;
-  width: 74%;
+  width: 67%;
 `;
 const BlockAddingOrderAddQ = styled.Text`
   color: ${colors.titleText};
@@ -49,7 +50,7 @@ const BlockAddingOrderAddQ = styled.Text`
 `;
 const BlockAddingOrderParticipantsText = styled.Text`
   color: ${colors.titleText};
-  font-size: 35px;
+  font-size: 36px;
 `;
 const BlockInput = styled.View`
   width: 100%;
@@ -108,6 +109,12 @@ export default function CreatingOrder({ participants, setCreateOrderModal, setPa
   const [quantity, setQuantity] = useState("");
   const [dateForOrder, setDateForOrder] = useState(new Date());
   const [orders, setOrders] = useState([]);
+  const [showPicker, setShowPicker] = useState(false);
+
+  const handleChangeDate = (event) => {
+    setShowPicker(false);
+    setDateForOrder(new Date(event.nativeEvent.timestamp));
+  };
 
   const delFronArrayOfParticipants = (participant) => {
     const newArray = participants.filter((e) => e.email !== participant.email);
@@ -185,9 +192,17 @@ export default function CreatingOrder({ participants, setCreateOrderModal, setPa
       </BlockAddingOrderParticipants>
       <BlockAddingOrderParticipants>
         <BlockAddingOrderParticipantsText>Order date:</BlockAddingOrderParticipantsText>
+        {showPicker && (
+          <DateTimePicker
+            style={{ width: "80%", aspectRatio: 3 / 4 }}
+            mode={"date"}
+            value={new Date()}
+            onChange={handleChangeDate}
+          />
+        )}
         <BlockAddingOrderDate
           onPress={() => {
-            console.log(dateForOrder);
+            setShowPicker(true);
           }}
         >
           <BlockAddingOrderDateText>{new Date(dateForOrder).toLocaleDateString("en-GB")}</BlockAddingOrderDateText>
@@ -218,7 +233,6 @@ export default function CreatingOrder({ participants, setCreateOrderModal, setPa
               onChangeText={setQuantity}
               value={quantity}
               maxLength={7}
-              keyboardType="numeric"
               placeholder="Quantity"
             ></BlockInputQnt>
             <BlockInputBtn

@@ -25,6 +25,7 @@
         <action android:name="android.intent.action.VIEW"/>
         <category android:name="android.intent.category.DEFAULT"/>
         <category android:name="android.intent.category.BROWSABLE"/>
+        <data android:scheme="com.ant-volkov.orders"/>
         <data android:scheme="com.ant_volkov.orders"/>
         <data android:scheme="exp+orders"/>
       </intent-filter>

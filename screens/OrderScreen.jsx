@@ -269,7 +269,7 @@ export default function OrderScreen({ route, navigation }) {
                         <BlockOrderItemQuantityOk>{item.quantity}</BlockOrderItemQuantityOk>
                       </BlockOrderItemOk>
                     )}
-                    keyExtractor={(item) => item.orderId}
+                    keyExtractor={(item, index) => index}
                   />
                 ) : null}
               </View>
@@ -278,8 +278,8 @@ export default function OrderScreen({ route, navigation }) {
                   <SwipeListView
                     style={{ width: "100%", height: "100%" }}
                     data={orders.order.filter((e) => e.made !== true)}
-                    renderItem={(data, rowMap) => (
-                      <BlockOrderItem>
+                    renderItem={(data, rowMap, index) => (
+                      <BlockOrderItem key={index}>
                         <BlockOrderItemName>{data.item.name}</BlockOrderItemName>
                         <BlockOrderItemQuantity>{data.item.quantity}</BlockOrderItemQuantity>
                       </BlockOrderItem>

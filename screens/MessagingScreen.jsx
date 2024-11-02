@@ -126,7 +126,7 @@ export default function MessagingScreen({ route, navigation }) {
             <FlatList
               data={fetchedMessages}
               renderItem={({ item }) => <Message message={item} />}
-              keyExtractor={(item) => item.orderId}
+              keyExtractor={(item, index) => index}
             />
           </BlockForMessage>
         ) : (
