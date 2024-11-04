@@ -1,5 +1,5 @@
 import { View, Text, TouchableOpacity, FlatList } from "react-native";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import * as colors from "../variables/colors";
 import { LinearGradient } from "expo-linear-gradient";
 import { StatusBar } from "expo-status-bar";
@@ -25,15 +25,15 @@ const BlockButtonBtn = styled.TouchableOpacity`
 `;
 const BlockMessaging = styled.View`
   width: 100%;
-  height: 90%;
+  height: 70%;
 `;
 const BoxInput = styled.View`
   background-color: ${colors.MessagingInputBackground};
-  padding: 10px;
+  padding: 3px;
   width: 99%;
-  height: 70px;
+  height: 50px;
   position: absolute;
-  bottom: 40px;
+  bottom: 10px;
   left: 6%;
   border-radius: 10px;
   flex-direction: row;
@@ -49,7 +49,7 @@ const BlockIconMessage = styled.TouchableOpacity`
   position: absolute;
   right: 5%;
   height: 100%;
-  top: 20%;
+  align-self: center;
   justify-content: center;
   align-items: center;
 `;
@@ -66,6 +66,7 @@ export default function MessagingScreen({ route, navigation }) {
   const [loaded, setLoaded] = useState(false);
   const conversationId = item.docId;
   const currentUser = auth.currentUser;
+  const flatList = React.useRef(null);
 
   const sendMessage = async () => {
     try {
@@ -93,10 +94,17 @@ export default function MessagingScreen({ route, navigation }) {
             ...doc.data(),
           }))
         );
+        scrollToEnd();
         setLoaded(true);
       }
     );
   }, []);
+
+  const scrollToEnd = () => {
+    if (flatList.current) {
+      flatList.current.scrollToEnd({ animated: true });
+    }
+  };
 
   return (
     <LinearGradient
@@ -125,6 +133,7 @@ export default function MessagingScreen({ route, navigation }) {
           <BlockForMessage>
             <FlatList
               data={fetchedMessages}
+              ref={flatList}
               renderItem={({ item }) => <Message message={item} />}
               keyExtractor={(item, index) => index}
             />
