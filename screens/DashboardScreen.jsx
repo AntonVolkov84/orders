@@ -72,6 +72,8 @@ export default function DashboardScreen({ navigation }) {
     );
   }, []);
 
+  useEffect(() => {});
+
   return (
     <LinearGradient
       colors={[
