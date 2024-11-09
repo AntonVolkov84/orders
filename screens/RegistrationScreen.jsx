@@ -1,5 +1,5 @@
 import { View, Alert, Text, TextInput, TouchableOpacity, Image, Button } from "react-native";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import * as ImagePicker from "expo-image-picker";
 import { LinearGradient } from "expo-linear-gradient";
 import * as colors from "../variables/colors";
@@ -10,6 +10,7 @@ import { getDownloadURL, getStorage, ref, uploadBytes, uploadBytesResumable } fr
 import { db, app } from "../firebaseConfig";
 import { collection, doc, addDoc, setDoc, serverTimestamp } from "firebase/firestore";
 import { getAuth, signOut, sendEmailVerification, createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
+import { AppContext } from "../App.js";
 
 const TitleText = styled.Text`
   font-size: 40px;
@@ -67,6 +68,7 @@ export default function RegistrationScreen({ navigation }) {
   const [fileName, setFileName] = useState("");
   const storage = getStorage(app);
   const auth = getAuth();
+  const expoPushToken = useContext(AppContext);
 
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -129,6 +131,7 @@ export default function RegistrationScreen({ navigation }) {
         email: email,
         userId: userId,
         file: fileName,
+        pushToken: expoPushToken,
       };
       await setDoc(doc(db, "users", email), user);
     } catch (error) {

@@ -1,9 +1,18 @@
 import * as Notifications from "expo-notifications";
-import { getMessaging, getToken } from "firebase/messaging";
+import { Platform } from "react-native";
 import Constants from "expo-constants";
+import * as Device from "expo-device";
 
 async function registerForPushNotificationsAsync() {
   let token;
+  if (Platform.OS === "android") {
+    await Notifications.setNotificationChannelAsync("default", {
+      name: "default",
+      importance: Notifications.AndroidImportance.MAX,
+      vibrationPattern: [0, 250, 250, 250],
+      lightColor: "#FF231F7C",
+    });
+  }
   const { status: existingStatus } = await Notifications.getPermissionsAsync();
   let finalStatus = existingStatus;
   if (existingStatus !== "granted") {
@@ -24,7 +33,7 @@ async function registerForPushNotificationsAsync() {
         projectId,
       })
     ).data;
-    console.log(pushTokenString);
+
     return pushTokenString;
   } catch (error) {
     console.log(error);

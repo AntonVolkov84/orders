@@ -72,8 +72,6 @@ export default function DashboardScreen({ navigation }) {
     );
   }, []);
 
-  useEffect(() => {});
-
   return (
     <LinearGradient
       colors={[
@@ -118,7 +116,11 @@ export default function DashboardScreen({ navigation }) {
               </SafeAreaProvider>
             ) : null}
           </BlockOrdersShow>
-          <BlockOrderIcon onPress={() => setCreateOrderModal(true)}>
+          <BlockOrderIcon
+            onPress={() => {
+              setCreateOrderModal(true);
+            }}
+          >
             <OrderIcon />
           </BlockOrderIcon>
         </>

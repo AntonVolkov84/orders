@@ -1,5 +1,5 @@
 import { View, Alert, Text, Button, TouchableOpacity, TextInput } from "react-native";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import styled from "styled-components";
 import { getAuth, GoogleAuthProvider, signInWithCredential, signInWithEmailAndPassword } from "firebase/auth";
 import { LinearGradient } from "expo-linear-gradient";
@@ -10,6 +10,8 @@ import { GoogleSignin, GoogleSigninButton } from "@react-native-google-signin/go
 import { db } from "../firebaseConfig";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { doc, setDoc, serverTimestamp, getDoc } from "firebase/firestore";
+import { registerForPushNotificationsAsync } from "../notifications.js";
+import { AppContext } from "../App.js";
 
 const TitleText = styled.Text`
   font-size: 40px;
@@ -84,7 +86,7 @@ export default function LoginScreen({ navigation }) {
       });
   };
 
-  const addToUsers = async (nikname, photoURL, email, userId) => {
+  const addToUsers = async (nikname, photoURL, email, userId, pushToken) => {
     try {
       const user = {
         timestamp: serverTimestamp(),
@@ -92,6 +94,7 @@ export default function LoginScreen({ navigation }) {
         photoURL: photoURL,
         email: email,
         userId: userId,
+        pushToken: expoPushToken,
       };
       await setDoc(doc(db, "users", email), user);
     } catch (error) {

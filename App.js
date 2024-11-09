@@ -1,4 +1,4 @@
-import { StyleSheet, Alert, Text, View } from "react-native";
+import { StyleSheet, Alert, Text, View, AppRegistry } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import RegistrationScreen from "./screens/RegistrationScreen";
@@ -8,10 +8,9 @@ import DashboardScreen from "./screens/DashboardScreen.jsx";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import OrderScreen from "./screens/OrderScreen.jsx";
 import MessagingScreen from "./screens/MessagingScreen.jsx";
-import * as Device from "expo-device";
 import * as Notifications from "expo-notifications";
-import Constants from "expo-constants";
 import { registerForPushNotificationsAsync } from "./notifications.js";
+import messaging from "@react-native-firebase/messaging";
 
 const Stack = createNativeStackNavigator();
 export const AppContext = createContext(null);
@@ -23,7 +22,7 @@ Notifications.setNotificationHandler({
     shouldSetBadge: false,
   }),
 });
-async function sendPushNotification(expoPushToken) {
+export async function sendPushNotification(expoPushToken) {
   const message = {
     to: expoPushToken,
     sound: "default",
@@ -51,7 +50,13 @@ export default function App() {
   const notificationListener = useRef();
   const responseListener = useRef();
   const [expoPushToken, setExpoPushToken] = useState("");
-
+  onAuthStateChanged(auth, (user) => {
+    if (user && auth.currentUser.emailVerified) {
+      setUser(user);
+    } else {
+      setUser("");
+    }
+  });
   useEffect(() => {
     registerForPushNotificationsAsync()
       .then((token) => setExpoPushToken(token ?? ""))
@@ -64,40 +69,51 @@ export default function App() {
     responseListener.current = Notifications.addNotificationResponseReceivedListener((response) => {
       console.log(response);
     });
+    messaging()
+      .getInitialNotification()
+      .then(async (remoteMessage) => {
+        if (remoteMessage) {
+          console.log("Notify from app to quite state", remoteMessage.notification);
+        }
+      });
+    messaging().onNotificationOpenedApp((removeMessage) => {
+      console.log("Notification caused app to open", removeMessage.notification);
+    });
+    messaging().setBackgroundMessageHandler(async (remoteMessage) => {
+      console.log("Message handled in the background!", remoteMessage);
+    });
+    const unsubscribe = messaging().onMessage(async (remoteMessage) => {
+      Alert.alert("A new FCM message arrived!", JSON.stringify(remoteMessage));
+    });
 
     return () => {
       notificationListener.current && Notifications.removeNotificationSubscription(notificationListener.current);
       responseListener.current && Notifications.removeNotificationSubscription(responseListener.current);
+      unsubscribe;
     };
   }, []);
-
-  onAuthStateChanged(auth, (user) => {
-    if (user && auth.currentUser.emailVerified) {
-      setUser(user);
-    } else {
-      setUser("");
-    }
-  });
 
   if (!user) {
     return (
       <NavigationContainer>
-        <Stack.Navigator initialRouteName="Login">
-          <Stack.Screen
-            name="Login"
-            component={LoginScreen}
-            options={{
-              headerShown: false,
-            }}
-          />
-          <Stack.Screen
-            name="Registration"
-            component={RegistrationScreen}
-            options={{
-              headerShown: false,
-            }}
-          />
-        </Stack.Navigator>
+        <AppContext.Provider value={expoPushToken}>
+          <Stack.Navigator initialRouteName="Login">
+            <Stack.Screen
+              name="Login"
+              component={LoginScreen}
+              options={{
+                headerShown: false,
+              }}
+            />
+            <Stack.Screen
+              name="Registration"
+              component={RegistrationScreen}
+              options={{
+                headerShown: false,
+              }}
+            />
+          </Stack.Navigator>
+        </AppContext.Provider>
       </NavigationContainer>
     );
   }
