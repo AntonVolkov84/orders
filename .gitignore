@@ -2,7 +2,8 @@
 
 # dependencies
 node_modules/
-
+.env
+orders-78c1c-firebase-adminsdk-on1s2-df75c93507.json
 
 # Expo
 .expo/

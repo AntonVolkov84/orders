@@ -1,4 +1,6 @@
 import * as Notifications from "expo-notifications";
+import { getMessaging, getToken } from "firebase/messaging";
+import Constants from "expo-constants";
 
 async function registerForPushNotificationsAsync() {
   let token;
@@ -12,19 +14,21 @@ async function registerForPushNotificationsAsync() {
     alert("Failed to get push token for push notification!");
     return;
   }
-  token = (await Notifications.getExpoPushTokenAsync()).data;
-  console.log("token", token);
-
-  if (Platform.OS === "android") {
-    Notifications.setNotificationChannelAsync("default", {
-      name: "default",
-      importance: Notifications.AndroidImportance.MAX,
-      vibrationPattern: [0, 250, 250, 250],
-      lightColor: "#FF231F7C",
-    });
+  const projectId = Constants?.expoConfig?.extra?.eas?.projectId ?? Constants?.easConfig?.projectId;
+  if (!projectId) {
+    handleRegistrationError("Project ID not found");
   }
-
-  return token;
+  try {
+    const pushTokenString = (
+      await Notifications.getExpoPushTokenAsync({
+        projectId,
+      })
+    ).data;
+    console.log(pushTokenString);
+    return pushTokenString;
+  } catch (error) {
+    console.log(error);
+  }
 }
 
 export { registerForPushNotificationsAsync };
