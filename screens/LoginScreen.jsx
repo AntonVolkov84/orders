@@ -9,8 +9,7 @@ import * as colors from "../variables/colors.js";
 import { GoogleSignin, GoogleSigninButton } from "@react-native-google-signin/google-signin";
 import { db } from "../firebaseConfig";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { doc, setDoc, serverTimestamp, getDoc } from "firebase/firestore";
-import { registerForPushNotificationsAsync } from "../notifications.js";
+import { doc, setDoc, serverTimestamp, getDoc, updateDoc } from "firebase/firestore";
 import { AppContext } from "../App.js";
 
 const TitleText = styled.Text`
@@ -71,6 +70,8 @@ export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const auth = getAuth();
+  const expoPushToken = useContext(AppContext);
+
   const loginUser = () => {
     signInWithEmailAndPassword(auth, email, password)
       .catch((error) => {
@@ -78,11 +79,15 @@ export default function LoginScreen({ navigation }) {
         const errorMessage = error.message;
         console.log("error in loginUser", errorCode, errorMessage);
       })
-      .then(() => {
+      .then(async () => {
         if (!auth.currentUser.emailVerified) {
           Alert.alert("Mail is not Verified");
           logOut();
         }
+        const firebaseRef = doc(db, "users", email);
+        await updateDoc(firebaseRef, {
+          pushToken: expoPushToken,
+        });
       });
   };
 
@@ -121,6 +126,10 @@ export default function LoginScreen({ navigation }) {
       const googleCredential = GoogleAuthProvider.credential(idToken);
       const docSnap = await getDoc(doc(db, "users", user.data.user.email));
       if (docSnap.exists()) {
+        const firebaseRef = doc(db, "users", user.data.user.email);
+        await updateDoc(firebaseRef, {
+          pushToken: expoPushToken,
+        });
         signInWithCredential(auth, googleCredential);
       } else {
         signInWithCredential(auth, googleCredential).then((result) => {
