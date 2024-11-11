@@ -80,14 +80,11 @@ export default function MessagingScreen({ route, navigation }) {
         await addDoc(collection(db, "messages", conversationId, "conversation"), data);
       }
       const arrOfReseiver = [];
-      if (item.participants.length < 2) {
-        return;
-      }
-      for (let i = 1; i < item.participants.length; i++) {
-        const docSnap = await getDoc(doc(db, "users", item.participants[i]));
+      const participantsWithoutCurrentUser = item.participants.filter((email) => email !== currentUser.email);
+      for (let i = 0; i < participantsWithoutCurrentUser.length; i++) {
+        const docSnap = await getDoc(doc(db, "users", participantsWithoutCurrentUser[i]));
         arrOfReseiver.push(docSnap.data().pushToken);
       }
-      console.log("item", item);
       try {
         const pushMessage = {
           to: arrOfReseiver,
