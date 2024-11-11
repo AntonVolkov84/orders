@@ -1,5 +1,5 @@
 import { View, Text, TouchableOpacity, Image, TextInput, FlatList } from "react-native";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { LinearGradient } from "expo-linear-gradient";
 import * as colors from "../variables/colors";
 import { StatusBar } from "expo-status-bar";
@@ -12,6 +12,7 @@ import { db, auth } from "../firebaseConfig";
 import { collection, onSnapshot, where, orderBy, query, getDocs } from "firebase/firestore";
 import OrdersDashboard from "../components/OrdersDashboard";
 import { SafeAreaView, SafeAreaProvider } from "react-native-safe-area-context";
+import { AppContext } from "../App";
 
 const BlockOrderIcon = styled.TouchableOpacity`
   width: 20%;
@@ -57,6 +58,7 @@ export default function DashboardScreen({ navigation }) {
   const [fetchedOrders, setFetchedOrders] = useState([]);
   const [isLoaded, setIsLoaded] = useState(false);
   const currentEmail = auth.currentUser.email;
+  const sendPushNotification = useContext(AppContext);
 
   useEffect(() => {
     onSnapshot(
@@ -93,6 +95,7 @@ export default function DashboardScreen({ navigation }) {
             </BlockAddingParticipant>
             <BlockAddingOrder>
               <CreatingOrder
+                sendPushNotification={sendPushNotification}
                 participants={participants}
                 setParticipants={setParticipants}
                 setCreateOrderModal={setCreateOrderModal}

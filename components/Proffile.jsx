@@ -45,8 +45,9 @@ const BlockProfileSectionNikname = styled.TouchableOpacity`
   background-color: ${colors.menuProfile};
 `;
 const BlockProfileSectionEmail = styled.TouchableOpacity`
-  width: 100%;
+  width: 90%;
   height: 10%;
+  margin-left: 5%;
   flex-direction: row;
   justify-content: center;
   align-items: center;
@@ -122,7 +123,7 @@ const BlockProfileSectionAvatar = styled.TouchableOpacity`
 `;
 const BlockProfileText = styled.Text`
   color: ${colors.menuFrofileText};
-  font-size: 25px;
+  font-size: 20px;
   margin-left: 5%;
 `;
 const ButtonLogout = styled.TouchableOpacity`

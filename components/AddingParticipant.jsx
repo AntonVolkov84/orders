@@ -183,10 +183,10 @@ export default function AddingParticipamt({ setParticipants, participants }) {
                     <BlockParticipant onPress={() => addParticipantsToOrder(participant)} key={participant.userId}>
                       <BlockParticipantAvatar
                         source={{
-                          uri: `${participant.photoURL}`,
+                          uri: `${participant.photoURL || "No photo"}`,
                         }}
                       ></BlockParticipantAvatar>
-                      <BlockParticipantName>{participant.nikname}</BlockParticipantName>
+                      <BlockParticipantName>{participant.nikname || "No nikname"}</BlockParticipantName>
                     </BlockParticipant>
                   ))}
                 </>

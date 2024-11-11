@@ -22,15 +22,7 @@ Notifications.setNotificationHandler({
     shouldSetBadge: false,
   }),
 });
-export async function sendPushNotification(expoPushToken) {
-  const message = {
-    to: expoPushToken,
-    sound: "default",
-    title: "Original Title",
-    body: "And here is the body! Hahaha",
-    data: { someData: "goes here" },
-  };
-
+async function sendPushNotification(message) {
   await fetch("https://exp.host/--/api/v2/push/send", {
     method: "POST",
     headers: {
@@ -120,29 +112,31 @@ export default function App() {
 
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Dashboard">
-        <Stack.Screen
-          name="Dashboard"
-          component={DashboardScreen}
-          options={{
-            headerShown: false,
-          }}
-        />
-        <Stack.Screen
-          name="OrderScreen"
-          component={OrderScreen}
-          options={{
-            headerShown: false,
-          }}
-        />
-        <Stack.Screen
-          name="Messaging"
-          component={MessagingScreen}
-          options={{
-            headerShown: false,
-          }}
-        />
-      </Stack.Navigator>
+      <AppContext.Provider value={sendPushNotification}>
+        <Stack.Navigator initialRouteName="Dashboard">
+          <Stack.Screen
+            name="Dashboard"
+            component={DashboardScreen}
+            options={{
+              headerShown: false,
+            }}
+          />
+          <Stack.Screen
+            name="OrderScreen"
+            component={OrderScreen}
+            options={{
+              headerShown: false,
+            }}
+          />
+          <Stack.Screen
+            name="Messaging"
+            component={MessagingScreen}
+            options={{
+              headerShown: false,
+            }}
+          />
+        </Stack.Navigator>
+      </AppContext.Provider>
     </NavigationContainer>
   );
 }

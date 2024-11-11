@@ -5,7 +5,7 @@ import * as colors from "../variables/colors";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import Button from "../components/Button";
 import Feather from "@expo/vector-icons/Feather";
-import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { collection, addDoc, serverTimestamp, doc, getDoc } from "firebase/firestore";
 import { db, auth } from "../firebaseConfig";
 import DateTimePicker from "@react-native-community/datetimepicker";
 
@@ -104,7 +104,7 @@ const BlockResultBtn = styled.TouchableOpacity`
   width: 100%;
 `;
 
-export default function CreatingOrder({ participants, setCreateOrderModal, setParticipants, navigation }) {
+export default function CreatingOrder({ participants, setCreateOrderModal, setParticipants, sendPushNotification }) {
   const [name, setName] = useState("");
   const [quantity, setQuantity] = useState("");
   const [dateForOrder, setDateForOrder] = useState(new Date());
@@ -133,10 +133,41 @@ export default function CreatingOrder({ participants, setCreateOrderModal, setPa
     const newOrders = orders.filter((order) => order.id !== id);
     setOrders(newOrders);
   };
+
+  const sendNotificationWhithNewOrders = async (arrOfParicipantsEmail, orders) => {
+    const arrOfReseiver = [];
+    for (let i = 0; i < arrOfParicipantsEmail.length; i++) {
+      const docSnap = await getDoc(doc(db, "users", arrOfParicipantsEmail[i]));
+      arrOfReseiver.push(docSnap.data().pushToken);
+    }
+    try {
+      const message = {
+        to: arrOfReseiver,
+        sound: "default",
+        title: `You have got a new ORDER from ${arrOfParicipantsEmail[0]}`,
+        body: "Do not forget to complete me!!!",
+        data: { someData: orders },
+      };
+      console.log(arrOfReseiver);
+      await fetch("https://exp.host/--/api/v2/push/send", {
+        method: "POST",
+        headers: {
+          host: "exp.host",
+          Accept: "application/json",
+          "Accept-encoding": "gzip, deflate",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(message),
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
   const fetchOrders = async () => {
     const currentEmail = auth.currentUser.email;
     const arrOfParicipantsEmail = [currentEmail];
     participants.map((e) => arrOfParicipantsEmail.push(e.email));
+    sendNotificationWhithNewOrders(arrOfParicipantsEmail, orders);
     try {
       const order = {
         timestamp: serverTimestamp(),
