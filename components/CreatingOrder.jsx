@@ -136,7 +136,10 @@ export default function CreatingOrder({ participants, setCreateOrderModal, setPa
 
   const sendNotificationWhithNewOrders = async (arrOfParicipantsEmail, orders) => {
     const arrOfReseiver = [];
-    for (let i = 0; i < arrOfParicipantsEmail.length; i++) {
+    if (arrOfParicipantsEmail.length < 2) {
+      return;
+    }
+    for (let i = 1; i < arrOfParicipantsEmail.length; i++) {
       const docSnap = await getDoc(doc(db, "users", arrOfParicipantsEmail[i]));
       arrOfReseiver.push(docSnap.data().pushToken);
     }
@@ -148,7 +151,7 @@ export default function CreatingOrder({ participants, setCreateOrderModal, setPa
         body: "Do not forget to complete me!!!",
         data: { someData: orders },
       };
-      console.log(arrOfReseiver);
+
       await fetch("https://exp.host/--/api/v2/push/send", {
         method: "POST",
         headers: {

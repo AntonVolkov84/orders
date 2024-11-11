@@ -7,7 +7,7 @@ import styled from "styled-components";
 import { db, auth } from "../firebaseConfig";
 import Button from "../components/Button";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
-import { doc, addDoc, onSnapshot, collection, orderBy, serverTimestamp, query, where } from "firebase/firestore";
+import { doc, addDoc, onSnapshot, collection, orderBy, serverTimestamp, query, getDoc } from "firebase/firestore";
 import Message from "../components/Message";
 
 const BlockButton = styled.View`
@@ -78,7 +78,37 @@ export default function MessagingScreen({ route, navigation }) {
           timestamp: serverTimestamp(),
         };
         await addDoc(collection(db, "messages", conversationId, "conversation"), data);
+      }
+      const arrOfReseiver = [];
+      if (item.participants.length < 2) {
+        return;
+      }
+      for (let i = 1; i < item.participants.length; i++) {
+        const docSnap = await getDoc(doc(db, "users", item.participants[i]));
+        arrOfReseiver.push(docSnap.data().pushToken);
+      }
+      console.log("item", item);
+      try {
+        const pushMessage = {
+          to: arrOfReseiver,
+          sound: "default",
+          title: `Comment have arrived for ORDER by ${item.participants[0]}`,
+          body: message,
+        };
+
+        await fetch("https://exp.host/--/api/v2/push/send", {
+          method: "POST",
+          headers: {
+            host: "exp.host",
+            Accept: "application/json",
+            "Accept-encoding": "gzip, deflate",
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(pushMessage),
+        });
         setMessage("");
+      } catch (error) {
+        console.log(error);
       }
     } catch (error) {
       console.log("send message", error);
