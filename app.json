@@ -3,12 +3,12 @@
     "name": "Orders",
     "slug": "orders",
     "scheme": "com.ant-volkov.orders",
-    "version": "1.1.0",
+    "version": "1.2.1",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/order.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./assets/order.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -38,7 +38,7 @@
           "measurementId": "G-3P0YBJ9FP6"
         }
       },
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/order.png"
     },
     "plugins": [
       ["@react-native-google-signin/google-signin"],
