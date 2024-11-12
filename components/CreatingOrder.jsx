@@ -15,46 +15,46 @@ const BlockAddingOrder = styled.View`
 `;
 const BlockAddingOrderTitle = styled.Text`
   color: ${colors.titleText};
-  font-size: 25px;
+  font-size: 20px;
   align-self: center;
 `;
 const BlockAddingOrderDate = styled.TouchableOpacity`
   color: ${colors.titleText};
-  font-size: 25px;
+  font-size: 20px;
   align-self: center;
 `;
 const BlockAddingOrderDateText = styled.Text`
   color: ${colors.titleText};
-  font-size: 25px;
+  font-size: 20px;
   align-self: center;
   margin-left: 2%;
 `;
 const BlockAddingOrderParticipants = styled.View`
   color: ${colors.titleText};
-  font-size: 25px;
+  font-size: 20px;
   flex-direction: row;
 `;
 const BlockAddingOrderAdd = styled.View`
   color: ${colors.titleText};
-  font-size: 25px;
+  font-size: 20px;
   flex-direction: row;
 `;
 const BlockAddingOrderAddText = styled.Text`
   color: ${colors.titleText};
-  font-size: 25px;
+  font-size: 20px;
   width: 67%;
 `;
 const BlockAddingOrderAddQ = styled.Text`
   color: ${colors.titleText};
-  font-size: 25px;
+  font-size: 20px;
 `;
 const BlockAddingOrderParticipantsText = styled.Text`
   color: ${colors.titleText};
-  font-size: 25px;
+  font-size: 20px;
 `;
 const BlockInput = styled.View`
   width: 100%;
-  height: 70px;
+  height: 50px;
   padding-top: 1%;
   font-size: 25px;
   flex-direction: row;
@@ -99,8 +99,8 @@ const BlockResultBtn = styled.TouchableOpacity`
   flex-direction: row;
   justify-content: space-around;
   align-items: center;
-  position: absolute;
-  bottom: 200px;
+  position: sticky;
+  bottom: 0px;
   width: 100%;
 `;
 
@@ -242,8 +242,24 @@ export default function CreatingOrder({ participants, setCreateOrderModal, setPa
           <BlockAddingOrderDateText>{new Date(dateForOrder).toLocaleDateString("en-GB")}</BlockAddingOrderDateText>
         </BlockAddingOrderDate>
       </BlockAddingOrderParticipants>
-      <SafeAreaView>
-        <ScrollView style={{ height: 450 }}>
+      <SafeAreaView style={{ height: 470 }}>
+        <ScrollView>
+          <BlockInput>
+            <Input onChangeText={setName} value={name} maxLength={25} placeholder="Name of product or business"></Input>
+            <BlockInputQnt
+              onChangeText={setQuantity}
+              value={quantity}
+              maxLength={7}
+              placeholder="Quantity"
+            ></BlockInputQnt>
+            <BlockInputBtn
+              onPress={() => {
+                addingToChart();
+              }}
+            >
+              <MaterialIcons name="shopping-cart-checkout" size={35} color={colors.creatingOrderIcon} />
+            </BlockInputBtn>
+          </BlockInput>
           {Boolean(orders.length) ? (
             <>
               {orders.map((order, index) => (
@@ -261,22 +277,6 @@ export default function CreatingOrder({ participants, setCreateOrderModal, setPa
               ))}
             </>
           ) : null}
-          <BlockInput>
-            <Input onChangeText={setName} value={name} maxLength={25} placeholder="Name of product or business"></Input>
-            <BlockInputQnt
-              onChangeText={setQuantity}
-              value={quantity}
-              maxLength={7}
-              placeholder="Quantity"
-            ></BlockInputQnt>
-            <BlockInputBtn
-              onPress={() => {
-                addingToChart();
-              }}
-            >
-              <MaterialIcons name="shopping-cart-checkout" size={35} color={colors.creatingOrderIcon} />
-            </BlockInputBtn>
-          </BlockInput>
         </ScrollView>
       </SafeAreaView>
       <BlockResultBtn>

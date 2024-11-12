@@ -33,7 +33,7 @@ const BlockOrderCreate = styled.View`
 `;
 const BlockAddingParticipant = styled.View`
   width: 100%;
-  height: 150px;
+  height: 100px;
   padding-left: 3%;
   padding-right: 3%;
 `;

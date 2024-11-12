@@ -13,7 +13,7 @@ import Button from "../components/Button";
 
 const Container = styled.View`
   width: 100%;
-  height: 100%;
+  height: 70%;
   padding: 1%;
   padding-top: 5%;
 `;

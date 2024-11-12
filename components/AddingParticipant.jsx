@@ -15,7 +15,7 @@ const BlockAdding = styled.View`
   align-items: center;
 `;
 const BlockIcon = styled.TouchableOpacity`
-  height: 70%;
+  height: 100%;
   aspect-ratio: 1;
   border: 2px solid;
   border-color: ${colors.APBorderColor};
@@ -25,7 +25,7 @@ const BlockIcon = styled.TouchableOpacity`
   margin-right: 5%;
 `;
 const BlockParticipant = styled.TouchableOpacity`
-  height: 65%;
+  width: 30%;
   aspect-ratio: 1;
   justify-content: center;
   align-items: center;
@@ -41,26 +41,31 @@ const BlockParticipantAvatar = styled.Image`
 `;
 const BlockParticipantName = styled.Text`
   color: ${colors.APBorderColor};
-  font-size: 20px;
-  overflow: hidden;
+  font-size: 15px;
+  width: 100%;
+  height: 20px;
+  text-overflow: ellipsis;
+  text-align: center;
 `;
 const Modal = styled.View`
   width: 100%;
   height: 100%;
   padding: 2%;
+  background-color: ${colors.orderBackgroundColor};
+  z-index: 4;
 `;
 const ModalInput = styled.TextInput`
   width: 100%;
-  height: 70px;
+  height: 50px;
   background-color: ${colors.backgroundColorInput};
   color: ${colors.colorTextInput};
-  font-size: 25px;
+  font-size: 20px;
   padding-left: 2%;
   border-radius: 10px;
 `;
 const ModalButton = styled.View`
   width: 100%;
-  height: 50px;
+  height: 30px;
   flex-direction: row;
   align-items: center;
   justify-content: space-around;
@@ -173,10 +178,10 @@ export default function AddingParticipamt({ setParticipants, participants }) {
           <ScrollView horizontal={true}>
             <BlockAdding>
               <BlockIcon onPress={() => setAddingParticipantModal(true)}>
-                <MaterialCommunityIcons name="account-plus-outline" size={60} color={colors.APBorderColor} />
+                <MaterialCommunityIcons name="account-plus-outline" size={50} color={colors.APBorderColor} />
               </BlockIcon>
               {loadingData ? (
-                <Text style={{ color: colors.titleText, fontSize: 25 }}>Loading...</Text>
+                <Text style={{ color: colors.titleText, fontSize: 20 }}>Loading...</Text>
               ) : (
                 <>
                   {allParticipantsData.map((participant) => (
@@ -186,7 +191,9 @@ export default function AddingParticipamt({ setParticipants, participants }) {
                           uri: `${participant.photoURL || "No photo"}`,
                         }}
                       ></BlockParticipantAvatar>
-                      <BlockParticipantName>{participant.nikname || "No nikname"}</BlockParticipantName>
+                      <BlockParticipantName numberOfLines={1}>
+                        {participant.nikname || "No nikname"}
+                      </BlockParticipantName>
                     </BlockParticipant>
                   ))}
                 </>
