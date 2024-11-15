@@ -4,14 +4,9 @@ import styled from "styled-components";
 import { LinearGradient } from "expo-linear-gradient";
 import * as colors from "../variables/colors";
 
-const BlockButton = styled.View`
-  width: 100%;
-  height: 100%;
-  justify-content: center;
-  align-items: center;
-`;
 const BlockButtonText = styled.Text`
   font-size: 20px;
+  text-align: center;
   color: ${colors.BlockButtonText};
 `;
 

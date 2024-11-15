@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, TextInput, FlatList } from "react-native";
+import { View, Text, TouchableOpacity, TextInput, FlatList, Alert } from "react-native";
 import React, { useState, useEffect } from "react";
 import { LinearGradient } from "expo-linear-gradient";
 import * as colors from "../variables/colors";
@@ -39,24 +39,25 @@ const BlockOrderItemOk = styled.View`
   margin-bottom: 1%;
 `;
 const BlockOrderItemName = styled.Text`
-  width: 80%;
-  font-size: 25px;
+  width: 70%;
+  font-size: 20px;
   color: ${colors.orderScreenItemText};
   margin-left: 2%;
 `;
 const BlockOrderItemQuantity = styled.Text`
-  font-size: 25px;
+  font-size: 20px;
   color: ${colors.orderScreenItemText};
-  margin-left: 2%;
+  margin-left: 1%;
+  width: 26%;
 `;
 const BlockOrderItemNameOk = styled.Text`
-  width: 80%;
-  font-size: 25px;
+  width: 70%;
+  font-size: 20px;
   color: ${colors.orderScreenItemText};
   margin-left: 2%;
 `;
 const BlockOrderItemQuantityOk = styled.Text`
-  font-size: 25px;
+  font-size: 20px;
   color: ${colors.orderScreenItemText};
   margin-left: 2%;
 `;
@@ -119,7 +120,7 @@ const InputFieldName = styled.TextInput`
   background-color: ${colors.orderScreenModalInputBackgroung};
   border-radius: 18px;
   padding-left: 2%;
-  font-size: 25px;
+  font-size: 20px;
 `;
 const InputFieldQuantity = styled.TextInput`
   width: 25%;
@@ -127,8 +128,8 @@ const InputFieldQuantity = styled.TextInput`
   background-color: ${colors.orderScreenModalInputBackgroung};
   margin-left: 5%;
   border-radius: 12px;
-  padding-left: 2%;
-  font-size: 25px;
+  font-size: 20px;
+  text-align: center;
 `;
 
 const BlockButton = styled.View`
@@ -140,7 +141,11 @@ const BlockButton = styled.View`
   margin-bottom: 2%;
 `;
 const BlockButtonBtn = styled.TouchableOpacity`
-  width: 33%;
+  width: 30%;
+  height: 50px;
+`;
+const BlockButtonBtnBack = styled.TouchableOpacity`
+  width: 13%;
   height: 50px;
 `;
 
@@ -156,6 +161,9 @@ export default function OrderScreen({ route, navigation }) {
   const documentId = item.docId;
 
   const updateOrder = async () => {
+    if (!name || !quantity) {
+      Alert.alert("Some field is empty");
+    }
     const updatingOrder = {
       id: Date.parse(new Date()),
       made: false,
@@ -167,10 +175,15 @@ export default function OrderScreen({ route, navigation }) {
     await updateDoc(firebaseRef, {
       order: arrayUnion(updatingOrder),
     });
-    await updateDoc(firebaseRef, {
-      order: arrayRemove(dataItem),
-    });
+    if (dataItem) {
+      await updateDoc(firebaseRef, {
+        order: arrayRemove(dataItem),
+      });
+    }
     setModalUpdate(false);
+    setName("");
+    setQuantity("");
+    setDataItem("");
   };
 
   const okOrder = async (item) => {
@@ -221,12 +234,37 @@ export default function OrderScreen({ route, navigation }) {
             : "loading..."}
         </OrderName>
         <BlockButton>
-          <BlockButtonBtn
+          <BlockButtonBtnBack
             onPress={() => {
               navigation.goBack();
             }}
           >
-            <Button children="Go back" />
+            <LinearGradient
+              colors={[
+                colors.startColorForGradientButton,
+                colors.endColorForGradientButton,
+                colors.startColorForGradientButton,
+                colors.endColorForGradientButton,
+              ]}
+              start={{ x: 0.0, y: 0.0 }}
+              end={{ x: 1.0, y: 1.0 }}
+              style={{
+                height: "100%",
+                width: "100%",
+                borderRadius: 30,
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <Ionicons name="arrow-back-circle-outline" size={40} color={colors.BlockButtonText} />
+            </LinearGradient>
+          </BlockButtonBtnBack>
+          <BlockButtonBtn
+            onPress={() => {
+              setModalUpdate(true);
+            }}
+          >
+            <Button children="Add one more" />
           </BlockButtonBtn>
           <BlockButtonBtn
             onPress={() => {
@@ -241,16 +279,17 @@ export default function OrderScreen({ route, navigation }) {
             <ModalBlock>
               <ModalBlockInput>
                 <InputFieldName onChangeText={setName} maxLength={25} value={name}></InputFieldName>
-                <InputFieldQuantity
-                  onChangeText={setQuantity}
-                  value={quantity}
-                  maxLength={7}
-                  keyboardType="numeric"
-                ></InputFieldQuantity>
+                <InputFieldQuantity onChangeText={setQuantity} value={quantity} maxLength={7}></InputFieldQuantity>
               </ModalBlockInput>
-
               <ModalBlockBtn>
-                <ModalButton onPress={() => setModalUpdate(false)}>
+                <ModalButton
+                  onPress={() => {
+                    setModalUpdate(false);
+                    setName("");
+                    setQuantity("");
+                    setDataItem("");
+                  }}
+                >
                   <Button children="Cancel" />
                 </ModalButton>
                 <ModalButton onPress={() => updateOrder()}>

@@ -166,7 +166,7 @@ export default function MessagingScreen({ route, navigation }) {
             />
           </BlockForMessage>
         ) : (
-          <Text>Loading</Text>
+          <Text style={{ color: colors.titleText, fontSize: 20 }}>Loading...</Text>
         )}
       </BlockMessaging>
       <BoxInput>

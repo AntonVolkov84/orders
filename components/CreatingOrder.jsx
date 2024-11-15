@@ -208,7 +208,7 @@ export default function CreatingOrder({ participants, setCreateOrderModal, setPa
               overflow: "wrap",
               marginLeft: "2%",
               color: colors.titleText,
-              fontSize: 25,
+              fontSize: 20,
             }}
           >
             {participants.map((e) => (
@@ -280,14 +280,14 @@ export default function CreatingOrder({ participants, setCreateOrderModal, setPa
         </ScrollView>
       </SafeAreaView>
       <BlockResultBtn>
-        <TouchableOpacity onPress={() => setCreateOrderModal(false)} style={{ width: "25%", height: 70 }}>
+        <TouchableOpacity onPress={() => setCreateOrderModal(false)} style={{ width: "25%", height: 50 }}>
           <Button children="Cancel" />
         </TouchableOpacity>
         <TouchableOpacity
           onPress={() => {
             makeOrder();
           }}
-          style={{ width: "25%", height: 70 }}
+          style={{ width: "25%", height: 50 }}
         >
           <Button children="Make order" />
         </TouchableOpacity>
