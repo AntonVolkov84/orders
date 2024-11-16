@@ -24,6 +24,16 @@ const OrderName = styled.Text`
   align-self: center;
   margin-bottom: 2%;
 `;
+const BlockOrder = styled.View`
+  height: 100%;
+`;
+const BlockOrderItemAll = styled.View`
+  height: 100%;
+  margin-bottom: 2%;
+`;
+const BlockOrderItemOkAll = styled.View`
+  height: 100%;
+`;
 const BlockOrderItem = styled.View`
   flex-direction: row;
   height: 70px;
@@ -140,6 +150,14 @@ const BlockButton = styled.View`
   align-items: center;
   margin-bottom: 2%;
 `;
+const BlockButtonToggle = styled.View`
+  width: 90%;
+  height: 80px;
+  flex-direction: row;
+  justify-content: flex-end;
+  align-items: center;
+  margin-bottom: 2%;
+`;
 const BlockButtonBtn = styled.TouchableOpacity`
   width: 30%;
   height: 50px;
@@ -156,6 +174,7 @@ export default function OrderScreen({ route, navigation }) {
   const [modalUpdate, setModalUpdate] = useState(false);
   const [orders, setOrders] = useState(null);
   const [dataItem, setDataItem] = useState(null);
+  const [toggleBoughtItems, setToggleBoughtItems] = useState(false);
   const { item } = route.params;
   const currentUserEmail = auth.currentUser.email;
   const documentId = item.docId;
@@ -298,61 +317,75 @@ export default function OrderScreen({ route, navigation }) {
               </ModalBlockBtn>
             </ModalBlock>
           ) : (
-            <View>
-              <View style={{ marginBottom: " 5%" }}>
-                {ordersLoaded ? (
-                  <FlatList
-                    data={orders.order.filter((e) => e.made === true)}
-                    renderItem={({ item }) => (
-                      <BlockOrderItemOk>
-                        <BlockOrderItemNameOk>{item.name}</BlockOrderItemNameOk>
-                        <BlockOrderItemQuantityOk>{item.quantity}</BlockOrderItemQuantityOk>
-                      </BlockOrderItemOk>
-                    )}
-                    keyExtractor={(item, index) => index}
-                  />
-                ) : null}
-              </View>
-              {ordersLoaded ? (
+            <BlockOrder>
+              {toggleBoughtItems ? (
                 <>
-                  <SwipeListView
-                    style={{ width: "100%", height: "100%" }}
-                    data={orders.order.filter((e) => e.made !== true)}
-                    renderItem={(data, rowMap, index) => (
-                      <BlockOrderItem key={index}>
-                        <BlockOrderItemName>{data.item.name}</BlockOrderItemName>
-                        <BlockOrderItemQuantity>{data.item.quantity}</BlockOrderItemQuantity>
-                      </BlockOrderItem>
-                    )}
-                    renderHiddenItem={(data, rowMap) => (
-                      <Hiden>
-                        <HidenUpdate
-                          onPress={() => {
-                            setName(data.item.name);
-                            setQuantity(data.item.quantity);
-                            setDataItem(data.item);
-                            setModalUpdate(true);
-                          }}
-                        >
-                          <Ionicons color="white" size={30} name="create"></Ionicons>
-                        </HidenUpdate>
-                        <HidenOk
-                          onPress={() => {
-                            setDataItem(data.item);
-                            okOrder(data.item);
-                          }}
-                        >
-                          <Entypo name="check" size={30} color="white" />
-                        </HidenOk>
-                      </Hiden>
-                    )}
-                    rightOpenValue={-130}
-                  ></SwipeListView>
+                  {ordersLoaded ? (
+                    <FlatList
+                      data={orders.order.filter((e) => e.made === true)}
+                      renderItem={({ item }) => (
+                        <BlockOrderItemOk>
+                          <BlockOrderItemNameOk>{item.name}</BlockOrderItemNameOk>
+                          <BlockOrderItemQuantityOk>{item.quantity}</BlockOrderItemQuantityOk>
+                        </BlockOrderItemOk>
+                      )}
+                      keyExtractor={(item, index) => index}
+                    />
+                  ) : null}
                 </>
-              ) : null}
-            </View>
+              ) : (
+                <>
+                  {ordersLoaded ? (
+                    <BlockOrderItemAll>
+                      <SwipeListView
+                        style={{ width: "100%", height: "100%" }}
+                        data={orders.order.filter((e) => e.made !== true)}
+                        renderItem={(data, rowMap, index) => (
+                          <BlockOrderItem key={index}>
+                            <BlockOrderItemName>{data.item.name}</BlockOrderItemName>
+                            <BlockOrderItemQuantity>{data.item.quantity}</BlockOrderItemQuantity>
+                          </BlockOrderItem>
+                        )}
+                        renderHiddenItem={(data, rowMap) => (
+                          <Hiden>
+                            <HidenUpdate
+                              onPress={() => {
+                                setName(data.item.name);
+                                setQuantity(data.item.quantity);
+                                setDataItem(data.item);
+                                setModalUpdate(true);
+                              }}
+                            >
+                              <Ionicons color="white" size={30} name="create"></Ionicons>
+                            </HidenUpdate>
+                            <HidenOk
+                              onPress={() => {
+                                setDataItem(data.item);
+                                okOrder(data.item);
+                              }}
+                            >
+                              <Entypo name="check" size={30} color="white" />
+                            </HidenOk>
+                          </Hiden>
+                        )}
+                        rightOpenValue={-130}
+                      ></SwipeListView>
+                    </BlockOrderItemAll>
+                  ) : null}
+                </>
+              )}
+            </BlockOrder>
           )}
         </BlockSafeAreaView>
+        <BlockButtonToggle>
+          <BlockButtonBtn
+            onPress={() => {
+              setToggleBoughtItems(!toggleBoughtItems);
+            }}
+          >
+            <Button children={toggleBoughtItems ? "Order items" : "Bought Items"} />
+          </BlockButtonBtn>
+        </BlockButtonToggle>
       </Container>
     </LinearGradient>
   );
