@@ -8,6 +8,10 @@ import { getAuth } from "firebase/auth";
 import Button from "./Button";
 import { db } from "../firebaseConfig";
 
+const BlockSaveArea = styled.SafeAreaView`
+  width: 100%;
+  height: 100%;
+`;
 const BlockAdding = styled.View`
   width: 100%;
   height: 100%;
@@ -15,33 +19,32 @@ const BlockAdding = styled.View`
   align-items: center;
 `;
 const BlockIcon = styled.TouchableOpacity`
-  height: 100%;
-  aspect-ratio: 1;
+  height: 75px;
+  width: 75px;
   border: 2px solid;
   border-color: ${colors.APBorderColor};
-  justify-content: center;
-  align-items: center;
+  justify-self: center;
+  align-self: center;
   border-radius: 100px;
   margin-right: 5%;
+  justify-content: center;
+  align-items: center;
 `;
 const BlockParticipant = styled.TouchableOpacity`
-  width: 30%;
-  aspect-ratio: 1;
+  width: 60px;
   justify-content: center;
   align-items: center;
   margin-right: 1%;
 `;
 const BlockParticipantAvatar = styled.Image`
-  background-color: green;
   border-radius: 100px;
   aspect-ratio: 1;
-  overflow: hidden;
   object-fit: cover;
-  width: 80%;
+  width: 100%;
 `;
 const BlockParticipantName = styled.Text`
   color: ${colors.APBorderColor};
-  font-size: 15px;
+  font-size: 12px;
   width: 100%;
   height: 20px;
   text-overflow: ellipsis;
@@ -174,14 +177,16 @@ export default function AddingParticipamt({ setParticipants, participants }) {
           </ModalButton>
         </Modal>
       ) : (
-        <SafeAreaView>
-          <ScrollView horizontal={true}>
+        <BlockSaveArea>
+          <ScrollView style={{ width: "100%", height: "100%" }} horizontal={true}>
             <BlockAdding>
               <BlockIcon onPress={() => setAddingParticipantModal(true)}>
                 <MaterialCommunityIcons name="account-plus-outline" size={50} color={colors.APBorderColor} />
               </BlockIcon>
               {loadingData ? (
-                <Text style={{ color: colors.titleText, fontSize: 20 }}>Loading...</Text>
+                <Text style={{ textAlign: "center", textJustify: "center", color: colors.titleText, fontSize: 20 }}>
+                  Loading...
+                </Text>
               ) : (
                 <>
                   {allParticipantsData.map((participant) => (
@@ -200,7 +205,7 @@ export default function AddingParticipamt({ setParticipants, participants }) {
               )}
             </BlockAdding>
           </ScrollView>
-        </SafeAreaView>
+        </BlockSaveArea>
       )}
     </>
   );

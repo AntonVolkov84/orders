@@ -31,9 +31,6 @@ const BlockOrderItemAll = styled.View`
   height: 100%;
   margin-bottom: 2%;
 `;
-const BlockOrderItemOkAll = styled.View`
-  height: 100%;
-`;
 const BlockOrderItem = styled.View`
   flex-direction: row;
   height: 70px;
@@ -69,7 +66,8 @@ const BlockOrderItemNameOk = styled.Text`
 const BlockOrderItemQuantityOk = styled.Text`
   font-size: 20px;
   color: ${colors.orderScreenItemText};
-  margin-left: 2%;
+  margin-left: 1%;
+  width: 26%;
 `;
 const BlockSafeAreaView = styled.View`
   width: 100%;
@@ -157,6 +155,7 @@ const BlockButtonToggle = styled.View`
   justify-content: flex-end;
   align-items: center;
   margin-bottom: 2%;
+  padding: 0 2px;
 `;
 const BlockButtonBtn = styled.TouchableOpacity`
   width: 30%;
@@ -383,7 +382,7 @@ export default function OrderScreen({ route, navigation }) {
               setToggleBoughtItems(!toggleBoughtItems);
             }}
           >
-            <Button children={toggleBoughtItems ? "Order items" : "Bought Items"} />
+            <Button children={toggleBoughtItems ? "Order items" : "Bought items"} />
           </BlockButtonBtn>
         </BlockButtonToggle>
       </Container>
