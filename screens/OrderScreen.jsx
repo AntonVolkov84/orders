@@ -5,7 +5,7 @@ import * as colors from "../variables/colors";
 import { StatusBar } from "expo-status-bar";
 import styled from "styled-components";
 import { db, auth } from "../firebaseConfig";
-import { doc, onSnapshot, updateDoc, arrayUnion, arrayRemove, where } from "firebase/firestore";
+import { doc, onSnapshot, updateDoc, arrayUnion, arrayRemove } from "firebase/firestore";
 import { SwipeListView } from "react-native-swipe-list-view";
 import { Ionicons } from "@expo/vector-icons";
 import Entypo from "@expo/vector-icons/Entypo";
@@ -39,11 +39,24 @@ const BlockOrderItem = styled.View`
   margin-bottom: 1%;
 `;
 const BlockOrderItemOk = styled.View`
-  flex-direction: row;
+  flex-direction: column;
   height: 70px;
   align-items: center;
   background-color: ${colors.orderScreenItemBackgroundOk};
   margin-bottom: 1%;
+`;
+const BlockOrderItemOkInfo = styled.View`
+  flex-direction: row;
+  height: 70%;
+  align-items: center;
+  background-color: ${colors.orderScreenItemBackgroundOk};
+`;
+const BlockOrderItemOkAuthor = styled.Text`
+  text-align: center;
+  width: 100%;
+  height: 20%;
+  background-color: ${colors.orderScreenItemBackgroundOk};
+  font-size: 10px;
 `;
 const BlockOrderItemName = styled.Text`
   width: 70%;
@@ -177,7 +190,6 @@ export default function OrderScreen({ route, navigation }) {
   const { item } = route.params;
   const currentUserEmail = auth.currentUser.email;
   const documentId = item.docId;
-
   const updateOrder = async () => {
     if (!name || !quantity) {
       Alert.alert("Some field is empty");
@@ -209,6 +221,7 @@ export default function OrderScreen({ route, navigation }) {
       id: Date.parse(new Date()),
       made: true,
       madeBy: currentUserEmail,
+      madeByDisplayName: auth.currentUser.displayName || currentUserEmail,
       name: item.name,
       quantity: item.quantity,
     };
@@ -296,8 +309,18 @@ export default function OrderScreen({ route, navigation }) {
           {modalUpdate ? (
             <ModalBlock>
               <ModalBlockInput>
-                <InputFieldName onChangeText={setName} maxLength={25} value={name}></InputFieldName>
-                <InputFieldQuantity onChangeText={setQuantity} value={quantity} maxLength={7}></InputFieldQuantity>
+                <InputFieldName
+                  onChangeText={setName}
+                  maxLength={25}
+                  value={name}
+                  placeholder="Name of product or business"
+                ></InputFieldName>
+                <InputFieldQuantity
+                  onChangeText={setQuantity}
+                  value={quantity}
+                  maxLength={7}
+                  placeholder="Quantity"
+                ></InputFieldQuantity>
               </ModalBlockInput>
               <ModalBlockBtn>
                 <ModalButton
@@ -324,8 +347,11 @@ export default function OrderScreen({ route, navigation }) {
                       data={orders.order.filter((e) => e.made === true)}
                       renderItem={({ item }) => (
                         <BlockOrderItemOk>
-                          <BlockOrderItemNameOk>{item.name}</BlockOrderItemNameOk>
-                          <BlockOrderItemQuantityOk>{item.quantity}</BlockOrderItemQuantityOk>
+                          <BlockOrderItemOkInfo>
+                            <BlockOrderItemNameOk>{item.name}</BlockOrderItemNameOk>
+                            <BlockOrderItemQuantityOk>{item.quantity}</BlockOrderItemQuantityOk>
+                          </BlockOrderItemOkInfo>
+                          <BlockOrderItemOkAuthor>{item.madeByDisplayName}</BlockOrderItemOkAuthor>
                         </BlockOrderItemOk>
                       )}
                       keyExtractor={(item, index) => index}

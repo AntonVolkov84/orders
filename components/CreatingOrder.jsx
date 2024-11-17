@@ -1,5 +1,5 @@
 import { View, Text, TouchableOpacity, TextInput, ScrollView, SafeAreaView, Alert } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import * as colors from "../variables/colors";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
@@ -67,7 +67,7 @@ const Input = styled.TextInput`
   padding-left: 1%;
   padding-right: 1%;
   color: ${colors.creatingOrderText};
-  font-size: 20px;
+  font-size: 15px;
 `;
 const BlockInputQnt = styled.TextInput`
   width: 20%;
@@ -76,8 +76,8 @@ const BlockInputQnt = styled.TextInput`
   border-radius: 5px;
   margin-left: 1%;
   color: ${colors.creatingOrderText};
-  font-size: 20px;
-  text-align: center;
+  font-size: 15px;
+  padding-left: 1%;
 `;
 const BlockInputBtn = styled.TouchableOpacity`
   width: 13%;
@@ -242,24 +242,19 @@ export default function CreatingOrder({ participants, setCreateOrderModal, setPa
           <BlockAddingOrderDateText>{new Date(dateForOrder).toLocaleDateString("en-GB")}</BlockAddingOrderDateText>
         </BlockAddingOrderDate>
       </BlockAddingOrderParticipants>
-      <SafeAreaView style={{ height: 470 }}>
+      <BlockInput>
+        <Input onChangeText={setName} value={name} maxLength={25} placeholder="Name of product or business"></Input>
+        <BlockInputQnt onChangeText={setQuantity} value={quantity} maxLength={7} placeholder="Quantity"></BlockInputQnt>
+        <BlockInputBtn
+          onPress={() => {
+            addingToChart();
+          }}
+        >
+          <MaterialIcons name="shopping-cart-checkout" size={30} color={colors.placeolderColor} />
+        </BlockInputBtn>
+      </BlockInput>
+      <SafeAreaView style={{ height: "55%", marginBottom: "1%" }}>
         <ScrollView>
-          <BlockInput>
-            <Input onChangeText={setName} value={name} maxLength={25} placeholder="Name of product or business"></Input>
-            <BlockInputQnt
-              onChangeText={setQuantity}
-              value={quantity}
-              maxLength={7}
-              placeholder="Quantity"
-            ></BlockInputQnt>
-            <BlockInputBtn
-              onPress={() => {
-                addingToChart();
-              }}
-            >
-              <MaterialIcons name="shopping-cart-checkout" size={35} color={colors.creatingOrderIcon} />
-            </BlockInputBtn>
-          </BlockInput>
           {Boolean(orders.length) ? (
             <>
               {orders.map((order, index) => (
@@ -271,7 +266,7 @@ export default function CreatingOrder({ participants, setCreateOrderModal, setPa
                       delFromChart(order.id);
                     }}
                   >
-                    <Feather name="delete" size={30} color={colors.titleText} />
+                    <Feather name="delete" size={25} color={colors.titleText} />
                   </BlockDelOrderBtn>
                 </BlockAddingOrderAdd>
               ))}

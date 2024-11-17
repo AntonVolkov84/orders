@@ -190,16 +190,24 @@ export default function AddingParticipamt({ setParticipants, participants }) {
               ) : (
                 <>
                   {allParticipantsData.map((participant) => (
-                    <BlockParticipant onPress={() => addParticipantsToOrder(participant)} key={participant.userId}>
-                      <BlockParticipantAvatar
-                        source={{
-                          uri: `${participant.photoURL || "No photo"}`,
-                        }}
-                      ></BlockParticipantAvatar>
-                      <BlockParticipantName numberOfLines={1}>
-                        {participant.nikname || "No nikname"}
-                      </BlockParticipantName>
-                    </BlockParticipant>
+                    <>
+                      {participant ? (
+                        <BlockParticipant onPress={() => addParticipantsToOrder(participant)} key={participant.userId}>
+                          <BlockParticipantAvatar
+                            source={{
+                              uri: `${participant.photoURL}`,
+                            }}
+                          ></BlockParticipantAvatar>
+                          <BlockParticipantName numberOfLines={1}>
+                            {participant.nikname || "No nikname"}
+                          </BlockParticipantName>
+                        </BlockParticipant>
+                      ) : (
+                        <Text style={{ color: colors.titleText, width: "30%", textAlign: "center" }}>
+                          Participant delete
+                        </Text>
+                      )}
+                    </>
                   ))}
                 </>
               )}

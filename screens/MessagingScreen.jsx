@@ -7,7 +7,20 @@ import styled from "styled-components";
 import { db, auth } from "../firebaseConfig";
 import Button from "../components/Button";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
-import { doc, addDoc, onSnapshot, collection, orderBy, serverTimestamp, query, getDoc } from "firebase/firestore";
+import {
+  doc,
+  addDoc,
+  onSnapshot,
+  collection,
+  orderBy,
+  serverTimestamp,
+  query,
+  getDoc,
+  getDocs,
+  where,
+  updateDoc,
+  arrayUnion,
+} from "firebase/firestore";
 import Message from "../components/Message";
 
 const BlockButton = styled.View`
@@ -67,12 +80,26 @@ export default function MessagingScreen({ route, navigation }) {
   const conversationId = item.docId;
   const currentUser = auth.currentUser;
   const flatList = React.useRef(null);
+  const currentEmail = currentUser.email;
+
+  const markMessagesAsRead = async () => {
+    const refForChangeMessageStatus = query(
+      collection(db, "messages", conversationId, "conversation"),
+      where("isRead", "not-in", [currentEmail])
+    );
+    const unreadMessages = await getDocs(refForChangeMessageStatus);
+    unreadMessages.forEach(async (document) => {
+      const messageRef = doc(db, "messages", conversationId, "conversation", document.id);
+      await updateDoc(messageRef, { isRead: arrayUnion(currentEmail) });
+    });
+  };
 
   const sendMessage = async () => {
     try {
       if (message.length) {
         const data = {
           messageId: Date.parse(new Date()),
+          isRead: [currentEmail],
           messageText: message,
           author: currentUser.email,
           timestamp: serverTimestamp(),
@@ -123,8 +150,10 @@ export default function MessagingScreen({ route, navigation }) {
         );
         scrollToEnd();
         setLoaded(true);
+        markMessagesAsRead();
       }
     );
+    markMessagesAsRead();
   }, []);
 
   const scrollToEnd = () => {

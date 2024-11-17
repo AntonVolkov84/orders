@@ -37,3 +37,4 @@ export const MessagingInputBackground = "#1c1c1c";
 export const MessagingInputColor = "#FFFFFF";
 export const MessagingIconColor = "#a8dce7";
 export const MessagingPlaceholder = "#a8dce7";
+export const placeolderColor = "#474747";

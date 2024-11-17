@@ -5,10 +5,10 @@
     "scheme": "com.ant-volkov.orders",
     "version": "1.2.3",
     "orientation": "portrait",
-    "icon": "./assets/order.png",
+    "icon": "./assets/Orders3.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/order.png",
+      "image": "./assets/Orders3.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -19,7 +19,7 @@
     "android": {
       "googleServicesFile": "./google-services.json",
       "adaptiveIcon": {
-        "foregroundImage": "./assets/order.png",
+        "foregroundImage": "./assets/Orders3.png",
         "backgroundColor": "#ffffff"
       },
       "permissions": ["android.permission.RECORD_AUDIO"],
@@ -38,7 +38,7 @@
           "measurementId": "G-3P0YBJ9FP6"
         }
       },
-      "favicon": "./assets/order.png"
+      "favicon": "./assets/Orders3.png"
     },
     "plugins": [
       ["@react-native-google-signin/google-signin"],

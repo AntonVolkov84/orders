@@ -33,7 +33,7 @@ const InputField = styled.TextInput`
   background-color: ${colors.backgroundColorInput};
   border: none;
   color: ${colors.colorTextInput};
-  font-size: 25px;
+  font-size: 20px;
 `;
 
 const LoginButton = styled.TouchableOpacity`
