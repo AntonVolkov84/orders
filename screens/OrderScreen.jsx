@@ -5,7 +5,17 @@ import * as colors from "../variables/colors";
 import { StatusBar } from "expo-status-bar";
 import styled from "styled-components";
 import { db, auth } from "../firebaseConfig";
-import { doc, onSnapshot, updateDoc, arrayUnion, arrayRemove } from "firebase/firestore";
+import {
+  doc,
+  onSnapshot,
+  updateDoc,
+  arrayUnion,
+  arrayRemove,
+  getDocs,
+  where,
+  collection,
+  query,
+} from "firebase/firestore";
 import { SwipeListView } from "react-native-swipe-list-view";
 import { Ionicons } from "@expo/vector-icons";
 import Entypo from "@expo/vector-icons/Entypo";
@@ -161,6 +171,16 @@ const BlockButton = styled.View`
   align-items: center;
   margin-bottom: 2%;
 `;
+const NewMessageAlert = styled.View`
+  position: absolute;
+  right: 15px;
+  top: -10px;
+  width: 20px;
+  height: 20px;
+  justify-content: center;
+  align-items: center;
+  z-index: 2;
+`;
 const BlockButtonToggle = styled.View`
   width: 90%;
   height: 80px;
@@ -187,9 +207,23 @@ export default function OrderScreen({ route, navigation }) {
   const [orders, setOrders] = useState(null);
   const [dataItem, setDataItem] = useState(null);
   const [toggleBoughtItems, setToggleBoughtItems] = useState(false);
+  const [newMessageArrived, setNewMessageArrived] = useState(false);
   const { item } = route.params;
   const currentUserEmail = auth.currentUser.email;
   const documentId = item.docId;
+
+  const checkUnreadMessages = async () => {
+    const refForChangeMessageStatus = query(
+      collection(db, "messages", documentId, "conversation"),
+      where("doNotReadBy", "array-contains-any", [`${currentUserEmail}`])
+    );
+    const unreadMessages = await getDocs(refForChangeMessageStatus);
+    unreadMessages.forEach(async (document) => {
+      setNewMessageArrived(true);
+      console.log(document.data());
+    });
+  };
+
   const updateOrder = async () => {
     if (!name || !quantity) {
       Alert.alert("Some field is empty");
@@ -240,6 +274,7 @@ export default function OrderScreen({ route, navigation }) {
       setOrders(snapshot.data());
       setOrdersLoaded(true);
     });
+    checkUnreadMessages();
   }, []);
 
   return (
@@ -299,9 +334,16 @@ export default function OrderScreen({ route, navigation }) {
           </BlockButtonBtn>
           <BlockButtonBtn
             onPress={() => {
+              setNewMessageArrived(false);
               navigation.navigate("Messaging", { item });
             }}
           >
+            {newMessageArrived ? (
+              <NewMessageAlert>
+                <Ionicons name="alert-circle-sharp" size={20} color={colors.NewMessageArrivedColor} />
+              </NewMessageAlert>
+            ) : null}
+
             <Button children="Messaging" />
           </BlockButtonBtn>
         </BlockButton>

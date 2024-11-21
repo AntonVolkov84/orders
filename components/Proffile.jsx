@@ -307,7 +307,7 @@ export default function DashboardScreen({ navigation }) {
           <BlockProfileSectionNikname>
             <BlockProfileText>Nikname:</BlockProfileText>
             <BlockProfileText>
-              {loadingUserProfileData ? <Text>Loading...</Text> : userProfileData.nikname || newNikname}
+              {loadingUserProfileData ? <Text>Loading...</Text> : userProfileData.nikname || "wait for Nikname"}
             </BlockProfileText>
             <ChangeNikname
               onPress={() => {

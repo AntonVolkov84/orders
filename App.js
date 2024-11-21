@@ -42,6 +42,7 @@ export default function App() {
   const notificationListener = useRef();
   const responseListener = useRef();
   const [expoPushToken, setExpoPushToken] = useState("");
+
   onAuthStateChanged(auth, (user) => {
     if (user && auth.currentUser.emailVerified) {
       setUser(user);

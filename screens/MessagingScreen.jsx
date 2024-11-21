@@ -1,5 +1,5 @@
 import { View, Text, TouchableOpacity, FlatList } from "react-native";
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import * as colors from "../variables/colors";
 import { LinearGradient } from "expo-linear-gradient";
 import { StatusBar } from "expo-status-bar";
@@ -19,7 +19,7 @@ import {
   getDocs,
   where,
   updateDoc,
-  arrayUnion,
+  arrayRemove,
 } from "firebase/firestore";
 import Message from "../components/Message";
 
@@ -85,21 +85,23 @@ export default function MessagingScreen({ route, navigation }) {
   const markMessagesAsRead = async () => {
     const refForChangeMessageStatus = query(
       collection(db, "messages", conversationId, "conversation"),
-      where("isRead", "not-in", [currentEmail])
+      where("doNotReadBy", "array-contains-any", [currentEmail])
     );
     const unreadMessages = await getDocs(refForChangeMessageStatus);
     unreadMessages.forEach(async (document) => {
       const messageRef = doc(db, "messages", conversationId, "conversation", document.id);
-      await updateDoc(messageRef, { isRead: arrayUnion(currentEmail) });
+      await updateDoc(messageRef, { doNotReadBy: arrayRemove(currentEmail) });
     });
   };
 
   const sendMessage = async () => {
     try {
+      const arr = item.participants.filter((email) => email !== currentEmail);
+      console.log("====>>>", arr);
       if (message.length) {
         const data = {
           messageId: Date.parse(new Date()),
-          isRead: [currentEmail],
+          doNotReadBy: [...arr],
           messageText: message,
           author: currentUser.email,
           timestamp: serverTimestamp(),
@@ -119,7 +121,6 @@ export default function MessagingScreen({ route, navigation }) {
           title: `Comment have arrived for ORDER by ${item.participants[0]}`,
           body: message,
         };
-
         await fetch("https://exp.host/--/api/v2/push/send", {
           method: "POST",
           headers: {
