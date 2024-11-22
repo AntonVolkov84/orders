@@ -48,6 +48,13 @@
         {
           "photosPermission": "NSPhotoLibraryUsageDescription"
         }
+      ],
+      [
+        "react-native-google-mobile-ads",
+        {
+          "androidAppId": "ca-app-pub-9267417700367649~9246252513",
+          "userTrackingUsageDescription": "This identifier will be used to deliver personalized ads to you."
+        }
       ]
     ],
     "extra": {

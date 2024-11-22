@@ -92,7 +92,6 @@ export default function MessagingScreen({ route, navigation }) {
     unreadMessages.forEach(async (document) => {
       docForUpdate.push(document.id);
     });
-    console.log(docForUpdate);
     docForUpdate.forEach(async (id) => {
       const messageRef = doc(db, "messages", conversationId, "conversation", id);
       await updateDoc(messageRef, { doNotReadBy: arrayRemove(currentEmail) });

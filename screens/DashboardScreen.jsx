@@ -13,6 +13,7 @@ import { collection, onSnapshot, where, orderBy, query, getDocs } from "firebase
 import OrdersDashboard from "../components/OrdersDashboard";
 import { SafeAreaView, SafeAreaProvider } from "react-native-safe-area-context";
 import { AppContext } from "../App";
+import { BannerAd, BannerAdSize, InterstitialAd, AdEventType, TestIds } from "react-native-google-mobile-ads";
 
 const BlockOrderIcon = styled.TouchableOpacity`
   width: 20%;
@@ -52,14 +53,34 @@ const BlockOrdersShow = styled.View`
   margin-top: 1%;
 `;
 
+const interstitial = InterstitialAd.createForAdRequest(TestIds.INTERSTITIAL, {
+  requestNonPersonalizedAdsOnly: true,
+});
+
 export default function DashboardScreen({ navigation }) {
   const [createOrderModal, setCreateOrderModal] = useState(false);
   const [participants, setParticipants] = useState([]);
   const [fetchedOrders, setFetchedOrders] = useState([]);
   const [isLoaded, setIsLoaded] = useState(false);
+  const [interstitialLoaded, setInterstitialLoaded] = useState(false);
   const currentEmail = auth.currentUser.email;
   const sendPushNotification = useContext(AppContext);
 
+  const loadInterstitial = () => {
+    const unsubscribeLoaded = interstitial.addAdEventListener(AdEventType.LOADED, () => {
+      setInterstitialLoaded(true);
+    });
+
+    const unsubscribeClosed = interstitial.addAdEventListener(AdEventType.CLOSED, () => {
+      setInterstitialLoaded(false);
+      interstitial.load();
+    });
+    interstitial.load();
+    return () => {
+      unsubscribeClosed();
+      unsubscribeLoaded();
+    };
+  };
   useEffect(() => {
     onSnapshot(
       query(
@@ -72,6 +93,13 @@ export default function DashboardScreen({ navigation }) {
         setIsLoaded(true);
       }
     );
+  }, []);
+  useEffect(() => {
+    const unsubscribeInterstitialEvents = loadInterstitial();
+
+    return () => {
+      unsubscribeInterstitialEvents();
+    };
   }, []);
 
   return (
@@ -122,12 +150,27 @@ export default function DashboardScreen({ navigation }) {
           <BlockOrderIcon
             onPress={() => {
               setCreateOrderModal(true);
+              {
+                interstitialLoaded ? interstitial.show() : null;
+              }
             }}
           >
             <OrderIcon />
           </BlockOrderIcon>
         </>
       )}
+      <View style={{ position: "absolute", bottom: 0 }}>
+        <BannerAd
+          unitId={TestIds.BANNER}
+          size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER}
+          requestOptions={{
+            requestNonPersonalizedAdsOnly: true,
+            networkExtras: {
+              collapsible: "bottom",
+            },
+          }}
+        />
+      </View>
     </LinearGradient>
   );
 }
