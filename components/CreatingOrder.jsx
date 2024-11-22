@@ -211,9 +211,9 @@ export default function CreatingOrder({ participants, setCreateOrderModal, setPa
               fontSize: 20,
             }}
           >
-            {participants.map((e) => (
+            {participants.map((e, index) => (
               <Text
-                key={e.userId}
+                key={index}
                 onPress={() => {
                   delFronArrayOfParticipants(e);
                 }}

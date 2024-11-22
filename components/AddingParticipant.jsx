@@ -79,7 +79,7 @@ const ModalButtonBtn = styled.TouchableOpacity`
   height: 100%;
 `;
 
-export default function AddingParticipamt({ setParticipants, participants }) {
+export default function AddingParticipant({ setParticipants, participants }) {
   const auth = getAuth();
   const [inputEmail, setInputEmail] = useState("");
   const [loadingData, setLoadingData] = useState(true);
@@ -189,10 +189,10 @@ export default function AddingParticipamt({ setParticipants, participants }) {
                 </Text>
               ) : (
                 <>
-                  {allParticipantsData.map((participant) => (
-                    <>
+                  {allParticipantsData.map((participant, index) => (
+                    <View key={index}>
                       {participant ? (
-                        <BlockParticipant onPress={() => addParticipantsToOrder(participant)} key={participant.userId}>
+                        <BlockParticipant onPress={() => addParticipantsToOrder(participant)}>
                           <BlockParticipantAvatar
                             source={{
                               uri: `${participant.photoURL}`,
@@ -207,7 +207,7 @@ export default function AddingParticipamt({ setParticipants, participants }) {
                           Participant delete
                         </Text>
                       )}
-                    </>
+                    </View>
                   ))}
                 </>
               )}

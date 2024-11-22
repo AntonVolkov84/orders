@@ -215,12 +215,11 @@ export default function OrderScreen({ route, navigation }) {
   const checkUnreadMessages = async () => {
     const refForChangeMessageStatus = query(
       collection(db, "messages", documentId, "conversation"),
-      where("doNotReadBy", "array-contains-any", [`${currentUserEmail}`])
+      where("doNotReadBy", "array-contains", currentUserEmail)
     );
     const unreadMessages = await getDocs(refForChangeMessageStatus);
     unreadMessages.forEach(async (document) => {
       setNewMessageArrived(true);
-      console.log(document.data());
     });
   };
 
@@ -270,6 +269,7 @@ export default function OrderScreen({ route, navigation }) {
   };
 
   useEffect(() => {
+    setNewMessageArrived(false);
     onSnapshot(doc(db, "orders", documentId), (snapshot) => {
       setOrders(snapshot.data());
       setOrdersLoaded(true);

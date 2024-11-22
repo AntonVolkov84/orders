@@ -85,23 +85,27 @@ export default function MessagingScreen({ route, navigation }) {
   const markMessagesAsRead = async () => {
     const refForChangeMessageStatus = query(
       collection(db, "messages", conversationId, "conversation"),
-      where("doNotReadBy", "array-contains-any", [currentEmail])
+      where("doNotReadBy", "array-contains", currentEmail)
     );
     const unreadMessages = await getDocs(refForChangeMessageStatus);
+    const docForUpdate = [];
     unreadMessages.forEach(async (document) => {
-      const messageRef = doc(db, "messages", conversationId, "conversation", document.id);
+      docForUpdate.push(document.id);
+    });
+    console.log(docForUpdate);
+    docForUpdate.forEach(async (id) => {
+      const messageRef = doc(db, "messages", conversationId, "conversation", id);
       await updateDoc(messageRef, { doNotReadBy: arrayRemove(currentEmail) });
     });
   };
 
   const sendMessage = async () => {
     try {
-      const arr = item.participants.filter((email) => email !== currentEmail);
-      console.log("====>>>", arr);
       if (message.length) {
+        const arrOfReciverMessage = item.participants.filter((email) => email !== currentEmail);
         const data = {
           messageId: Date.parse(new Date()),
-          doNotReadBy: [...arr],
+          doNotReadBy: arrOfReciverMessage,
           messageText: message,
           author: currentUser.email,
           timestamp: serverTimestamp(),
@@ -151,7 +155,6 @@ export default function MessagingScreen({ route, navigation }) {
         );
         scrollToEnd();
         setLoaded(true);
-        markMessagesAsRead();
       }
     );
     markMessagesAsRead();
