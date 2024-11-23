@@ -1,6 +1,7 @@
-import { View, Text, Button, TouchableOpacity, Image, TextInput } from "react-native";
+import { View, Text, Button, TouchableOpacity, Image, TextInput, FlatList } from "react-native";
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
+import { LinearGradient } from "expo-linear-gradient";
 import * as colors from "../variables/colors";
 import { getAuth, signOut } from "firebase/auth";
 import * as NavigationBar from "expo-navigation-bar";
@@ -11,6 +12,10 @@ import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import * as ImagePicker from "expo-image-picker";
 import { getDownloadURL, getStorage, ref, uploadBytesResumable, deleteObject } from "firebase/storage";
+import { useTranslation } from "react-i18next";
+import i18next from "../i18next";
+import { LanguageResources } from "../i18next";
+import languageList from "../locales/languagesList.json";
 
 const BlockMenuProfile = styled.TouchableOpacity`
   width: 98%;
@@ -28,7 +33,7 @@ const BlockMenuProfileText = styled.Text`
 `;
 const BlockProfile = styled.TouchableOpacity`
   width: 98%;
-  height: 90%;
+  height: 92%;
   position: absolute;
   margin-top: 3%;
   background-color: ${colors.menuProfile};
@@ -37,6 +42,14 @@ const BlockProfile = styled.TouchableOpacity`
   z-index: 2;
 `;
 const BlockProfileSectionNikname = styled.TouchableOpacity`
+  width: 100%;
+  height: 10%;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  background-color: ${colors.menuProfile};
+`;
+const BlockProfileSectionLanguage = styled.TouchableOpacity`
   width: 100%;
   height: 10%;
   flex-direction: row;
@@ -60,11 +73,17 @@ const ChangeNikname = styled.TouchableOpacity`
   align-items: center;
   margin-left: 5%;
 `;
+const ChangeLanguage = styled.TouchableOpacity`
+  width: 10%;
+  height: 100%;
+  justify-content: center;
+  align-items: center;
+  margin-left: 5%;
+`;
 const ModalNikname = styled.View`
   width: 100%;
   height: 105%;
   position: absolute;
-  z-index: 1;
   background-color: ${colors.modalNiknameBackground};
   padding-top: 30%;
   align-items: center;
@@ -115,7 +134,7 @@ const ModalNiknameBtnText = styled.Text`
 `;
 const BlockProfileSectionAvatar = styled.TouchableOpacity`
   width: 100%;
-  height: 68%;
+  height: 58%;
   flex-direction: row;
   justify-content: center;
   align-items: center;
@@ -137,6 +156,21 @@ const ButtonLogoutText = styled.Text`
   color: ${colors.titleText};
   font-size: 25px;
 `;
+const ModalLanguage = styled.View`
+  width: 100%;
+  height: 105%;
+  position: absolute;
+  background-color: ${colors.modalNiknameBackground};
+  padding-top: 30%;
+  align-items: center;
+  z-index: 3;
+`;
+const LanguageText = styled.Text`
+  color: ${colors.titleText};
+  font-size: 25px;
+  text-align: center;
+`;
+
 const auth = getAuth();
 
 export default function DashboardScreen({ navigation }) {
@@ -147,7 +181,22 @@ export default function DashboardScreen({ navigation }) {
   const [newNikname, setNewNikname] = useState("");
   const [newPhotoURL, setNewPhotoURL] = useState(null);
   const [fileName, setFileName] = useState(null);
+  const [language, setLanguage] = useState("");
+  const [changeLanguageModal, setChangeLanguageModal] = useState(false);
   const storage = getStorage(app);
+  const { t } = useTranslation();
+
+  const images = {
+    en: require("../assets/england.png"),
+    ru: require("../assets/russia.png"),
+    ua: require("../assets/ukraine.png"),
+  };
+
+  const changeLng = (language) => {
+    i18next.changeLanguage(language);
+    setChangeLanguageModal(false);
+    handleChangeLanguage();
+  };
 
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -229,16 +278,7 @@ export default function DashboardScreen({ navigation }) {
     await NavigationBar.setBackgroundColorAsync("#1E2322");
     await NavigationBar.setButtonStyleAsync("light");
   };
-  const getUserProfile = async () => {
-    const docRef = doc(db, "users", auth.currentUser.email);
-    const docSnap = await getDoc(docRef);
-    if (docSnap.exists()) {
-      setUserProfileData(docSnap.data());
-      setLoadingUserProfileData(false);
-    } else {
-      console.log("Couldn`t download user profile");
-    }
-  };
+
   useEffect(() => {
     onSnapshot(doc(db, "users", auth.currentUser.email), (snapshot) => {
       setUserProfileData(snapshot.data());
@@ -250,6 +290,10 @@ export default function DashboardScreen({ navigation }) {
   const handleChangeNikname = async () => {
     const cityRef = doc(db, "users", auth.currentUser.email);
     await setDoc(cityRef, { nikname: newNikname }, { merge: true });
+  };
+  const handleChangeLanguage = async () => {
+    const cityRef = doc(db, "users", auth.currentUser.email);
+    await setDoc(cityRef, { language: language }, { merge: true });
   };
   const handleChangeAvatar = async (fileToDel, downloadURL) => {
     delFileFromStorage();
@@ -270,7 +314,7 @@ export default function DashboardScreen({ navigation }) {
           size={30}
           color={colors.BlockMenuProfileText}
         />
-        <BlockMenuProfileText>Proffile</BlockMenuProfileText>
+        <BlockMenuProfileText>{t("profile")}</BlockMenuProfileText>
       </BlockMenuProfile>
       {changeNiknameModal ? (
         <ModalNikname>
@@ -318,6 +362,25 @@ export default function DashboardScreen({ navigation }) {
               <FontAwesome6 name="edit" size={30} color={colors.menuProfileText} />
             </ChangeNikname>
           </BlockProfileSectionNikname>
+          <BlockProfileSectionLanguage>
+            <BlockProfileText>Language:</BlockProfileText>
+            <BlockProfileText>
+              {loadingUserProfileData ? (
+                <Text>Loading...</Text>
+              ) : (
+                <Text>{languageList[language].nativeName}</Text> || (
+                  <Text>{languageList[userProfileData.language].nativeName}</Text>
+                ) || <Text>Language</Text>
+              )}
+            </BlockProfileText>
+            <ChangeLanguage
+              onPress={() => {
+                setChangeLanguageModal(true);
+              }}
+            >
+              <FontAwesome6 name="edit" size={30} color={colors.menuProfileText} />
+            </ChangeLanguage>
+          </BlockProfileSectionLanguage>
           <BlockProfileSectionAvatar onPress={() => pickImage()}>
             <Image
               style={{ width: "50%", aspectRatio: 1, objectfit: "cover", borderRadius: 180 }}
@@ -335,6 +398,42 @@ export default function DashboardScreen({ navigation }) {
             <ButtonLogoutText>Logout</ButtonLogoutText>
           </ButtonLogout>
         </BlockProfile>
+      ) : null}
+      {changeLanguageModal ? (
+        <ModalLanguage>
+          <TouchableOpacity onPress={() => setChangeLanguageModal(false)}>
+            <LanguageText style={{ color: "white", textAlign: "center", marginBottom: "20%" }}>Cancel</LanguageText>
+            <FlatList
+              data={Object.keys(LanguageResources)}
+              renderItem={({ item }) => (
+                <View style={{ marginTop: "15%" }}>
+                  <TouchableOpacity
+                    onPress={() => {
+                      setLanguage(item);
+                      changeLng(item);
+                    }}
+                    style={{
+                      width: "50%",
+                      aspectRatio: 1 / 1,
+                      justifyContent: "center",
+                      alignSelf: "center",
+                    }}
+                  >
+                    <Image style={{ width: "100%", height: "100%" }} source={images[item]}></Image>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={() => {
+                      setLanguage(item);
+                      changeLng(item);
+                    }}
+                  >
+                    <LanguageText>{languageList[item].nativeName}</LanguageText>
+                  </TouchableOpacity>
+                </View>
+              )}
+            />
+          </TouchableOpacity>
+        </ModalLanguage>
       ) : null}
     </>
   );

@@ -69,6 +69,7 @@ export default function DashboardScreen({ navigation }) {
   const loadInterstitial = () => {
     const unsubscribeLoaded = interstitial.addAdEventListener(AdEventType.LOADED, () => {
       setInterstitialLoaded(true);
+      console.log("Interstitial loaded");
     });
 
     const unsubscribeClosed = interstitial.addAdEventListener(AdEventType.CLOSED, () => {
@@ -150,16 +151,13 @@ export default function DashboardScreen({ navigation }) {
           <BlockOrderIcon
             onPress={() => {
               setCreateOrderModal(true);
-              {
-                interstitialLoaded ? interstitial.show() : null;
-              }
             }}
           >
             <OrderIcon />
           </BlockOrderIcon>
         </>
       )}
-      <View style={{ position: "absolute", bottom: 0 }}>
+      <View style={{ position: "absolute", bottom: 0, paddingleft: "1%" }}>
         <BannerAd
           unitId={TestIds.BANNER}
           size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER}
