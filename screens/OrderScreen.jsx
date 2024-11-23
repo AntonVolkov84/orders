@@ -20,6 +20,7 @@ import { SwipeListView } from "react-native-swipe-list-view";
 import { Ionicons } from "@expo/vector-icons";
 import Entypo from "@expo/vector-icons/Entypo";
 import Button from "../components/Button";
+import { useTranslation } from "react-i18next";
 
 const Container = styled.View`
   width: 100%;
@@ -211,6 +212,7 @@ export default function OrderScreen({ route, navigation }) {
   const { item } = route.params;
   const currentUserEmail = auth.currentUser.email;
   const documentId = item.docId;
+  const { t } = useTranslation();
 
   const checkUnreadMessages = async () => {
     const refForChangeMessageStatus = query(
@@ -293,7 +295,7 @@ export default function OrderScreen({ route, navigation }) {
       <Container>
         <OrderName>
           {ordersLoaded
-            ? new Date(new Date(orders.dateForOrder)).toLocaleDateString("ru-RU", {
+            ? new Date(new Date(orders.dateForOrder)).toLocaleDateString(`${t("OrderDashboardTime")}`, {
                 month: "long",
                 day: "numeric",
               })
@@ -330,7 +332,7 @@ export default function OrderScreen({ route, navigation }) {
               setModalUpdate(true);
             }}
           >
-            <Button children="Add one more" />
+            <Button children={t("OrderScreenAdd")} />
           </BlockButtonBtn>
           <BlockButtonBtn
             onPress={() => {
@@ -344,7 +346,7 @@ export default function OrderScreen({ route, navigation }) {
               </NewMessageAlert>
             ) : null}
 
-            <Button children="Messaging" />
+            <Button children={t("OrderScreenMessaging")} />
           </BlockButtonBtn>
         </BlockButton>
         <BlockSafeAreaView>
@@ -355,13 +357,13 @@ export default function OrderScreen({ route, navigation }) {
                   onChangeText={setName}
                   maxLength={25}
                   value={name}
-                  placeholder="Name of product or business"
+                  placeholder={t("OrderScreenModalPlaceholderItem")}
                 ></InputFieldName>
                 <InputFieldQuantity
                   onChangeText={setQuantity}
                   value={quantity}
                   maxLength={7}
-                  placeholder="Quantity"
+                  placeholder={t("OrderScreenModalPlaceholderQT")}
                 ></InputFieldQuantity>
               </ModalBlockInput>
               <ModalBlockBtn>
@@ -373,10 +375,10 @@ export default function OrderScreen({ route, navigation }) {
                     setDataItem("");
                   }}
                 >
-                  <Button children="Cancel" />
+                  <Button children={t("ProffileCancel")} />
                 </ModalButton>
                 <ModalButton onPress={() => updateOrder()}>
-                  <Button children="Update" />
+                  <Button children={t("OrderScreenModalUpdate")} />
                 </ModalButton>
               </ModalBlockBtn>
             </ModalBlock>
@@ -450,7 +452,7 @@ export default function OrderScreen({ route, navigation }) {
               setToggleBoughtItems(!toggleBoughtItems);
             }}
           >
-            <Button children={toggleBoughtItems ? "Order items" : "Bought items"} />
+            <Button children={toggleBoughtItems ? `${t("OrderScreenOrderItems")}` : `${t("OrderScreenBoughtItems")}`} />
           </BlockButtonBtn>
         </BlockButtonToggle>
       </Container>

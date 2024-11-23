@@ -5,9 +5,11 @@ import { LinearGradient } from "expo-linear-gradient";
 import * as colors from "../variables/colors";
 
 const BlockButtonText = styled.Text`
-  font-size: 20px;
+  font-size: 17px;
   text-align: center;
   color: ${colors.BlockButtonText};
+  padding-left: 2px;
+  padding-right: 2px;
 `;
 
 export default function Button({ children }) {

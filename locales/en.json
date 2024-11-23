@@ -1,3 +1,26 @@
 {
-  "profile": "Proffile"
+  "Proffile": "Proffile",
+  "ProffileEmail": "Email:",
+  "ProffileNikname": "Nikname:",
+  "ProffileLanguage": "Language:",
+  "ProffileLogout": "Logout",
+  "ProffilePlaceholderNikname": "Print you`r nikname",
+  "ProffileCancel": "Cancel",
+  "ProffileOk": "Ok",
+  "OrderDashboardCloseOrder": "Close order",
+  "OrderDashboardTime": "en-EN",
+  "OrderScreenAdd": "Add one more",
+  "OrderScreenMessaging": "Messaging",
+  "OrderScreenBoughtItems": "Bought items",
+  "OrderScreenOrderItems": "Order items",
+  "OrderScreenModalPlaceholderItem": "Name of product or business",
+  "OrderScreenModalPlaceholderQT": "Quantity",
+  "OrderScreenModalUpdate": "Update",
+  "MessagingGoBack": "Go back",
+  "MessagingMakeMessage": "Сreate a message",
+  "AddingParticipantsModalPlaceholder": "Write email of participant",
+  "AddingParticipantsAlertExistYourself": "Why You are adding Yourself. You are here!",
+  "AddingParticipantsAlertExist": "You add new participant",
+  "AddingParticipantsAlertNotIn": "Participant doesn`t exict",
+  "AddingParticipantsCheck": "Check"
 }

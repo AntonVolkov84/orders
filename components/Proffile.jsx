@@ -61,10 +61,10 @@ const BlockProfileSectionEmail = styled.TouchableOpacity`
   width: 90%;
   height: 10%;
   margin-left: 5%;
+  margin-right: 5%;
   flex-direction: row;
   justify-content: center;
   align-items: center;
-  background-color: ${colors.menuProfile};
 `;
 const ChangeNikname = styled.TouchableOpacity`
   width: 10%;
@@ -144,6 +144,7 @@ const BlockProfileText = styled.Text`
   color: ${colors.menuFrofileText};
   font-size: 20px;
   margin-left: 5%;
+  overflow: wrap;
 `;
 const ButtonLogout = styled.TouchableOpacity`
   width: 100%;
@@ -192,10 +193,10 @@ export default function DashboardScreen({ navigation }) {
     ua: require("../assets/ukraine.png"),
   };
 
-  const changeLng = (language) => {
-    i18next.changeLanguage(language);
+  const changeLng = (lng) => {
+    i18next.changeLanguage(lng);
     setChangeLanguageModal(false);
-    handleChangeLanguage();
+    handleChangeLanguage(lng);
   };
 
   const pickImage = async () => {
@@ -282,6 +283,7 @@ export default function DashboardScreen({ navigation }) {
   useEffect(() => {
     onSnapshot(doc(db, "users", auth.currentUser.email), (snapshot) => {
       setUserProfileData(snapshot.data());
+      i18next.changeLanguage(snapshot.data().language);
     });
     setLoadingUserProfileData(false);
     customNavigationBar();
@@ -291,9 +293,9 @@ export default function DashboardScreen({ navigation }) {
     const cityRef = doc(db, "users", auth.currentUser.email);
     await setDoc(cityRef, { nikname: newNikname }, { merge: true });
   };
-  const handleChangeLanguage = async () => {
+  const handleChangeLanguage = async (lng) => {
     const cityRef = doc(db, "users", auth.currentUser.email);
-    await setDoc(cityRef, { language: language }, { merge: true });
+    await setDoc(cityRef, { language: lng }, { merge: true });
   };
   const handleChangeAvatar = async (fileToDel, downloadURL) => {
     delFileFromStorage();
@@ -314,7 +316,7 @@ export default function DashboardScreen({ navigation }) {
           size={30}
           color={colors.BlockMenuProfileText}
         />
-        <BlockMenuProfileText>{t("profile")}</BlockMenuProfileText>
+        <BlockMenuProfileText>{t("Proffile")}</BlockMenuProfileText>
       </BlockMenuProfile>
       {changeNiknameModal ? (
         <ModalNikname>
@@ -322,11 +324,11 @@ export default function DashboardScreen({ navigation }) {
             <ModalNiknameInput
               onChangeText={setNewNikname}
               maxLength={20}
-              placeholder="Print You`r nikname"
+              placeholder={t("ProffilePlaceholderNikname")}
             ></ModalNiknameInput>
             <ModalBlockBtn>
               <ModalNiknameBtnCancel onPress={() => setChangeNiknameModal(false)}>
-                <ModalNiknameBtnText>Cancel</ModalNiknameBtnText>
+                <ModalNiknameBtnText>{t("ProffileCancel")}</ModalNiknameBtnText>
               </ModalNiknameBtnCancel>
               <ModalNiknameBtnOk
                 onPress={() => {
@@ -334,7 +336,7 @@ export default function DashboardScreen({ navigation }) {
                   setChangeNiknameModal(false);
                 }}
               >
-                <ModalNiknameBtnText>Ok</ModalNiknameBtnText>
+                <ModalNiknameBtnText>{t("ProffileOk")}</ModalNiknameBtnText>
               </ModalNiknameBtnOk>
             </ModalBlockBtn>
           </ModalNiknameEntry>
@@ -343,13 +345,13 @@ export default function DashboardScreen({ navigation }) {
       {visibilityMenu ? (
         <BlockProfile>
           <BlockProfileSectionEmail>
-            <BlockProfileText>Email:</BlockProfileText>
+            <BlockProfileText>{t("ProffileEmail")}</BlockProfileText>
             <BlockProfileText>
               {loadingUserProfileData ? <Text>Loading...</Text> : auth.currentUser.email}
             </BlockProfileText>
           </BlockProfileSectionEmail>
           <BlockProfileSectionNikname>
-            <BlockProfileText>Nikname:</BlockProfileText>
+            <BlockProfileText>{t("ProffileNikname")}</BlockProfileText>
             <BlockProfileText>
               {loadingUserProfileData ? <Text>Loading...</Text> : userProfileData?.nikname || "wait for Nikname"}
             </BlockProfileText>
@@ -363,14 +365,12 @@ export default function DashboardScreen({ navigation }) {
             </ChangeNikname>
           </BlockProfileSectionNikname>
           <BlockProfileSectionLanguage>
-            <BlockProfileText>Language:</BlockProfileText>
+            <BlockProfileText>{t("ProffileLanguage")}</BlockProfileText>
             <BlockProfileText>
               {loadingUserProfileData ? (
                 <Text>Loading...</Text>
               ) : (
-                <Text>{languageList[language].nativeName}</Text> || (
-                  <Text>{languageList[userProfileData.language].nativeName}</Text>
-                ) || <Text>Language</Text>
+                <Text>{languageList[userProfileData.language].nativeName}</Text>
               )}
             </BlockProfileText>
             <ChangeLanguage
@@ -395,14 +395,16 @@ export default function DashboardScreen({ navigation }) {
             }}
             title="Logout"
           >
-            <ButtonLogoutText>Logout</ButtonLogoutText>
+            <ButtonLogoutText>{t("ProffileLogout")}</ButtonLogoutText>
           </ButtonLogout>
         </BlockProfile>
       ) : null}
       {changeLanguageModal ? (
         <ModalLanguage>
           <TouchableOpacity onPress={() => setChangeLanguageModal(false)}>
-            <LanguageText style={{ color: "white", textAlign: "center", marginBottom: "20%" }}>Cancel</LanguageText>
+            <LanguageText style={{ color: "white", textAlign: "center", marginBottom: "20%" }}>
+              {t("ProffileCancel")}
+            </LanguageText>
             <FlatList
               data={Object.keys(LanguageResources)}
               renderItem={({ item }) => (

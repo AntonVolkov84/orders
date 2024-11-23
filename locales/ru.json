@@ -1,3 +1,26 @@
 {
-  "profile": "Профиль"
+  "Proffile": "Профиль",
+  "ProffileEmail": "Эл. почта:",
+  "ProffileNikname": "Псевдоним:",
+  "ProffileLanguage": "Язык:",
+  "ProffileLogout": "Выйти из системы",
+  "ProffilePlaceholderNikname": "Введите новый псевдоним",
+  "ProffileCancel": "Отмена",
+  "ProffileOk": "Принять",
+  "OrderDashboardCloseOrder": "Закрыть заказ",
+  "OrderDashboardTime": "ru-RU",
+  "OrderScreenAdd": "Добавить позицию",
+  "OrderScreenMessaging": "Сообщения",
+  "OrderScreenBoughtItems": "Сделано",
+  "OrderScreenOrderItems": "Не сделано",
+  "OrderScreenModalPlaceholderItem": "Название позиции или дела",
+  "OrderScreenModalPlaceholderQT": "Кол-во",
+  "OrderScreenModalUpdate": "Обновить",
+  "MessagingGoBack": "Назад",
+  "MessagingMakeMessage": "Создать сообщение",
+  "AddingParticipantsModalPlaceholder": "Напишите эл. почту участника",
+  "AddingParticipantsAlertExistYourself": "Зачем добавляешь себя, ты уже тут!",
+  "AddingParticipantsAlertExist": "Вы добавили нового участника",
+  "AddingParticipantsAlertNotIn": "С такой эл. почтой нет никого",
+  "AddingParticipantsCheck": "Искать"
 }

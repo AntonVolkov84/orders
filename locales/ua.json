@@ -1,3 +1,26 @@
 {
-  "profile": "Профіль"
+  "Proffile": "Профіль",
+  "ProffileEmail": "Ел. пошта:",
+  "ProffileNikname": "Псевдонім:",
+  "ProffileLanguage": "Мова:",
+  "ProffileLogout": "Вийти з системи",
+  "ProffilePlaceholderNikname": "Введіть новий псевдонім",
+  "ProffileCancel": "Відміна",
+  "ProffileOk": "Гарно",
+  "OrderDashboardCloseOrder": "Закрити замовлення",
+  "OrderDashboardTime": "en-EN",
+  "OrderScreenAdd": "Додати позицію",
+  "OrderScreenMessaging": "Листування",
+  "OrderScreenBoughtItems": "Зроблено",
+  "OrderScreenOrderItems": "Не зроблено",
+  "OrderScreenModalPlaceholderItem": "Назва позиції чи справи",
+  "OrderScreenModalPlaceholderQT": "Кількість",
+  "OrderScreenModalUpdate": "Оновити",
+  "MessagingGoBack": "Назад",
+  "MessagingMakeMessage": "Створити листа",
+  "AddingParticipantsModalPlaceholder": "Напишіть ел. адресу учасника",
+  "AddingParticipantsAlertExistYourself": "Навіщо додаєш себе, ти вже тут!",
+  "AddingParticipantsAlertExist": "Ви додали учасника",
+  "AddingParticipantsAlertNotIn": "З такою елю поштою нікого нема",
+  "AddingParticipantsCheck": "Шукати"
 }

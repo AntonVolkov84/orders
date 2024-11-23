@@ -5,6 +5,7 @@ import styled from "styled-components";
 import { db } from "../firebaseConfig";
 import { getDoc, doc, deleteDoc, addDoc, collection } from "firebase/firestore";
 import Button from "./Button";
+import { useTranslation } from "react-i18next";
 
 const BlockOrderShow = styled.TouchableOpacity`
   width: 100%;
@@ -68,6 +69,7 @@ export default function OrdersDashboard({ item, navigation }) {
   const [orderCreatorProfile, setOrderCreatorProfile] = useState(null);
   const [loadingOrderCreatorProfile, setLoadingOrderCreatorProfile] = useState(false);
   const dateForOrder = new Date(item.dateForOrder);
+  const { t } = useTranslation();
 
   useEffect(() => {
     getOrderCreatorProfile();
@@ -119,11 +121,14 @@ export default function OrdersDashboard({ item, navigation }) {
           </BlockOrderCreator>
           <BlockOrderInfo>
             <BlockOrderInfoDate>
-              {new Date(dateForOrder).toLocaleDateString("ru-RU", { month: "long", day: "numeric" })}
+              {new Date(dateForOrder).toLocaleDateString(`${t("OrderDashboardTime")}`, {
+                month: "long",
+                day: "numeric",
+              })}
             </BlockOrderInfoDate>
             <BlockOrderInfoArr>{item.order.map((e) => e.name + ", ")}</BlockOrderInfoArr>
             <CloseOrderBtn onPress={() => delCompliteOrder(item.docId)}>
-              <Button children="Close order" />
+              <Button children={t("OrderDashboardCloseOrder")} />
             </CloseOrderBtn>
           </BlockOrderInfo>
         </BlockOrder>

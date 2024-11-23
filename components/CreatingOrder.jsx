@@ -8,6 +8,7 @@ import Feather from "@expo/vector-icons/Feather";
 import { collection, addDoc, serverTimestamp, doc, getDoc } from "firebase/firestore";
 import { db, auth } from "../firebaseConfig";
 import DateTimePicker from "@react-native-community/datetimepicker";
+import { useTranslation } from "react-i18next";
 
 const BlockAddingOrder = styled.View`
   width: 100%;
@@ -110,6 +111,7 @@ export default function CreatingOrder({ participants, setCreateOrderModal, setPa
   const [dateForOrder, setDateForOrder] = useState(new Date());
   const [orders, setOrders] = useState([]);
   const [showPicker, setShowPicker] = useState(false);
+  const { t } = useTranslation();
 
   const handleChangeDate = (event) => {
     setShowPicker(false);

@@ -7,6 +7,7 @@ import { doc, addDoc, collection, getDoc, getDocs } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 import Button from "./Button";
 import { db } from "../firebaseConfig";
+import { useTranslation } from "react-i18next";
 
 const BlockSaveArea = styled.SafeAreaView`
   width: 100%;
@@ -85,17 +86,18 @@ export default function AddingParticipant({ setParticipants, participants }) {
   const [loadingData, setLoadingData] = useState(true);
   const [allParticipantsData, setAllParticipantsData] = useState([]);
   const [addingParticipantModal, setAddingParticipantModal] = useState(false);
+  const { t } = useTranslation();
 
   const verificationInputMail = async (email) => {
     if (email === auth.currentUser.email) {
-      return Alert.alert("Why You are adding Yourself. You are here!");
+      return Alert.alert(`${t("AddingParticipantsAlertExistYourself")}`);
     }
     try {
       const docSnap = await getDoc(doc(db, "users", email));
       if (docSnap.exists()) {
         addToParticipant(email);
       } else {
-        Alert.alert("Participant doesn`t exict");
+        Alert.alert(`${t("AddingParticipantsAlertNotIn")}`);
       }
     } catch (error) {
       Alert.alert("Participant doesn`t exict", error.message);
@@ -108,7 +110,7 @@ export default function AddingParticipant({ setParticipants, participants }) {
         email: email,
       };
       await addDoc(collection(db, "AllParticipants", currentEmail, "PersonalParticipant"), participant);
-      Alert.alert("You add new participant");
+      Alert.alert(`${t("AddingParticipantsAlertExist")}`);
       gettAllParticipants();
     } catch (error) {
       console.log("add to participant", error.message);
@@ -152,7 +154,7 @@ export default function AddingParticipant({ setParticipants, participants }) {
       {addingParticipantModal ? (
         <Modal>
           <ModalInput
-            placeholder="Write email of participant"
+            placeholder={t("AddingParticipantsModalPlaceholder")}
             value={inputEmail}
             onChangeText={setInputEmail}
           ></ModalInput>
@@ -163,7 +165,7 @@ export default function AddingParticipant({ setParticipants, participants }) {
                 setInputEmail("");
               }}
             >
-              <Button children="Cancel" />
+              <Button children={t("ProffileCancel")} />
             </ModalButtonBtn>
             <ModalButtonBtn
               onPress={() => {
@@ -172,7 +174,7 @@ export default function AddingParticipant({ setParticipants, participants }) {
                 setInputEmail("");
               }}
             >
-              <Button children="Check" />
+              <Button children={t("AddingParticipantsCheck")} />
             </ModalButtonBtn>
           </ModalButton>
         </Modal>

@@ -7,6 +7,7 @@ import styled from "styled-components";
 import { db, auth } from "../firebaseConfig";
 import Button from "../components/Button";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
+import { useTranslation } from "react-i18next";
 import {
   doc,
   addDoc,
@@ -81,6 +82,7 @@ export default function MessagingScreen({ route, navigation }) {
   const currentUser = auth.currentUser;
   const flatList = React.useRef(null);
   const currentEmail = currentUser.email;
+  const { t } = useTranslation();
 
   const markMessagesAsRead = async () => {
     const refForChangeMessageStatus = query(
@@ -184,7 +186,7 @@ export default function MessagingScreen({ route, navigation }) {
             navigation.goBack();
           }}
         >
-          <Button children="Go back" />
+          <Button children={t("MessagingGoBack")} />
         </BlockButtonBtn>
       </BlockButton>
       <BlockMessaging>
@@ -204,7 +206,7 @@ export default function MessagingScreen({ route, navigation }) {
       <BoxInput>
         <BoxInputText
           placeholderTextColor={colors.MessagingPlaceholder}
-          placeholder="Создать сообщение"
+          placeholder={t("MessagingMakeMessage")}
           multiline
           onChangeText={setMessage}
           value={message}
