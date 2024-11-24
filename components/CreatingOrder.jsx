@@ -199,9 +199,9 @@ export default function CreatingOrder({ participants, setCreateOrderModal, setPa
 
   return (
     <BlockAddingOrder>
-      <BlockAddingOrderTitle>Creating Order</BlockAddingOrderTitle>
+      <BlockAddingOrderTitle>{t("CreatingOrderCreate")}</BlockAddingOrderTitle>
       <BlockAddingOrderParticipants>
-        <BlockAddingOrderParticipantsText>Participants:</BlockAddingOrderParticipantsText>
+        <BlockAddingOrderParticipantsText>{t("CreatingOrderParticipants")}</BlockAddingOrderParticipantsText>
         {Boolean(participants) ? (
           <Text
             style={{
@@ -227,7 +227,7 @@ export default function CreatingOrder({ participants, setCreateOrderModal, setPa
         ) : null}
       </BlockAddingOrderParticipants>
       <BlockAddingOrderParticipants>
-        <BlockAddingOrderParticipantsText>Order date:</BlockAddingOrderParticipantsText>
+        <BlockAddingOrderParticipantsText>{t("CreatingOrderDate")}</BlockAddingOrderParticipantsText>
         {showPicker && (
           <DateTimePicker
             style={{ width: "80%", aspectRatio: 3 / 4 }}
@@ -245,8 +245,18 @@ export default function CreatingOrder({ participants, setCreateOrderModal, setPa
         </BlockAddingOrderDate>
       </BlockAddingOrderParticipants>
       <BlockInput>
-        <Input onChangeText={setName} value={name} maxLength={25} placeholder="Name of product or business"></Input>
-        <BlockInputQnt onChangeText={setQuantity} value={quantity} maxLength={7} placeholder="Quantity"></BlockInputQnt>
+        <Input
+          onChangeText={setName}
+          value={name}
+          maxLength={25}
+          placeholder={t("CreatingOrderPlaceholderName")}
+        ></Input>
+        <BlockInputQnt
+          onChangeText={setQuantity}
+          value={quantity}
+          maxLength={7}
+          placeholder={t("CreatingOrderPlaceholderQT")}
+        ></BlockInputQnt>
         <BlockInputBtn
           onPress={() => {
             addingToChart();
@@ -278,7 +288,7 @@ export default function CreatingOrder({ participants, setCreateOrderModal, setPa
       </SafeAreaView>
       <BlockResultBtn>
         <TouchableOpacity onPress={() => setCreateOrderModal(false)} style={{ width: "25%", height: 50 }}>
-          <Button children="Cancel" />
+          <Button children={t("ProffileCancel")} />
         </TouchableOpacity>
         <TouchableOpacity
           onPress={() => {
@@ -286,7 +296,7 @@ export default function CreatingOrder({ participants, setCreateOrderModal, setPa
           }}
           style={{ width: "25%", height: 50 }}
         >
-          <Button children="Make order" />
+          <Button children={t("CreatingOrderMakeOrder")} />
         </TouchableOpacity>
       </BlockResultBtn>
     </BlockAddingOrder>

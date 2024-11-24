@@ -22,5 +22,15 @@
   "AddingParticipantsAlertExistYourself": "Why You are adding Yourself. You are here!",
   "AddingParticipantsAlertExist": "You add new participant",
   "AddingParticipantsAlertNotIn": "Participant doesn`t exict",
-  "AddingParticipantsCheck": "Check"
+  "AddingParticipantsCheck": "Check",
+  "AddingParticipantsDublicate": "This participant already exists",
+  "AddingParticipantsAskDelParticipant": "You want to delete this participant",
+  "AddingParticipantsDelParticipant": "Participant deleted",
+  "AddingParticipantsDel": "Delete",
+  "CreatingOrderCreate": "Creating order",
+  "CreatingOrderParticipants": "Participants:",
+  "CreatingOrderDate": "Order date:",
+  "CreatingOrderPlaceholderName": "Name of product or business",
+  "CreatingOrderPlaceholderQT": "Quantity",
+  "CreatingOrderMakeOrder": "Create"
 }

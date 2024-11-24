@@ -22,5 +22,15 @@
   "AddingParticipantsAlertExistYourself": "Зачем добавляешь себя, ты уже тут!",
   "AddingParticipantsAlertExist": "Вы добавили нового участника",
   "AddingParticipantsAlertNotIn": "С такой эл. почтой нет никого",
-  "AddingParticipantsCheck": "Искать"
+  "AddingParticipantsCheck": "Искать",
+  "AddingParticipantsDublicate": "Этот участник уже существует",
+  "AddingParticipantsAskDelParticipant": "Вы хотите удалить данного участника?",
+  "AddingParticipantsDelParticipant": "участник удален",
+  "AddingParticipantsDel": "Удалить",
+  "CreatingOrderCreate": "Создание заказа",
+  "CreatingOrderParticipants": "Участники:",
+  "CreatingOrderDate": "Дата заказа:",
+  "CreatingOrderPlaceholderName": "Название позиции или дела",
+  "CreatingOrderPlaceholderQT": "Кол-во",
+  "CreatingOrderMakeOrder": "Создать"
 }

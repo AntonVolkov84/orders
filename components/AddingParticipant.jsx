@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import * as colors from "../variables/colors";
-import { doc, addDoc, collection, getDoc, getDocs } from "firebase/firestore";
+import { doc, addDoc, collection, getDoc, getDocs, where, query, deleteDoc } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 import Button from "./Button";
 import { db } from "../firebaseConfig";
@@ -58,6 +58,21 @@ const Modal = styled.View`
   background-color: ${colors.orderBackgroundColor};
   z-index: 4;
 `;
+const ModalDelParticipant = styled.View`
+  width: 100%;
+  height: 100%;
+  padding: 2%;
+  background-color: ${colors.orderBackgroundColor};
+  position: absolute;
+  z-index: 5;
+`;
+const ModalDelParticipantText = styled.Text`
+  width: 100%;
+  padding: 2%;
+  background-color: ${colors.orderBackgroundColor};
+  color: ${colors.titleText};
+  text-align: center;
+`;
 const ModalInput = styled.TextInput`
   width: 100%;
   height: 50px;
@@ -86,8 +101,29 @@ export default function AddingParticipant({ setParticipants, participants }) {
   const [loadingData, setLoadingData] = useState(true);
   const [allParticipantsData, setAllParticipantsData] = useState([]);
   const [addingParticipantModal, setAddingParticipantModal] = useState(false);
+  const [delParticipantModal, setDelParticipantModal] = useState(false);
+  const [participantForDeleting, setParticipantForDeleting] = useState("");
   const { t } = useTranslation();
 
+  const VerificationMailDublicate = async (email) => {
+    try {
+      const docSnap = await getDocs(
+        query(
+          collection(db, "AllParticipants", auth.currentUser.email, "PersonalParticipant"),
+          where("email", "==", email)
+        )
+      );
+      if (!Boolean(docSnap.docs.length)) {
+        verificationInputMail(email);
+      } else {
+        docSnap.forEach((e) => {
+          return Alert.alert(`${t("AddingParticipantsDublicate")}`);
+        });
+      }
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
   const verificationInputMail = async (email) => {
     if (email === auth.currentUser.email) {
       return Alert.alert(`${t("AddingParticipantsAlertExistYourself")}`);
@@ -136,7 +172,9 @@ export default function AddingParticipant({ setParticipants, participants }) {
     const newArr = [];
     for (i = 0; i < arr.length; i++) {
       const docSnap = await getDoc(doc(db, "users", arr[i]));
-      newArr.push(docSnap.data());
+      if (docSnap.exists()) {
+        newArr.push(docSnap.data());
+      }
       if (i === arr.length - 1) {
         setAllParticipantsData(newArr);
         setLoadingData(false);
@@ -149,8 +187,51 @@ export default function AddingParticipant({ setParticipants, participants }) {
       setParticipants((prevParticipants) => [...prevParticipants, { ...participant }]);
     }
   };
+  const handleLongPress = (participant) => {
+    setDelParticipantModal(true);
+    setParticipantForDeleting(participant.email);
+  };
+  const delParticipantData = async (participant) => {
+    let documentID;
+    const ref = query(
+      collection(db, "AllParticipants", auth.currentUser.email, "PersonalParticipant"),
+      where("email", "==", `${participant}`)
+    );
+    const dataForDel = await getDocs(ref);
+    dataForDel.forEach(async (e) => {
+      documentID = e.id;
+      await deleteDoc(doc(db, "AllParticipants", auth.currentUser.email, "PersonalParticipant", documentID));
+    });
+    gettAllParticipants();
+  };
+
   return (
     <>
+      {delParticipantModal ? (
+        <ModalDelParticipant>
+          <ModalDelParticipantText>
+            {t("AddingParticipantsAskDelParticipant")} {participantForDeleting}
+          </ModalDelParticipantText>
+          <ModalButton>
+            <ModalButtonBtn
+              onPress={() => {
+                setDelParticipantModal(false);
+              }}
+            >
+              <Button children={t("ProffileCancel")} />
+            </ModalButtonBtn>
+            <ModalButtonBtn
+              onPress={() => {
+                setDelParticipantModal(false);
+                delParticipantData(participantForDeleting);
+                setParticipantForDeleting("");
+              }}
+            >
+              <Button children={t("AddingParticipantsDel")} />
+            </ModalButtonBtn>
+          </ModalButton>
+        </ModalDelParticipant>
+      ) : null}
       {addingParticipantModal ? (
         <Modal>
           <ModalInput
@@ -169,7 +250,7 @@ export default function AddingParticipant({ setParticipants, participants }) {
             </ModalButtonBtn>
             <ModalButtonBtn
               onPress={() => {
-                verificationInputMail(inputEmail);
+                VerificationMailDublicate(inputEmail);
                 setAddingParticipantModal(false);
                 setInputEmail("");
               }}
@@ -193,22 +274,19 @@ export default function AddingParticipant({ setParticipants, participants }) {
                 <>
                   {allParticipantsData.map((participant, index) => (
                     <View key={index}>
-                      {participant ? (
-                        <BlockParticipant onPress={() => addParticipantsToOrder(participant)}>
-                          <BlockParticipantAvatar
-                            source={{
-                              uri: `${participant.photoURL}`,
-                            }}
-                          ></BlockParticipantAvatar>
-                          <BlockParticipantName numberOfLines={1}>
-                            {participant.nikname || "No nikname"}
-                          </BlockParticipantName>
-                        </BlockParticipant>
-                      ) : (
-                        <Text style={{ color: colors.titleText, width: "30%", textAlign: "center" }}>
-                          Participant delete
-                        </Text>
-                      )}
+                      <BlockParticipant
+                        onPress={() => addParticipantsToOrder(participant)}
+                        onLongPress={() => handleLongPress(participant)}
+                      >
+                        <BlockParticipantAvatar
+                          source={{
+                            uri: `${participant.photoURL}`,
+                          }}
+                        ></BlockParticipantAvatar>
+                        <BlockParticipantName numberOfLines={1}>
+                          {participant.nikname || "No nikname"}
+                        </BlockParticipantName>
+                      </BlockParticipant>
                     </View>
                   ))}
                 </>

@@ -22,5 +22,15 @@
   "AddingParticipantsAlertExistYourself": "Навіщо додаєш себе, ти вже тут!",
   "AddingParticipantsAlertExist": "Ви додали учасника",
   "AddingParticipantsAlertNotIn": "З такою елю поштою нікого нема",
-  "AddingParticipantsCheck": "Шукати"
+  "AddingParticipantsCheck": "Шукати",
+  "AddingParticipantsDublicate": "Цей учасник вже існує",
+  "AddingParticipantsAskDelParticipant": "Ви бажаєте видалити цього учасника?",
+  "AddingParticipantsDelParticipant": "Учасник видален",
+  "AddingParticipantsDel": "Видалити",
+  "CreatingOrderCreate": "Створення замовлення",
+  "CreatingOrderParticipants": "Учасники:",
+  "CreatingOrderDate": "Дата замовлення:",
+  "CreatingOrderPlaceholderName": "Назва позиції чи справи",
+  "CreatingOrderPlaceholderQT": "Кількість",
+  "CreatingOrderMakeOrder": "Створити"
 }

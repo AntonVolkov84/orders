@@ -5,16 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="3ba10d6e-eac6-4340-a0d6-8f2ac9572524" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/components/AddingParticipant.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/AddingParticipant.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/Button.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/Button.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/CreatingOrder.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/CreatingOrder.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/OrdersDashboard.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/OrdersDashboard.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/Proffile.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/Proffile.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/locales/en.json" beforeDir="false" afterPath="$PROJECT_DIR$/locales/en.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/locales/ru.json" beforeDir="false" afterPath="$PROJECT_DIR$/locales/ru.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/locales/ua.json" beforeDir="false" afterPath="$PROJECT_DIR$/locales/ua.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/screens/MessagingScreen.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/screens/MessagingScreen.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/screens/OrderScreen.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/screens/OrderScreen.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
