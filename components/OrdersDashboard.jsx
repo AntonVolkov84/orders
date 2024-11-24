@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import * as colors from "../variables/colors";
 import styled from "styled-components";
 import { db } from "../firebaseConfig";
-import { getDoc, doc, deleteDoc, addDoc, collection } from "firebase/firestore";
+import { getDoc, doc, deleteDoc, addDoc, collection, getDocs } from "firebase/firestore";
 import Button from "./Button";
 import { useTranslation } from "react-i18next";
 
@@ -96,9 +96,18 @@ export default function OrdersDashboard({ item, navigation }) {
       if (!validationCloseAllPosition) {
         await addDoc(collection(db, "closed orders", orderCreatorProfile.email, "personal closed orders"), data);
         await deleteDoc(doc(db, "orders", docId));
-        Alert.alert("Order complete and close!");
+        Alert.alert(`${t("OrderDashboardAlertClose")}`);
+        const arr = [];
+        const delMessages = await getDocs(collection(db, "messages", docId, "conversation"));
+        delMessages.forEach((doc) => {
+          console.log(doc.data());
+          arr.push(doc.id);
+        });
+        arr.forEach(async (id) => {
+          await deleteDoc(doc(db, "messages", docId, "conversation", id));
+        });
       } else {
-        return Alert.alert("Some position is not close!");
+        return Alert.alert(`${t("OrderDashboardAlertNotClose")}`);
       }
     }
   };

@@ -9,6 +9,8 @@
   "ProffileOk": "Ok",
   "OrderDashboardCloseOrder": "Close order",
   "OrderDashboardTime": "en-EN",
+  "OrderDashboardAlertClose": "Order complete and close!",
+  "OrderDashboardAlertNotClose": "Some position is not close!",
   "OrderScreenAdd": "Add one more",
   "OrderScreenMessaging": "Messaging",
   "OrderScreenBoughtItems": "Bought items",

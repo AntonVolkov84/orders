@@ -9,6 +9,8 @@
   "ProffileOk": "Гарно",
   "OrderDashboardCloseOrder": "Закрити замовлення",
   "OrderDashboardTime": "en-EN",
+  "OrderDashboardAlertClose": "Замовлення закрито",
+  "OrderDashboardAlertNotClose": "Якась позиція не закрита",
   "OrderScreenAdd": "Додати позицію",
   "OrderScreenMessaging": "Листування",
   "OrderScreenBoughtItems": "Зроблено",

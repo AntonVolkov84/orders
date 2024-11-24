@@ -9,6 +9,8 @@
   "ProffileOk": "Принять",
   "OrderDashboardCloseOrder": "Закрыть заказ",
   "OrderDashboardTime": "ru-RU",
+  "OrderDashboardAlertClose": "Заказ закрыт",
+  "OrderDashboardAlertNotClose": "Какая-то позиция не закрыта",
   "OrderScreenAdd": "Добавить позицию",
   "OrderScreenMessaging": "Сообщения",
   "OrderScreenBoughtItems": "Сделано",
