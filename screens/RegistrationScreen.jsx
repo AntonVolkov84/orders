@@ -125,9 +125,12 @@ export default function RegistrationScreen({ navigation }) {
   const addToUsers = async (userId) => {
     try {
       const user = {
+        language: "en",
         timestamp: serverTimestamp(),
         nikname: nikname,
-        photoURL: photoURL,
+        photoURL:
+          photoURL ||
+          "https://firebasestorage.googleapis.com/v0/b/orders-78c1c.appspot.com/o/avatar%2FComponent%203.png?alt=media&token=9365bf71-bcfd-44d3-adb5-28bdbf7e0bf4",
         email: email,
         userId: userId,
         file: fileName,

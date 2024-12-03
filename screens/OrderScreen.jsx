@@ -21,6 +21,7 @@ import { Ionicons } from "@expo/vector-icons";
 import Entypo from "@expo/vector-icons/Entypo";
 import Button from "../components/Button";
 import { useTranslation } from "react-i18next";
+import { BannerAd, BannerAdSize, InterstitialAd, AdEventType, TestIds } from "react-native-google-mobile-ads";
 
 const Container = styled.View`
   width: 100%;
@@ -36,7 +37,7 @@ const OrderName = styled.Text`
   margin-bottom: 2%;
 `;
 const BlockOrder = styled.View`
-  height: 100%;
+  height: 99%;
 `;
 const BlockOrderItemAll = styled.View`
   height: 100%;
@@ -183,12 +184,10 @@ const NewMessageAlert = styled.View`
   z-index: 2;
 `;
 const BlockButtonToggle = styled.View`
-  width: 90%;
-  height: 80px;
+  width: 95%;
   flex-direction: row;
   justify-content: flex-end;
-  align-items: center;
-  margin-bottom: 2%;
+  align-items: flex-start;
   padding: 0 2px;
 `;
 const BlockButtonBtn = styled.TouchableOpacity`
@@ -349,7 +348,7 @@ export default function OrderScreen({ route, navigation }) {
             <Button children={t("OrderScreenMessaging")} />
           </BlockButtonBtn>
         </BlockButton>
-        <BlockSafeAreaView>
+        <BlockSafeAreaView style={{ height: "98%" }}>
           {modalUpdate ? (
             <ModalBlock>
               <ModalBlockInput>
@@ -456,6 +455,18 @@ export default function OrderScreen({ route, navigation }) {
           </BlockButtonBtn>
         </BlockButtonToggle>
       </Container>
+      <View style={{ position: "absolute", bottom: 0, paddingleft: "1%" }}>
+        <BannerAd
+          unitId={TestIds.BANNER}
+          size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER}
+          requestOptions={{
+            requestNonPersonalizedAdsOnly: true,
+            networkExtras: {
+              collapsible: "bottom",
+            },
+          }}
+        />
+      </View>
     </LinearGradient>
   );
 }

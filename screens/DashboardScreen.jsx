@@ -21,7 +21,7 @@ const BlockOrderIcon = styled.TouchableOpacity`
   border-radius: 100px;
   overflow: hidden;
   position: absolute;
-  bottom: 8%;
+  bottom: 9%;
   right: 8%;
 `;
 const BlockOrderCreate = styled.View`

@@ -101,7 +101,7 @@ const BlockResultBtn = styled.TouchableOpacity`
   justify-content: space-around;
   align-items: center;
   position: sticky;
-  bottom: 0px;
+  bottom: 0;
   width: 100%;
 `;
 
@@ -265,7 +265,7 @@ export default function CreatingOrder({ participants, setCreateOrderModal, setPa
           <MaterialIcons name="shopping-cart-checkout" size={30} color={colors.placeolderColor} />
         </BlockInputBtn>
       </BlockInput>
-      <SafeAreaView style={{ height: "55%", marginBottom: "1%" }}>
+      <SafeAreaView style={{ height: "52%", marginBottom: "1%" }}>
         <ScrollView>
           {Boolean(orders.length) ? (
             <>

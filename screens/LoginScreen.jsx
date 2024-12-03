@@ -94,6 +94,7 @@ export default function LoginScreen({ navigation }) {
   const addToUsers = async (nikname, photoURL, email, userId, pushToken) => {
     try {
       const user = {
+        language: "en",
         timestamp: serverTimestamp(),
         nikname: nikname,
         photoURL: photoURL,

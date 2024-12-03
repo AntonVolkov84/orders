@@ -23,6 +23,7 @@ import {
   arrayRemove,
 } from "firebase/firestore";
 import Message from "../components/Message";
+import { BannerAd, BannerAdSize, InterstitialAd, AdEventType, TestIds } from "react-native-google-mobile-ads";
 
 const BlockButton = styled.View`
   width: 100%;
@@ -47,7 +48,7 @@ const BoxInput = styled.View`
   width: 99%;
   height: 50px;
   position: absolute;
-  bottom: 10px;
+  bottom: 70px;
   left: 6%;
   border-radius: 10px;
   flex-direction: row;
@@ -215,6 +216,18 @@ export default function MessagingScreen({ route, navigation }) {
           <FontAwesome name="send" size={20} color={colors.MessagingIconColor} />
         </BlockIconMessage>
       </BoxInput>
+      <View style={{ position: "absolute", bottom: 0, paddingleft: "1%" }}>
+        <BannerAd
+          unitId={TestIds.BANNER}
+          size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER}
+          requestOptions={{
+            requestNonPersonalizedAdsOnly: true,
+            networkExtras: {
+              collapsible: "bottom",
+            },
+          }}
+        />
+      </View>
     </LinearGradient>
   );
 }
