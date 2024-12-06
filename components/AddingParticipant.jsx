@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, Alert, Image, TextInput, ScrollView, SafeAreaView } from "react-native";
+import { View, Text, TouchableOpacity, Alert, Image, TextInput, ScrollView, FlatList } from "react-native";
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
@@ -9,32 +9,22 @@ import Button from "./Button";
 import { db } from "../firebaseConfig";
 import { useTranslation } from "react-i18next";
 
-const BlockSaveArea = styled.SafeAreaView`
-  width: 100%;
-  height: 100%;
-`;
-const BlockAdding = styled.View`
-  width: 100%;
-  height: 100%;
-  flex-direction: row;
-  align-items: center;
-`;
 const BlockIcon = styled.TouchableOpacity`
-  height: 75px;
-  width: 75px;
+  height: 70px;
+  width: 70px;
   border: 2px solid;
   border-color: ${colors.APBorderColor};
   justify-self: center;
   align-self: center;
   border-radius: 100px;
-  margin-right: 5%;
+  margin-right: 1%;
   justify-content: center;
   align-items: center;
 `;
 const BlockParticipant = styled.TouchableOpacity`
   width: 60px;
   justify-content: center;
-  align-items: center;
+
   margin-right: 1%;
 `;
 const BlockParticipantAvatar = styled.Image`
@@ -259,41 +249,36 @@ export default function AddingParticipant({ setParticipants, participants }) {
             </ModalButtonBtn>
           </ModalButton>
         </Modal>
+      ) : loadingData ? (
+        <Text style={{ textAlign: "center", textJustify: "center", color: colors.titleText, fontSize: 20 }}>
+          Loading...
+        </Text>
       ) : (
-        <BlockSaveArea>
-          <ScrollView style={{ width: "100%", height: "100%" }} horizontal={true}>
-            <BlockAdding>
-              <BlockIcon onPress={() => setAddingParticipantModal(true)}>
-                <MaterialCommunityIcons name="account-plus-outline" size={50} color={colors.APBorderColor} />
-              </BlockIcon>
-              {loadingData ? (
-                <Text style={{ textAlign: "center", textJustify: "center", color: colors.titleText, fontSize: 20 }}>
-                  Loading...
-                </Text>
-              ) : (
-                <>
-                  {allParticipantsData.map((participant, index) => (
-                    <View key={index}>
-                      <BlockParticipant
-                        onPress={() => addParticipantsToOrder(participant)}
-                        onLongPress={() => handleLongPress(participant)}
-                      >
-                        <BlockParticipantAvatar
-                          source={{
-                            uri: `${participant.photoURL}`,
-                          }}
-                        ></BlockParticipantAvatar>
-                        <BlockParticipantName numberOfLines={1}>
-                          {participant.nikname || "No nikname"}
-                        </BlockParticipantName>
-                      </BlockParticipant>
-                    </View>
-                  ))}
-                </>
-              )}
-            </BlockAdding>
-          </ScrollView>
-        </BlockSaveArea>
+        <View style={{ flexDirection: "row" }}>
+          <BlockIcon onPress={() => setAddingParticipantModal(true)}>
+            <MaterialCommunityIcons name="account-plus-outline" size={50} color={colors.APBorderColor} />
+          </BlockIcon>
+          <FlatList
+            horizontal={true}
+            style={{ flexDirection: "row", flex: 1 }}
+            data={allParticipantsData}
+            keyExtractor={(item) => item.id}
+            renderItem={({ item, index }) => (
+              <BlockParticipant
+                key={index}
+                onPress={() => addParticipantsToOrder(item)}
+                onLongPress={() => handleLongPress(item)}
+              >
+                <BlockParticipantAvatar
+                  source={{
+                    uri: `${item.photoURL}`,
+                  }}
+                ></BlockParticipantAvatar>
+                <BlockParticipantName numberOfLines={1}>{item.nikname || "No nikname"}</BlockParticipantName>
+              </BlockParticipant>
+            )}
+          />
+        </View>
       )}
     </>
   );

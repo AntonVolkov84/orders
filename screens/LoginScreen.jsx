@@ -11,6 +11,7 @@ import { db } from "../firebaseConfig";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { doc, setDoc, serverTimestamp, getDoc, updateDoc } from "firebase/firestore";
 import { AppContext } from "../App.js";
+import { Dimensions } from "react-native";
 
 const TitleText = styled.Text`
   font-size: 40px;

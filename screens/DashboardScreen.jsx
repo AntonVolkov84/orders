@@ -33,10 +33,10 @@ const BlockOrderCreate = styled.View`
   background-color: ${colors.blockOrderCreateBackgroundColor};
 `;
 const BlockAddingParticipant = styled.View`
-  width: 100%;
+  width: 98%;
   height: 100px;
-  padding-left: 3%;
-  padding-right: 3%;
+  padding-left: 1%;
+  padding-right: 1%;
 `;
 const BlockAddingOrder = styled.View`
   width: 100%;
