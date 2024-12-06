@@ -35,9 +35,21 @@ const BlockOrderInfo = styled.View`
   margin-right: 1%;
   flex-direction: column;
 `;
-const BlockOrderInfoDate = styled.Text`
+const BlockInfoNameDate = styled.View`
   width: 100%;
   height: 15%;
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: center;
+`;
+const BlockOrderInfoName = styled.Text`
+  height: 100%;
+  font-size: ${screenHeight < 760 ? "20px" : "25px"};
+  text-align: center;
+  margin: 3%;
+`;
+const BlockOrderInfoDate = styled.Text`
+  height: 100%;
   font-size: ${screenHeight < 760 ? "20px" : "25px"};
   text-align: center;
   margin: 3%;
@@ -72,6 +84,7 @@ export default function OrdersDashboard({ item, navigation }) {
   const [orderCreatorProfile, setOrderCreatorProfile] = useState(null);
   const [loadingOrderCreatorProfile, setLoadingOrderCreatorProfile] = useState(false);
   const dateForOrder = new Date(item.dateForOrder);
+  const nameForOrder = item.nameOfOrder;
   const { t } = useTranslation();
 
   useEffect(() => {
@@ -132,12 +145,15 @@ export default function OrdersDashboard({ item, navigation }) {
             <BlockOrderCreatorName>{orderCreatorProfile.nikname}</BlockOrderCreatorName>
           </BlockOrderCreator>
           <BlockOrderInfo>
-            <BlockOrderInfoDate>
-              {new Date(dateForOrder).toLocaleDateString(`${t("OrderDashboardTime")}`, {
-                month: "long",
-                day: "numeric",
-              })}
-            </BlockOrderInfoDate>
+            <BlockInfoNameDate>
+              <BlockOrderInfoName>{nameForOrder || "No name"}</BlockOrderInfoName>
+              <BlockOrderInfoDate>
+                {new Date(dateForOrder).toLocaleDateString(`${t("OrderDashboardTime")}`, {
+                  month: "long",
+                  day: "numeric",
+                })}
+              </BlockOrderInfoDate>
+            </BlockInfoNameDate>
             <BlockOrderInfoArr>{item.order.map((e) => e.name + ", ")}</BlockOrderInfoArr>
             <CloseOrderBtn onPress={() => delCompliteOrder(item.docId)}>
               <Button children={t("OrderDashboardCloseOrder")} />

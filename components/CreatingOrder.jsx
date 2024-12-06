@@ -22,6 +22,28 @@ const BlockAddingOrderTitle = styled.Text`
   font-size: ${screenHeight < 760 ? "15px" : "20px"};
   align-self: center;
 `;
+const BlockAddingOrderName = styled.View`
+  flex-direction: row;
+  height: ${screenHeight < 760 ? "30px" : "40px"};
+  align-items: center;
+`;
+const BlockAddingOrderNameText = styled.Text`
+  color: ${colors.titleText};
+  font-size: ${screenHeight < 760 ? "15px" : "20px"};
+  align-self: flex-start;
+  align-self: center;
+`;
+const InputOrderName = styled.TextInput`
+  width: 50%;
+  height: 100%;
+  background-color: ${colors.backgroundColorInput};
+  border-radius: 5px;
+  padding-left: 1%;
+  padding-right: 1%;
+  color: ${colors.creatingOrderText};
+  margin-left: 5%;
+  font-size: 15px;
+`;
 const BlockAddingOrderDate = styled.TouchableOpacity`
   color: ${colors.titleText};
   font-size: ${screenHeight < 760 ? "15px" : "20px"};
@@ -111,6 +133,7 @@ const BlockResultBtn = styled.TouchableOpacity`
 export default function CreatingOrder({ participants, setCreateOrderModal, setParticipants, sendPushNotification }) {
   const [name, setName] = useState("");
   const [quantity, setQuantity] = useState("");
+  const [nameOfOrder, setNameForOrder] = useState("");
   const [dateForOrder, setDateForOrder] = useState(new Date());
   const [orders, setOrders] = useState([]);
   const [showPicker, setShowPicker] = useState(false);
@@ -152,7 +175,7 @@ export default function CreatingOrder({ participants, setCreateOrderModal, setPa
       const message = {
         to: arrOfReseiver,
         sound: "default",
-        title: `You have got a new ORDER from ${arrOfParicipantsEmail[0]}`,
+        title: `You have got a new ORDER from ${arrOfParicipantsEmail[0]} with name ${nameOfOrder}`,
         body: "Do not forget to complete me!!!",
         data: { someData: orders },
       };
@@ -179,6 +202,7 @@ export default function CreatingOrder({ participants, setCreateOrderModal, setPa
     try {
       const order = {
         timestamp: serverTimestamp(),
+        nameOfOrder: nameOfOrder,
         dateForOrder: Date.parse(dateForOrder),
         participants: arrOfParicipantsEmail,
         order: [...orders],
@@ -191,18 +215,31 @@ export default function CreatingOrder({ participants, setCreateOrderModal, setPa
   };
 
   const makeOrder = async () => {
+    if (!nameOfOrder) {
+      return Alert.alert(`${t("CreatingOrderNameAlert")}`);
+    }
     if (orders.length < 1) {
-      return Alert.alert("You can`t make order. There is no one position!");
+      return Alert.alert(`${t("CreatingOrderInputAlert")}`);
     }
     fetchOrders()
       .then(() => setParticipants([]))
       .then(() => setOrders([]))
+      .then(() => setNameForOrder(""))
       .then(() => setCreateOrderModal(false));
   };
 
   return (
     <BlockAddingOrder>
       <BlockAddingOrderTitle>{t("CreatingOrderCreate")}</BlockAddingOrderTitle>
+      <BlockAddingOrderName>
+        <BlockAddingOrderNameText>{t("CreatingOrderName")}:</BlockAddingOrderNameText>
+        <InputOrderName
+          onChangeText={setNameForOrder}
+          value={nameOfOrder}
+          maxLength={14}
+          placeholder={t("CreatingOrderNamePlaceholder")}
+        ></InputOrderName>
+      </BlockAddingOrderName>
       <BlockAddingOrderParticipants>
         <BlockAddingOrderParticipantsText>{t("CreatingOrderParticipants")}</BlockAddingOrderParticipantsText>
         {Boolean(participants) ? (
@@ -272,7 +309,7 @@ export default function CreatingOrder({ participants, setCreateOrderModal, setPa
           />
         </BlockInputBtn>
       </BlockInput>
-      <SafeAreaView style={{ height: screenHeight < 760 ? "60%" : "52%", marginBottom: "1%" }}>
+      <SafeAreaView style={{ height: screenHeight < 760 ? "50%" : "52%", marginBottom: "1%" }}>
         <ScrollView>
           {Boolean(orders.length) ? (
             <>

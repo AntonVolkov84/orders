@@ -57,7 +57,7 @@ const BoxInput = styled.View`
   flex-direction: row;
 `;
 const BoxInputText = styled.TextInput`
-  padding: 10px;
+  padding: 8px;
   width: 90%;
   height: 100%;
   color: ${colors.MessagingInputColor};
@@ -87,6 +87,7 @@ export default function MessagingScreen({ route, navigation }) {
   const flatList = React.useRef(null);
   const currentEmail = currentUser.email;
   const { t } = useTranslation();
+  const nameOfOrder = item.nameOfOrder;
 
   const markMessagesAsRead = async () => {
     const refForChangeMessageStatus = query(
@@ -127,7 +128,7 @@ export default function MessagingScreen({ route, navigation }) {
         const pushMessage = {
           to: arrOfReseiver,
           sound: "default",
-          title: `Comment have arrived for ORDER by ${item.participants[0]}`,
+          title: `Comment have arrived for ORDER ${nameOfOrder}`,
           body: message,
         };
         await fetch("https://exp.host/--/api/v2/push/send", {
