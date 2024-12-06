@@ -8,13 +8,14 @@ import * as NavigationBar from "expo-navigation-bar";
 import * as colors from "../variables/colors.js";
 import { GoogleSignin, GoogleSigninButton } from "@react-native-google-signin/google-signin";
 import { db } from "../firebaseConfig";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { doc, setDoc, serverTimestamp, getDoc, updateDoc } from "firebase/firestore";
 import { AppContext } from "../App.js";
 import { Dimensions } from "react-native";
 
+const screenHeight = Dimensions.get("screen").height;
+
 const TitleText = styled.Text`
-  font-size: 40px;
+  font-size: ${screenHeight < 760 ? "30px" : "40px"};
   color: ${colors.titleText};
   display: block;
   margin: 0 auto;
@@ -26,7 +27,7 @@ const BlockInput = styled.View`
 `;
 const InputField = styled.TextInput`
   width: 80%;
-  height: 70px;
+  height: ${screenHeight < 760 ? "50px" : "70px"};
   margin-top: 5%;
   padding-left: 5%;
   margin-left: 10%;
@@ -34,12 +35,12 @@ const InputField = styled.TextInput`
   background-color: ${colors.backgroundColorInput};
   border: none;
   color: ${colors.colorTextInput};
-  font-size: 20px;
+  font-size: ${screenHeight < 760 ? "15px" : "20px"};
 `;
 
 const LoginButton = styled.TouchableOpacity`
   width: 150px;
-  height: 70px;
+  height: ${screenHeight < 760 ? "50px" : "70px"};
   background-color: green;
   border-radius: 50px;
   margin: 0 auto;
@@ -47,7 +48,7 @@ const LoginButton = styled.TouchableOpacity`
 `;
 const LoginButtonText = styled.Text`
   color: ${colors.titleText};
-  font-size: 25px;
+  font-size: ${screenHeight < 760 ? "20px" : "25px"};
 `;
 const ButtonRegistration = styled.TouchableOpacity`
   justify-content: center;
@@ -55,15 +56,15 @@ const ButtonRegistration = styled.TouchableOpacity`
   margin-top: 15%;
 `;
 const ButtonRegistrationText = styled.Text`
-  font-size: 25px;
+  font-size: ${screenHeight < 760 ? "20px" : "25px"};
   color: ${colors.buttonRegistrationColor};
 `;
 const ButtonGoogle = styled.TouchableOpacity`
   width: 300px;
-  height: 70px;
+  height: ${screenHeight < 760 ? "50px" : "70px"};
   border-radius: 50px;
   margin: 5% auto;
-  font-size: 20px;
+  font-size: ${screenHeight < 760 ? "15px" : "20px"};
   border-radius: 15px;
 `;
 
@@ -72,7 +73,6 @@ export default function LoginScreen({ navigation }) {
   const [password, setPassword] = useState("");
   const auth = getAuth();
   const expoPushToken = useContext(AppContext);
-
   const loginUser = () => {
     signInWithEmailAndPassword(auth, email, password)
       .catch((error) => {

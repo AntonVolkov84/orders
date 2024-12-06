@@ -24,10 +24,13 @@ import {
 } from "firebase/firestore";
 import Message from "../components/Message";
 import { BannerAd, BannerAdSize, InterstitialAd, AdEventType, TestIds } from "react-native-google-mobile-ads";
+import { Dimensions } from "react-native";
+
+const screenHeight = Dimensions.get("screen").height;
 
 const BlockButton = styled.View`
   width: 100%;
-  height: 50px;
+  height: ${screenHeight < 760 ? "40px" : "50px"};
   flex-direction: row;
   justify-content: start;
   align-items: center;
@@ -46,7 +49,7 @@ const BoxInput = styled.View`
   background-color: ${colors.MessagingInputBackground};
   padding: 3px;
   width: 99%;
-  height: 50px;
+  height: ${screenHeight < 760 ? "40px" : "50px"};
   position: absolute;
   bottom: 70px;
   left: 6%;
@@ -58,7 +61,7 @@ const BoxInputText = styled.TextInput`
   width: 90%;
   height: 100%;
   color: ${colors.MessagingInputColor};
-  font-size: 20px;
+  font-size: ${screenHeight < 760 ? "15px" : "20px"};
 `;
 const BlockIconMessage = styled.TouchableOpacity`
   position: absolute;
@@ -201,7 +204,7 @@ export default function MessagingScreen({ route, navigation }) {
             />
           </BlockForMessage>
         ) : (
-          <Text style={{ color: colors.titleText, fontSize: 20 }}>Loading...</Text>
+          <Text style={{ color: colors.titleText, fontSize: screenHeight < 760 ? 15 : 20 }}>Loading...</Text>
         )}
       </BlockMessaging>
       <BoxInput>
@@ -213,7 +216,7 @@ export default function MessagingScreen({ route, navigation }) {
           value={message}
         ></BoxInputText>
         <BlockIconMessage onPress={() => sendMessage()}>
-          <FontAwesome name="send" size={20} color={colors.MessagingIconColor} />
+          <FontAwesome name="send" size={screenHeight < 760 ? 15 : 20} color={colors.MessagingIconColor} />
         </BlockIconMessage>
       </BoxInput>
       <View style={{ position: "absolute", bottom: 0, paddingleft: "1%" }}>

@@ -22,6 +22,9 @@ import Entypo from "@expo/vector-icons/Entypo";
 import Button from "../components/Button";
 import { useTranslation } from "react-i18next";
 import { BannerAd, BannerAdSize, InterstitialAd, AdEventType, TestIds } from "react-native-google-mobile-ads";
+import { Dimensions } from "react-native";
+
+const screenHeight = Dimensions.get("screen").height;
 
 const Container = styled.View`
   width: 100%;
@@ -30,7 +33,7 @@ const Container = styled.View`
   padding-top: 5%;
 `;
 const OrderName = styled.Text`
-  font-size: 25px;
+  font-size: ${screenHeight < 760 ? "20px" : "25px"};
   color: ${colors.titleText};
   justify-self: center;
   align-self: center;
@@ -45,14 +48,14 @@ const BlockOrderItemAll = styled.View`
 `;
 const BlockOrderItem = styled.View`
   flex-direction: row;
-  height: 70px;
+  height: ${screenHeight < 760 ? "50px" : "70px"};
   align-items: center;
   background-color: ${colors.orderScreenItemBackground};
   margin-bottom: 1%;
 `;
 const BlockOrderItemOk = styled.View`
   flex-direction: column;
-  height: 70px;
+  height: ${screenHeight < 760 ? "50px" : "70px"};
   align-items: center;
   background-color: ${colors.orderScreenItemBackgroundOk};
   margin-bottom: 1%;
@@ -68,28 +71,28 @@ const BlockOrderItemOkAuthor = styled.Text`
   width: 100%;
   height: 20%;
   background-color: ${colors.orderScreenItemBackgroundOk};
-  font-size: 10px;
+  font-size: ${screenHeight < 760 ? "8px" : "10px"};
 `;
 const BlockOrderItemName = styled.Text`
   width: 70%;
-  font-size: 20px;
+  font-size: ${screenHeight < 760 ? "15px" : "20px"};
   color: ${colors.orderScreenItemText};
   margin-left: 2%;
 `;
 const BlockOrderItemQuantity = styled.Text`
-  font-size: 20px;
+  font-size: ${screenHeight < 760 ? "15px" : "20px"};
   color: ${colors.orderScreenItemText};
   margin-left: 1%;
   width: 26%;
 `;
 const BlockOrderItemNameOk = styled.Text`
   width: 70%;
-  font-size: 20px;
+  font-size: ${screenHeight < 760 ? "15px" : "20px"};
   color: ${colors.orderScreenItemText};
   margin-left: 2%;
 `;
 const BlockOrderItemQuantityOk = styled.Text`
-  font-size: 20px;
+  font-size: ${screenHeight < 760 ? "15px" : "20px"};
   color: ${colors.orderScreenItemText};
   margin-left: 1%;
   width: 26%;
@@ -118,7 +121,7 @@ const HidenUpdate = styled.TouchableOpacity`
 `;
 
 const Hiden = styled.View`
-  height: 70px;
+  height: ${screenHeight < 760 ? "50px" : "70px"};
   width: 30%;
   flex-direction: row;
   position: absolute;
@@ -132,42 +135,42 @@ const ModalBlock = styled.View`
 `;
 const ModalBlockBtn = styled.View`
   width: 100%;
-  height: 70px;
+  height: ${screenHeight < 760 ? "50px" : "70px"};
   flex-direction: row;
   justify-content: space-around;
 `;
 const ModalBlockInput = styled.View`
   width: 100%;
-  height: 300px;
+  height: ${screenHeight < 760 ? "180px" : "300px"};
   flex-direction: row;
   justify-content: center;
   align-items: center;
 `;
 const ModalButton = styled.TouchableOpacity`
   width: 25%;
-  height: 70px;
+  height: ${screenHeight < 760 ? "50px" : "70px"};
 `;
 const InputFieldName = styled.TextInput`
   width: 70%;
-  height: 70px;
+  height: ${screenHeight < 760 ? "50px" : "70px"};
   background-color: ${colors.orderScreenModalInputBackgroung};
   border-radius: 18px;
   padding-left: 2%;
-  font-size: 20px;
+  font-size: ${screenHeight < 760 ? "15px" : "20px"};
 `;
 const InputFieldQuantity = styled.TextInput`
   width: 25%;
-  height: 70px;
+  height: ${screenHeight < 760 ? "50px" : "70px"};
   background-color: ${colors.orderScreenModalInputBackgroung};
   margin-left: 5%;
   border-radius: 12px;
-  font-size: 20px;
+  font-size: ${screenHeight < 760 ? "15px" : "20px"};
   text-align: center;
 `;
 
 const BlockButton = styled.View`
   width: 100%;
-  height: 80px;
+  height: ${screenHeight < 760 ? "60px" : "80px"};
   flex-direction: row;
   justify-content: space-around;
   align-items: center;
@@ -192,11 +195,11 @@ const BlockButtonToggle = styled.View`
 `;
 const BlockButtonBtn = styled.TouchableOpacity`
   width: 30%;
-  height: 50px;
+  height: ${screenHeight < 760 ? "40px" : "50px"};
 `;
 const BlockButtonBtnBack = styled.TouchableOpacity`
-  width: 13%;
-  height: 50px;
+  aspect-ratio: 1;
+  height: ${screenHeight < 760 ? "40px" : "50px"};
 `;
 
 export default function OrderScreen({ route, navigation }) {
@@ -323,7 +326,11 @@ export default function OrderScreen({ route, navigation }) {
                 alignItems: "center",
               }}
             >
-              <Ionicons name="arrow-back-circle-outline" size={40} color={colors.BlockButtonText} />
+              <Ionicons
+                name="arrow-back-circle-outline"
+                size={screenHeight < 760 ? 30 : 40}
+                color={colors.BlockButtonText}
+              />
             </LinearGradient>
           </BlockButtonBtnBack>
           <BlockButtonBtn
@@ -341,14 +348,18 @@ export default function OrderScreen({ route, navigation }) {
           >
             {newMessageArrived ? (
               <NewMessageAlert>
-                <Ionicons name="alert-circle-sharp" size={20} color={colors.NewMessageArrivedColor} />
+                <Ionicons
+                  name="alert-circle-sharp"
+                  size={screenHeight < 760 ? 15 : 20}
+                  color={colors.NewMessageArrivedColor}
+                />
               </NewMessageAlert>
             ) : null}
 
             <Button children={t("OrderScreenMessaging")} />
           </BlockButtonBtn>
         </BlockButton>
-        <BlockSafeAreaView style={{ height: "98%" }}>
+        <BlockSafeAreaView style={{ height: screenHeight < 760 ? "93%" : "98%" }}>
           {modalUpdate ? (
             <ModalBlock>
               <ModalBlockInput>
@@ -424,7 +435,7 @@ export default function OrderScreen({ route, navigation }) {
                                 setModalUpdate(true);
                               }}
                             >
-                              <Ionicons color="white" size={30} name="create"></Ionicons>
+                              <Ionicons color="white" size={screenHeight < 760 ? 20 : 30} name="create"></Ionicons>
                             </HidenUpdate>
                             <HidenOk
                               onPress={() => {
@@ -432,7 +443,7 @@ export default function OrderScreen({ route, navigation }) {
                                 okOrder(data.item);
                               }}
                             >
-                              <Entypo name="check" size={30} color="white" />
+                              <Entypo name="check" size={screenHeight < 760 ? 20 : 30} color="white" />
                             </HidenOk>
                           </Hiden>
                         )}

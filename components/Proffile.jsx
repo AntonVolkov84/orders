@@ -16,6 +16,9 @@ import { useTranslation } from "react-i18next";
 import i18next from "../i18next";
 import { LanguageResources } from "../i18next";
 import languageList from "../locales/languagesList.json";
+import { Dimensions } from "react-native";
+
+const screenHeight = Dimensions.get("screen").height;
 
 const BlockMenuProfile = styled.TouchableOpacity`
   width: 98%;
@@ -28,7 +31,7 @@ const BlockMenuProfile = styled.TouchableOpacity`
 `;
 const BlockMenuProfileText = styled.Text`
   color: ${colors.blockMenuFrofileText};
-  font-size: 30px;
+  font-size: ${screenHeight < 760 ? "20px" : "30px"};
   margin-left: 5%;
 `;
 const BlockProfile = styled.TouchableOpacity`
@@ -91,7 +94,7 @@ const ModalNikname = styled.View`
 `;
 const ModalNiknameEntry = styled.View`
   width: 98%;
-  height: 250px;
+  height: ${screenHeight < 760 ? "200px" : "250px"};
   border-radius: 10px;
   background-color: ${colors.modalNiknameBackgroundWindow};
   justify-content: center;
@@ -103,7 +106,7 @@ const ModalNiknameInput = styled.TextInput`
   height: 30%;
   background-color: ${colors.modalNiknameInput};
   padding-left: 5%;
-  font-size: 25px;
+  font-size: ${screenHeight < 760 ? "20px" : "25px"};
 `;
 const ModalBlockBtn = styled.View`
   width: 100%;
@@ -130,7 +133,7 @@ const ModalNiknameBtnOk = styled.TouchableOpacity`
 `;
 const ModalNiknameBtnText = styled.Text`
   color: ${colors.modalNiknameBtnText};
-  font-size: 20px;
+  font-size: ${screenHeight < 760 ? "15px" : "20px"};
 `;
 const BlockProfileSectionAvatar = styled.TouchableOpacity`
   width: 100%;
@@ -142,7 +145,7 @@ const BlockProfileSectionAvatar = styled.TouchableOpacity`
 `;
 const BlockProfileText = styled.Text`
   color: ${colors.menuFrofileText};
-  font-size: 20px;
+  font-size: ${screenHeight < 760 ? "15px" : "20px"};
   margin-left: 5%;
   overflow: wrap;
 `;
@@ -155,7 +158,7 @@ const ButtonLogout = styled.TouchableOpacity`
 `;
 const ButtonLogoutText = styled.Text`
   color: ${colors.titleText};
-  font-size: 25px;
+  font-size: ${screenHeight < 760 ? "20px" : "25px"};
 `;
 const ModalLanguage = styled.View`
   width: 100%;
@@ -168,7 +171,7 @@ const ModalLanguage = styled.View`
 `;
 const LanguageText = styled.Text`
   color: ${colors.titleText};
-  font-size: 25px;
+  font-size: ${screenHeight < 760 ? "20px" : "25px"};
   text-align: center;
 `;
 
@@ -313,7 +316,7 @@ export default function DashboardScreen({ navigation }) {
         <MaterialCommunityIcons
           style={{ marginLeft: "5%" }}
           name="menu"
-          size={30}
+          size={screenHeight < 760 ? 20 : 30}
           color={colors.BlockMenuProfileText}
         />
         <BlockMenuProfileText>{t("Proffile")}</BlockMenuProfileText>
@@ -361,7 +364,7 @@ export default function DashboardScreen({ navigation }) {
                 setChangeNiknameModal(true);
               }}
             >
-              <FontAwesome6 name="edit" size={30} color={colors.menuProfileText} />
+              <FontAwesome6 name="edit" size={screenHeight < 760 ? 20 : 30} color={colors.menuProfileText} />
             </ChangeNikname>
           </BlockProfileSectionNikname>
           <BlockProfileSectionLanguage>
@@ -370,7 +373,7 @@ export default function DashboardScreen({ navigation }) {
               {loadingUserProfileData ? (
                 <Text>Loading...</Text>
               ) : (
-                <Text>{languageList[userProfileData.language].nativeName}</Text>
+                <Text>{languageList[userProfileData.language].nativeName || "en"}</Text>
               )}
             </BlockProfileText>
             <ChangeLanguage
@@ -378,7 +381,7 @@ export default function DashboardScreen({ navigation }) {
                 setChangeLanguageModal(true);
               }}
             >
-              <FontAwesome6 name="edit" size={30} color={colors.menuProfileText} />
+              <FontAwesome6 name="edit" size={screenHeight < 760 ? 20 : 30} color={colors.menuProfileText} />
             </ChangeLanguage>
           </BlockProfileSectionLanguage>
           <BlockProfileSectionAvatar onPress={() => pickImage()}>

@@ -3,6 +3,9 @@ import React from "react";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import styled from "styled-components";
 import * as colors from "../variables/colors";
+import { Dimensions } from "react-native";
+
+const screenHeight = Dimensions.get("screen").height;
 
 const BlockOrder = styled.View`
   width: 100%;
@@ -15,7 +18,7 @@ const BlockOrder = styled.View`
 export default function OrderIcon() {
   return (
     <BlockOrder>
-      <FontAwesome name="cart-plus" size={40} color={colors.orderChartColor} />
+      <FontAwesome name="cart-plus" size={screenHeight < 760 ? 30 : 40} color={colors.orderChartColor} />
     </BlockOrder>
   );
 }

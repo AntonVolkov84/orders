@@ -4,6 +4,9 @@ import styled from "styled-components";
 import { doc, onSnapshot } from "firebase/firestore";
 import { auth, db } from "../firebaseConfig";
 import * as colors from "../variables/colors";
+import { Dimensions } from "react-native";
+
+const screenHeight = Dimensions.get("screen").height;
 
 const BlockMessage = styled.View`
   width: 100%;
@@ -27,9 +30,9 @@ const AuthorName = styled.Text`
   color: ${colors.titleText};
 `;
 const BlockForMessageText = styled.Text`
-  width: 200px;
+  width: ${screenHeight < 760 ? "170px" : "200px"};
   color: white;
-  font-size: 20px;
+  font-size: ${screenHeight < 760 ? "15px" : "20px"};
 `;
 
 export default function Message({ message }) {

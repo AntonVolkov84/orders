@@ -6,11 +6,14 @@ import { db } from "../firebaseConfig";
 import { getDoc, doc, deleteDoc, addDoc, collection, getDocs } from "firebase/firestore";
 import Button from "./Button";
 import { useTranslation } from "react-i18next";
+import { Dimensions } from "react-native";
+
+const screenHeight = Dimensions.get("screen").height;
 
 const BlockOrderShow = styled.TouchableOpacity`
   width: 100%;
   background-color: ${colors.blockMenuProfile};
-  height: 200px;
+  height: ${screenHeight < 760 ? "150px" : "200px"};
   margin-top: 1%;
 `;
 const BlockOrder = styled.View`
@@ -35,7 +38,7 @@ const BlockOrderInfo = styled.View`
 const BlockOrderInfoDate = styled.Text`
   width: 100%;
   height: 15%;
-  font-size: 25px;
+  font-size: ${screenHeight < 760 ? "20px" : "25px"};
   text-align: center;
   margin: 3%;
 `;
@@ -43,7 +46,7 @@ const BlockOrderInfoArr = styled.Text`
   width: 99%;
   height: 60%;
   margin-right: 1%;
-  font-size: 25px;
+  font-size: ${screenHeight < 760 ? "20px" : "25px"};
   text-align: center;
   overflow: hidden;
 `;
@@ -54,11 +57,11 @@ const BlockOrderCreatorAvatar = styled.Image`
   border-radius: 150px;
 `;
 const BlockOrderCreatorName = styled.Text`
-  font-size: 25px;
+  font-size: ${screenHeight < 760 ? "20px" : "25px"};
 `;
 
 const CloseOrderBtn = styled.TouchableOpacity`
-  height: 50px;
+  height: ${screenHeight < 760 ? "40px" : "50px"};
   width: 40%;
   position: absolute;
   bottom: 8%;

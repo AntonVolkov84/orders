@@ -11,9 +11,12 @@ import { db, app } from "../firebaseConfig";
 import { collection, doc, addDoc, setDoc, serverTimestamp } from "firebase/firestore";
 import { getAuth, signOut, sendEmailVerification, createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { AppContext } from "../App.js";
+import { Dimensions } from "react-native";
+
+const screenHeight = Dimensions.get("screen").height;
 
 const TitleText = styled.Text`
-  font-size: 40px;
+  font-size: ${screenHeight < 760 ? "30px" : "40px"};
   color: ${colors.titleText};
   display: block;
   margin: 0 auto;
@@ -25,7 +28,7 @@ const BlockInput = styled.View`
 `;
 const InputField = styled.TextInput`
   width: 80%;
-  height: 70px;
+  height: ${screenHeight < 760 ? "50px" : "70px"};
   margin-top: 5%;
   padding-left: 5%;
   margin-left: 10%;
@@ -33,23 +36,23 @@ const InputField = styled.TextInput`
   background-color: ${colors.backgroundColorInput};
   border: none;
   color: ${colors.colorTextInput};
-  font-size: 20px;
+  font-size: ${screenHeight < 760 ? "15px" : "20px"};
 `;
 const AvatarBlock = styled.TouchableOpacity`
-  width: 160px;
-  height: 160px;
+  aspect-ratio: 1;
+  height: ${screenHeight < 760 ? "120px" : "160px"};
   align-self: center;
   margin-top: 15%;
   justify-content: center;
 `;
 const AvatarText = styled.Text`
-  font-size: 25px;
+  font-size: ${screenHeight < 760 ? "20px" : "25px"};
   text-align: center;
   color: ${colors.colorTextInput};
 `;
 const RegisterButton = styled.TouchableOpacity`
   width: 160px;
-  height: 70px;
+  height: ${screenHeight < 760 ? "50px" : "70px"};
   background-color: green;
   border-radius: 50px;
   margin: 0 auto;
@@ -57,7 +60,7 @@ const RegisterButton = styled.TouchableOpacity`
 `;
 const RegisterButtonText = styled.Text`
   color: ${colors.buttonRegistrationColor};
-  font-size: 20px;
+  font-size: ${screenHeight < 760 ? "15px" : "20px"};
 `;
 
 export default function RegistrationScreen({ navigation }) {

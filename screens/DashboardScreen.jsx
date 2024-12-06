@@ -14,6 +14,9 @@ import OrdersDashboard from "../components/OrdersDashboard";
 import { SafeAreaView, SafeAreaProvider } from "react-native-safe-area-context";
 import { AppContext } from "../App";
 import { BannerAd, BannerAdSize, InterstitialAd, AdEventType, TestIds } from "react-native-google-mobile-ads";
+import { Dimensions } from "react-native";
+
+const screenHeight = Dimensions.get("screen").height;
 
 const BlockOrderIcon = styled.TouchableOpacity`
   width: 20%;
@@ -21,7 +24,7 @@ const BlockOrderIcon = styled.TouchableOpacity`
   border-radius: 100px;
   overflow: hidden;
   position: absolute;
-  bottom: 9%;
+  bottom: ${screenHeight < 760 ? "11%" : "9%"};
   right: 8%;
 `;
 const BlockOrderCreate = styled.View`
@@ -34,13 +37,13 @@ const BlockOrderCreate = styled.View`
 `;
 const BlockAddingParticipant = styled.View`
   width: 98%;
-  height: 100px;
+  height: ${screenHeight < 760 ? "80px" : "100px"};
   padding-left: 1%;
   padding-right: 1%;
 `;
 const BlockAddingOrder = styled.View`
   width: 100%;
-  height: 100% - 150px;
+  height: ${screenHeight < 760 ? "80%" : "100%"};
   margin-bottom: 1%;
   padding-left: 3%;
   padding-right: 3%;

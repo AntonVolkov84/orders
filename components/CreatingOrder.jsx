@@ -9,6 +9,9 @@ import { collection, addDoc, serverTimestamp, doc, getDoc } from "firebase/fires
 import { db, auth } from "../firebaseConfig";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { useTranslation } from "react-i18next";
+import { Dimensions } from "react-native";
+
+const screenHeight = Dimensions.get("screen").height;
 
 const BlockAddingOrder = styled.View`
   width: 100%;
@@ -16,48 +19,48 @@ const BlockAddingOrder = styled.View`
 `;
 const BlockAddingOrderTitle = styled.Text`
   color: ${colors.titleText};
-  font-size: 20px;
+  font-size: ${screenHeight < 760 ? "15px" : "20px"};
   align-self: center;
 `;
 const BlockAddingOrderDate = styled.TouchableOpacity`
   color: ${colors.titleText};
-  font-size: 20px;
+  font-size: ${screenHeight < 760 ? "15px" : "20px"};
   align-self: center;
 `;
 const BlockAddingOrderDateText = styled.Text`
   color: ${colors.titleText};
-  font-size: 20px;
+  font-size: ${screenHeight < 760 ? "15px" : "20px"};
   align-self: center;
   margin-left: 2%;
 `;
 const BlockAddingOrderParticipants = styled.View`
   color: ${colors.titleText};
-  font-size: 20px;
+  font-size: ${screenHeight < 760 ? "15px" : "20px"};
   flex-direction: row;
 `;
 const BlockAddingOrderAdd = styled.View`
   color: ${colors.titleText};
-  font-size: 20px;
+  font-size: ${screenHeight < 760 ? "15px" : "20px"};
   flex-direction: row;
 `;
 const BlockAddingOrderAddText = styled.Text`
   color: ${colors.titleText};
-  font-size: 20px;
+  font-size: ${screenHeight < 760 ? "15px" : "20px"};
   width: 67%;
 `;
 const BlockAddingOrderAddQ = styled.Text`
   color: ${colors.titleText};
-  font-size: 20px;
+  font-size: ${screenHeight < 760 ? "15px" : "20px"};
 `;
 const BlockAddingOrderParticipantsText = styled.Text`
   color: ${colors.titleText};
-  font-size: 20px;
+  font-size: ${screenHeight < 760 ? "15px" : "20px"};
 `;
 const BlockInput = styled.View`
   width: 100%;
-  height: 50px;
+  height: ${screenHeight < 760 ? "40px" : "50px"};
   padding-top: 1%;
-  font-size: 25px;
+  font-size: ${screenHeight < 760 ? "20px" : "25px"};
   flex-direction: row;
 `;
 const Input = styled.TextInput`
@@ -210,7 +213,7 @@ export default function CreatingOrder({ participants, setCreateOrderModal, setPa
               overflow: "wrap",
               marginLeft: "2%",
               color: colors.titleText,
-              fontSize: 20,
+              fontSize: screenHeight < 760 ? 15 : 20,
             }}
           >
             {participants.map((e, index) => (
@@ -262,10 +265,14 @@ export default function CreatingOrder({ participants, setCreateOrderModal, setPa
             addingToChart();
           }}
         >
-          <MaterialIcons name="shopping-cart-checkout" size={30} color={colors.placeolderColor} />
+          <MaterialIcons
+            name="shopping-cart-checkout"
+            size={screenHeight < 760 ? 20 : 30}
+            color={colors.placeolderColor}
+          />
         </BlockInputBtn>
       </BlockInput>
-      <SafeAreaView style={{ height: "52%", marginBottom: "1%" }}>
+      <SafeAreaView style={{ height: screenHeight < 760 ? "60%" : "52%", marginBottom: "1%" }}>
         <ScrollView>
           {Boolean(orders.length) ? (
             <>
@@ -278,7 +285,7 @@ export default function CreatingOrder({ participants, setCreateOrderModal, setPa
                       delFromChart(order.id);
                     }}
                   >
-                    <Feather name="delete" size={25} color={colors.titleText} />
+                    <Feather name="delete" size={screenHeight < 760 ? 20 : 25} color={colors.titleText} />
                   </BlockDelOrderBtn>
                 </BlockAddingOrderAdd>
               ))}
@@ -287,14 +294,17 @@ export default function CreatingOrder({ participants, setCreateOrderModal, setPa
         </ScrollView>
       </SafeAreaView>
       <BlockResultBtn>
-        <TouchableOpacity onPress={() => setCreateOrderModal(false)} style={{ width: "25%", height: 50 }}>
+        <TouchableOpacity
+          onPress={() => setCreateOrderModal(false)}
+          style={{ width: "25%", height: screenHeight < 760 ? 40 : 50 }}
+        >
           <Button children={t("ProffileCancel")} />
         </TouchableOpacity>
         <TouchableOpacity
           onPress={() => {
             makeOrder();
           }}
-          style={{ width: "25%", height: 50 }}
+          style={{ width: "25%", height: screenHeight < 760 ? 40 : 50 }}
         >
           <Button children={t("CreatingOrderMakeOrder")} />
         </TouchableOpacity>
