@@ -15,6 +15,7 @@
   "OrderScreenMessaging": "Messaging",
   "OrderScreenBoughtItems": "Bought items",
   "OrderScreenOrderItems": "Order items",
+  "OrderScreenAddParts": "Add participant",
   "OrderScreenModalPlaceholderItem": "Name of product or business",
   "OrderScreenModalPlaceholderQT": "Quantity",
   "OrderScreenModalUpdate": "Update",

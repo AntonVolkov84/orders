@@ -261,12 +261,26 @@ export default function OrderScreen({ route, navigation }) {
   }, [modalAddParticipant]);
 
   const updateParticipants = async (email) => {
-    const firebaseRef = doc(db, "orders", documentId);
-    await updateDoc(firebaseRef, {
-      participants: arrayUnion(email),
-    });
-    setModalAddParticipant(false);
-    sendPersonalMessage(email);
+    Alert.alert(`${t("OrderScreenAlertText")}`, `${email}`, [
+      {
+        text: `${t("ProffileCancel")}`,
+        onPress: () => {
+          return;
+        },
+        style: "cancel",
+      },
+      {
+        text: `${t("OrderScreenAlertAdd")}`,
+        onPress: async () => {
+          const firebaseRef = doc(db, "orders", documentId);
+          await updateDoc(firebaseRef, {
+            participants: arrayUnion(email),
+          });
+          setModalAddParticipant(false);
+          sendPersonalMessage(email);
+        },
+      },
+    ]);
   };
   const sendPersonalMessage = async (email) => {
     const docSnap = await getDoc(doc(db, "users", email));
@@ -570,7 +584,7 @@ export default function OrderScreen({ route, navigation }) {
               setModalAddParticipant(true);
             }}
           >
-            <Button children="Add participant" />
+            <Button children={t("OrderScreenAddParts")} />
           </BlockButtonBtn>
           <BlockButtonBtn
             onPress={() => {

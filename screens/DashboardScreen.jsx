@@ -140,7 +140,7 @@ export default function DashboardScreen({ navigation }) {
           <BlockOrdersShow>
             {isLoaded ? (
               <SafeAreaProvider>
-                <SafeAreaView style={{ height: "100%" }}>
+                <SafeAreaView style={{ height: "94%" }}>
                   <FlatList
                     data={fetchedOrders}
                     renderItem={({ item }) => <OrdersDashboard item={item} navigation={navigation} />}
