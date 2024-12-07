@@ -39,3 +39,4 @@ export const MessagingIconColor = "#a8dce7";
 export const MessagingPlaceholder = "#a8dce7";
 export const placeolderColor = "#474747";
 export const NewMessageArrivedColor = "#f22718";
+export const OrderDashboardName = "#fa0a42";

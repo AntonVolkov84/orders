@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, TextInput, FlatList, Alert } from "react-native";
+import { View, Text, TouchableOpacity, TextInput, FlatList, Alert, ScrollView } from "react-native";
 import React, { useState, useEffect } from "react";
 import { LinearGradient } from "expo-linear-gradient";
 import * as colors from "../variables/colors";
@@ -12,6 +12,7 @@ import {
   arrayUnion,
   arrayRemove,
   getDocs,
+  getDoc,
   where,
   collection,
   query,
@@ -189,7 +190,7 @@ const NewMessageAlert = styled.View`
 const BlockButtonToggle = styled.View`
   width: 95%;
   flex-direction: row;
-  justify-content: flex-end;
+  justify-content: space-between;
   align-items: flex-start;
   padding: 0 2px;
 `;
@@ -201,20 +202,123 @@ const BlockButtonBtnBack = styled.TouchableOpacity`
   aspect-ratio: 1;
   height: ${screenHeight < 760 ? "40px" : "50px"};
 `;
-
+const AddParticipantModal = styled.View`
+  height: 95%;
+  width: 100%;
+  position: absolute;
+  z-index: 3;
+`;
+const BlockAddingParticipant = styled.ScrollView`
+  width: 100%;
+  height: 100px;
+  background-color: ${colors.modalNiknameBackgroundWindow};
+  padding-left: 5%;
+  padding-right: 5%;
+  flex-direction: row;
+  margin-top: 3%;
+`;
+const BlockParticipant = styled.TouchableOpacity`
+  width: 100%;
+  height: 100%;
+  justify-content: center;
+  width: 60px;
+  margin-right: 1%;
+  flex: 1;
+`;
+const BlockParticipantAvatar = styled.Image`
+  border-radius: 100px;
+  aspect-ratio: 1;
+  object-fit: cover;
+`;
+const BlockParticipantName = styled.Text`
+  color: ${colors.modalNiknameBackground};
+  font-size: 12px;
+  width: 100%;
+  height: 20px;
+  text-overflow: ellipsis;
+  text-align: center;
+`;
 export default function OrderScreen({ route, navigation }) {
   const [name, setName] = useState("");
   const [quantity, setQuantity] = useState("");
   const [ordersLoaded, setOrdersLoaded] = useState(false);
   const [modalUpdate, setModalUpdate] = useState(false);
+  const [modalAddParticipant, setModalAddParticipant] = useState(false);
   const [orders, setOrders] = useState(null);
   const [dataItem, setDataItem] = useState(null);
   const [toggleBoughtItems, setToggleBoughtItems] = useState(false);
   const [newMessageArrived, setNewMessageArrived] = useState(false);
+  const [allParticipantsData, setAllParticipantsData] = useState([]);
+  const [loadingData, setLoadingData] = useState(true);
   const { item } = route.params;
   const currentUserEmail = auth.currentUser.email;
   const documentId = item.docId;
   const { t } = useTranslation();
+  const nameOfOrder = item.nameOfOrder;
+
+  useEffect(() => {
+    gettAllParticipants();
+  }, [modalAddParticipant]);
+
+  const updateParticipants = async (email) => {
+    const firebaseRef = doc(db, "orders", documentId);
+    await updateDoc(firebaseRef, {
+      participants: arrayUnion(email),
+    });
+    setModalAddParticipant(false);
+    sendPersonalMessage(email);
+  };
+  const sendPersonalMessage = async (email) => {
+    const docSnap = await getDoc(doc(db, "users", email));
+    const pushToken = docSnap.data().pushToken;
+    try {
+      const message = {
+        to: pushToken,
+        sound: "default",
+        title: `You have got a new ORDER with name ${nameOfOrder}`,
+        body: "Do not forget to complete me!!!",
+        data: { someData: item },
+      };
+
+      await fetch("https://exp.host/--/api/v2/push/send", {
+        method: "POST",
+        headers: {
+          host: "exp.host",
+          Accept: "application/json",
+          "Accept-encoding": "gzip, deflate",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(message),
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const gettAllParticipants = async () => {
+    const currentEmail = auth.currentUser.email;
+    try {
+      const querySnapshot = await getDocs(collection(db, "AllParticipants", currentUserEmail, "PersonalParticipant"));
+      const arr = querySnapshot.docs.map((doc) => doc.data().email);
+      if (arr) {
+        getdata(arr);
+      }
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+  const getdata = async (arr) => {
+    const newArr = [];
+    for (i = 0; i < arr.length; i++) {
+      const docSnap = await getDoc(doc(db, "users", arr[i]));
+      if (docSnap.exists()) {
+        newArr.push(docSnap.data());
+      }
+      if (i === arr.length - 1) {
+        setAllParticipantsData(newArr);
+        setLoadingData(false);
+      }
+    }
+  };
 
   const checkUnreadMessages = async () => {
     const refForChangeMessageStatus = query(
@@ -269,6 +373,7 @@ export default function OrderScreen({ route, navigation }) {
     await updateDoc(firebaseRef, {
       order: arrayUnion(updatingOrder),
     });
+
     setModalUpdate(false);
   };
 
@@ -297,7 +402,9 @@ export default function OrderScreen({ route, navigation }) {
       <Container>
         <OrderName>
           {ordersLoaded
-            ? new Date(new Date(orders.dateForOrder)).toLocaleDateString(`${t("OrderDashboardTime")}`, {
+            ? nameOfOrder +
+              " " +
+              new Date(new Date(orders.dateForOrder)).toLocaleDateString(`${t("OrderDashboardTime")}`, {
                 month: "long",
                 day: "numeric",
               })
@@ -458,6 +565,14 @@ export default function OrderScreen({ route, navigation }) {
         </BlockSafeAreaView>
         <BlockButtonToggle>
           <BlockButtonBtn
+            style={{ marginLeft: "5%" }}
+            onPress={() => {
+              setModalAddParticipant(true);
+            }}
+          >
+            <Button children="Add participant" />
+          </BlockButtonBtn>
+          <BlockButtonBtn
             onPress={() => {
               setToggleBoughtItems(!toggleBoughtItems);
             }}
@@ -478,6 +593,77 @@ export default function OrderScreen({ route, navigation }) {
           }}
         />
       </View>
+      {modalAddParticipant ? (
+        <AddParticipantModal>
+          <LinearGradient
+            colors={[
+              colors.startColorForGradient,
+              colors.endColorForGradient,
+              colors.startColorForGradient,
+              colors.endColorForGradient,
+            ]}
+            start={{ x: 0.0, y: 0.0 }}
+            end={{ x: 1.0, y: 1.0 }}
+            style={{ height: "100%", width: "100%", paddingTop: "5%" }}
+          >
+            <BlockButtonBtnBack
+              style={{ marginTop: "19%", marginLeft: "5%" }}
+              onPress={() => {
+                setModalAddParticipant(false);
+                setAllParticipantsData(null);
+                setLoadingData(true);
+              }}
+            >
+              <LinearGradient
+                colors={[
+                  colors.startColorForGradientButton,
+                  colors.endColorForGradientButton,
+                  colors.startColorForGradientButton,
+                  colors.endColorForGradientButton,
+                ]}
+                start={{ x: 0.0, y: 0.0 }}
+                end={{ x: 1.0, y: 1.0 }}
+                style={{
+                  height: "100%",
+                  width: "100%",
+                  borderRadius: 30,
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <Ionicons
+                  name="arrow-back-circle-outline"
+                  size={screenHeight < 760 ? 30 : 40}
+                  color={colors.BlockButtonText}
+                />
+              </LinearGradient>
+            </BlockButtonBtnBack>
+            <View style={{ height: "100px" }}>
+              {loadingData ? (
+                <Text>Loading...</Text>
+              ) : (
+                <BlockAddingParticipant horizontal>
+                  {allParticipantsData.map((p, index) => (
+                    <BlockParticipant
+                      key={index}
+                      onPress={() => {
+                        updateParticipants(p.email);
+                      }}
+                    >
+                      <BlockParticipantAvatar
+                        source={{
+                          uri: `${p.photoURL}`,
+                        }}
+                      ></BlockParticipantAvatar>
+                      <BlockParticipantName numberOfLines={1}>{p.nikname || "No nikname"}</BlockParticipantName>
+                    </BlockParticipant>
+                  ))}
+                </BlockAddingParticipant>
+              )}
+            </View>
+          </LinearGradient>
+        </AddParticipantModal>
+      ) : null}
     </LinearGradient>
   );
 }

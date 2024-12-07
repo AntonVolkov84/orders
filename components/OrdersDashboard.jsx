@@ -37,7 +37,7 @@ const BlockOrderInfo = styled.View`
 `;
 const BlockInfoNameDate = styled.View`
   width: 100%;
-  height: 15%;
+  height: 16%;
   flex-direction: row;
   justify-content: space-around;
   align-items: center;
@@ -47,12 +47,14 @@ const BlockOrderInfoName = styled.Text`
   font-size: ${screenHeight < 760 ? "20px" : "25px"};
   text-align: center;
   margin: 3%;
+  color: ${colors.OrderDashboardName};
 `;
 const BlockOrderInfoDate = styled.Text`
   height: 100%;
   font-size: ${screenHeight < 760 ? "20px" : "25px"};
   text-align: center;
   margin: 3%;
+  color: ${colors.OrderDashboardName};
 `;
 const BlockOrderInfoArr = styled.Text`
   width: 99%;
