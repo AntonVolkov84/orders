@@ -8,7 +8,14 @@ import { getAuth } from "firebase/auth";
 import Button from "./Button";
 import { db } from "../firebaseConfig";
 import { useTranslation } from "react-i18next";
+import { Dimensions } from "react-native";
 
+const screenHeight = Dimensions.get("screen").height;
+
+const Repair = styled.ScrollView`
+  width: 100%;
+  flex-direction: row;
+`;
 const BlockIcon = styled.TouchableOpacity`
   height: 70px;
   width: 70px;
@@ -20,18 +27,20 @@ const BlockIcon = styled.TouchableOpacity`
   margin-right: 1%;
   justify-content: center;
   align-items: center;
+  flex: 1;
 `;
 const BlockParticipant = styled.TouchableOpacity`
-  width: 60px;
+  width: 100%;
+  height: 100%;
   justify-content: center;
-
+  width: 60px;
   margin-right: 1%;
+  flex: 1;
 `;
 const BlockParticipantAvatar = styled.Image`
   border-radius: 100px;
   aspect-ratio: 1;
   object-fit: cover;
-  width: 100%;
 `;
 const BlockParticipantName = styled.Text`
   color: ${colors.APBorderColor};
@@ -254,31 +263,30 @@ export default function AddingParticipant({ setParticipants, participants }) {
           Loading...
         </Text>
       ) : (
-        <View style={{ flexDirection: "row" }}>
+        <Repair horizontal>
           <BlockIcon onPress={() => setAddingParticipantModal(true)}>
-            <MaterialCommunityIcons name="account-plus-outline" size={50} color={colors.APBorderColor} />
+            <MaterialCommunityIcons
+              name="account-plus-outline"
+              size={screenHeight < 760 ? 30 : 40}
+              color={colors.APBorderColor}
+            />
           </BlockIcon>
-          <FlatList
-            horizontal={true}
-            style={{ flexDirection: "row", flex: 1 }}
-            data={allParticipantsData}
-            keyExtractor={(item) => item.id}
-            renderItem={({ item, index }) => (
-              <BlockParticipant
-                key={index}
-                onPress={() => addParticipantsToOrder(item)}
-                onLongPress={() => handleLongPress(item)}
-              >
-                <BlockParticipantAvatar
-                  source={{
-                    uri: `${item.photoURL}`,
-                  }}
-                ></BlockParticipantAvatar>
-                <BlockParticipantName numberOfLines={1}>{item.nikname || "No nikname"}</BlockParticipantName>
-              </BlockParticipant>
-            )}
-          />
-        </View>
+
+          {allParticipantsData.map((p, index) => (
+            <BlockParticipant
+              key={index}
+              onPress={() => addParticipantsToOrder(p)}
+              onLongPress={() => handleLongPress(p)}
+            >
+              <BlockParticipantAvatar
+                source={{
+                  uri: `${p.photoURL}`,
+                }}
+              ></BlockParticipantAvatar>
+              <BlockParticipantName numberOfLines={1}>{p.nikname || "No nikname"}</BlockParticipantName>
+            </BlockParticipant>
+          ))}
+        </Repair>
       )}
     </>
   );

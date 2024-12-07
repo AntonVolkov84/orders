@@ -36,7 +36,6 @@ const BlockOrderCreate = styled.View`
   background-color: ${colors.blockOrderCreateBackgroundColor};
 `;
 const BlockAddingParticipant = styled.View`
-  width: 98%;
   height: ${screenHeight < 760 ? "80px" : "100px"};
   padding-left: 1%;
   padding-right: 1%;

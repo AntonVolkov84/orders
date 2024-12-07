@@ -59,6 +59,13 @@ const BlockAddingOrderParticipants = styled.View`
   color: ${colors.titleText};
   font-size: ${screenHeight < 760 ? "15px" : "20px"};
   flex-direction: row;
+  width: 100%;
+`;
+const AddingOrderDate = styled.View`
+  color: ${colors.titleText};
+  font-size: ${screenHeight < 760 ? "15px" : "20px"};
+  flex-direction: row;
+  width: 100%;
 `;
 const BlockAddingOrderAdd = styled.View`
   color: ${colors.titleText};
@@ -243,18 +250,18 @@ export default function CreatingOrder({ participants, setCreateOrderModal, setPa
       <BlockAddingOrderParticipants>
         <BlockAddingOrderParticipantsText>{t("CreatingOrderParticipants")}</BlockAddingOrderParticipantsText>
         {Boolean(participants) ? (
-          <Text
+          <ScrollView
+            horizontal
             style={{
               marginRight: "3%",
               width: "70%",
-              overflow: "wrap",
+              overflow: "scroll",
               marginLeft: "2%",
-              color: colors.titleText,
-              fontSize: screenHeight < 760 ? 15 : 20,
             }}
           >
             {participants.map((e, index) => (
               <Text
+                style={{ color: colors.titleText, fontSize: screenHeight < 760 ? 15 : 20 }}
                 key={index}
                 onPress={() => {
                   delFronArrayOfParticipants(e);
@@ -263,10 +270,10 @@ export default function CreatingOrder({ participants, setCreateOrderModal, setPa
                 {e.nikname + " "}
               </Text>
             ))}
-          </Text>
+          </ScrollView>
         ) : null}
       </BlockAddingOrderParticipants>
-      <BlockAddingOrderParticipants>
+      <AddingOrderDate>
         <BlockAddingOrderParticipantsText>{t("CreatingOrderDate")}</BlockAddingOrderParticipantsText>
         {showPicker && (
           <DateTimePicker
@@ -283,7 +290,7 @@ export default function CreatingOrder({ participants, setCreateOrderModal, setPa
         >
           <BlockAddingOrderDateText>{new Date(dateForOrder).toLocaleDateString("en-GB")}</BlockAddingOrderDateText>
         </BlockAddingOrderDate>
-      </BlockAddingOrderParticipants>
+      </AddingOrderDate>
       <BlockInput>
         <Input
           onChangeText={setName}
@@ -309,7 +316,7 @@ export default function CreatingOrder({ participants, setCreateOrderModal, setPa
           />
         </BlockInputBtn>
       </BlockInput>
-      <SafeAreaView style={{ height: screenHeight < 760 ? "50%" : "52%", marginBottom: "1%" }}>
+      <SafeAreaView style={{ height: "53%", marginBottom: "1%" }}>
         <ScrollView>
           {Boolean(orders.length) ? (
             <>
