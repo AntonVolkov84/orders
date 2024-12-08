@@ -316,7 +316,7 @@ export default function CreatingOrder({ participants, setCreateOrderModal, setPa
           />
         </BlockInputBtn>
       </BlockInput>
-      <SafeAreaView style={{ height: "53%", marginBottom: "1%" }}>
+      <SafeAreaView style={{ height: "45%", marginBottom: "1%" }}>
         <ScrollView>
           {Boolean(orders.length) ? (
             <>

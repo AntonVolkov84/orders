@@ -53,7 +53,6 @@ const AvatarText = styled.Text`
 const RegisterButton = styled.TouchableOpacity`
   width: 160px;
   height: ${screenHeight < 760 ? "50px" : "70px"};
-  background-color: green;
   border-radius: 50px;
   margin: 0 auto;
   margin-top: 15%;

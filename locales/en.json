@@ -19,6 +19,8 @@
   "OrderScreenModalPlaceholderItem": "Name of product or business",
   "OrderScreenModalPlaceholderQT": "Quantity",
   "OrderScreenModalUpdate": "Update",
+  "OrderScreenAlertAdd": "Add",
+  "OrderScreenAlertText": "Do you want to add this participant:",
   "MessagingGoBack": "Go back",
   "MessagingMakeMessage": "Сreate a message",
   "AddingParticipantsModalPlaceholder": "Write email of participant",

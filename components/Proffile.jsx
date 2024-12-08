@@ -117,7 +117,7 @@ const ModalNiknameBtnCancel = styled.TouchableOpacity`
   width: 20%;
   aspect-ratio: 4/3;
   border-radius: 18px;
-  background-color: red;
+  background-color: ${colors.ModalNiknameBtnCancel};
   justify-content: center;
   align-items: center;
   margin-left: 5%;
@@ -126,14 +126,14 @@ const ModalNiknameBtnOk = styled.TouchableOpacity`
   width: 20%;
   aspect-ratio: 4/3;
   border-radius: 18px;
-  background-color: green;
+  background-color: ${colors.ModalNiknameBtnOk};
   justify-content: center;
   align-items: center;
   margin-right: 5%;
 `;
 const ModalNiknameBtnText = styled.Text`
   color: ${colors.modalNiknameBtnText};
-  font-size: ${screenHeight < 760 ? "15px" : "20px"};
+  font-size: ${screenHeight < 760 ? "13px" : "15px"};
 `;
 const BlockProfileSectionAvatar = styled.TouchableOpacity`
   width: 100%;

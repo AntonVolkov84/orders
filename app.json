@@ -3,7 +3,7 @@
     "name": "Orders",
     "slug": "orders",
     "scheme": "com.ant-volkov.orders",
-    "version": "1.5.2",
+    "version": "1.6.0",
     "orientation": "portrait",
     "icon": "./assets/Orders3.png",
     "userInterfaceStyle": "light",
@@ -25,6 +25,9 @@
       },
       "permissions": ["android.permission.RECORD_AUDIO"],
       "package": "com.ant_volkov.orders"
+    },
+    "notification": {
+      "icon": "./assets/OrdersNotification.png"
     },
     "web": {
       "config": {

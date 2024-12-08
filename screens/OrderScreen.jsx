@@ -142,7 +142,7 @@ const ModalBlockBtn = styled.View`
 `;
 const ModalBlockInput = styled.View`
   width: 100%;
-  height: ${screenHeight < 760 ? "180px" : "300px"};
+  height: ${screenHeight < 760 ? "180px" : "200px"};
   flex-direction: row;
   justify-content: center;
   align-items: center;
@@ -597,7 +597,7 @@ export default function OrderScreen({ route, navigation }) {
       </Container>
       <View style={{ position: "absolute", bottom: 0, paddingleft: "1%" }}>
         <BannerAd
-          unitId={TestIds.BANNER}
+          unitId="ca-app-pub-3940256099942544/6300978111"
           size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER}
           requestOptions={{
             requestNonPersonalizedAdsOnly: true,

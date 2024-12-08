@@ -41,7 +41,6 @@ const InputField = styled.TextInput`
 const LoginButton = styled.TouchableOpacity`
   width: 150px;
   height: ${screenHeight < 760 ? "50px" : "70px"};
-  background-color: green;
   border-radius: 50px;
   margin: 0 auto;
   margin-top: 15%;

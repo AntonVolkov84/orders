@@ -222,7 +222,7 @@ export default function MessagingScreen({ route, navigation }) {
       </BoxInput>
       <View style={{ position: "absolute", bottom: 0, paddingleft: "1%" }}>
         <BannerAd
-          unitId={TestIds.BANNER}
+          unitId="ca-app-pub-3940256099942544/6300978111"
           size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER}
           requestOptions={{
             requestNonPersonalizedAdsOnly: true,
