@@ -127,7 +127,7 @@ export default function MessagingScreen({ route, navigation }) {
       try {
         const pushMessage = {
           to: arrOfReseiver,
-          sound: "default",
+          sound: `default`,
           title: `Comment have arrived for ORDER ${nameOfOrder}`,
           body: message,
         };

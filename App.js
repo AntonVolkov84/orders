@@ -80,7 +80,7 @@ export default function App() {
       console.log("Message handled in the background!", remoteMessage);
     });
     const unsubscribe = messaging().onMessage(async (remoteMessage) => {
-      Alert.alert(JSON.stringify(remoteMessage.data.title));
+      Alert.alert(JSON.stringify(remoteMessage.data.title, remoteMessage.data.message));
     });
 
     return () => {

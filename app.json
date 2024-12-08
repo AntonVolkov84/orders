@@ -3,7 +3,7 @@
     "name": "Orders",
     "slug": "orders",
     "scheme": "com.ant-volkov.orders",
-    "version": "1.6.0",
+    "version": "1.6.2",
     "orientation": "portrait",
     "icon": "./assets/Orders3.png",
     "userInterfaceStyle": "light",
@@ -26,9 +26,6 @@
       "permissions": ["android.permission.RECORD_AUDIO"],
       "package": "com.ant_volkov.orders"
     },
-    "notification": {
-      "icon": "./assets/OrdersNotification.png"
-    },
     "web": {
       "config": {
         "firebase": {
@@ -46,6 +43,16 @@
     },
     "plugins": [
       ["@react-native-google-signin/google-signin"],
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/OrdersNotification.png",
+          "color": "#ffffff",
+          "defaultChannel": "default",
+          "sounds": ["./assets/chimes-saved.mp3"],
+          "enableBackgroundRemoteNotifications": false
+        }
+      ],
       [
         "expo-image-picker",
 
