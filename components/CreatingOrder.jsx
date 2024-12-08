@@ -1,5 +1,5 @@
 import { View, Text, TouchableOpacity, TextInput, ScrollView, SafeAreaView, Alert } from "react-native";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import * as colors from "../variables/colors";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";

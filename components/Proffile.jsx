@@ -1,13 +1,12 @@
 import { View, Text, Button, TouchableOpacity, Image, TextInput, FlatList } from "react-native";
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import { LinearGradient } from "expo-linear-gradient";
 import * as colors from "../variables/colors";
 import { getAuth, signOut } from "firebase/auth";
 import * as NavigationBar from "expo-navigation-bar";
 import { db, app } from "../firebaseConfig";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
-import { getDoc, doc, setDoc, onSnapshot } from "firebase/firestore";
+import { doc, setDoc, onSnapshot } from "firebase/firestore";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import * as ImagePicker from "expo-image-picker";
