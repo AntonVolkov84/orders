@@ -40,12 +40,12 @@ async function sendPushNotification(message) {
 
 export default function App() {
   const [user, setUser] = useState("");
-  const [participants, setParticipants] = useState("");
   const auth = getAuth();
   const [notification, setNotification] = useState(null);
   const notificationListener = useRef();
   const responseListener = useRef();
   const [expoPushToken, setExpoPushToken] = useState("");
+  console.log("App");
 
   onAuthStateChanged(auth, (user) => {
     if (user && auth.currentUser.emailVerified) {

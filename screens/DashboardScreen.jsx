@@ -1,5 +1,5 @@
 import { View, Text, TouchableOpacity, Image, TextInput, FlatList } from "react-native";
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, memo } from "react";
 import { LinearGradient } from "expo-linear-gradient";
 import * as colors from "../variables/colors";
 import { StatusBar } from "expo-status-bar";
@@ -13,7 +13,7 @@ import { collection, onSnapshot, where, orderBy, query, getDocs } from "firebase
 import OrdersDashboard from "../components/OrdersDashboard";
 import { SafeAreaView, SafeAreaProvider } from "react-native-safe-area-context";
 import { AppContext } from "../App";
-import { BannerAd, BannerAdSize, InterstitialAd, AdEventType, TestIds } from "react-native-google-mobile-ads";
+import { BannerAd, BannerAdSize } from "react-native-google-mobile-ads";
 import { Dimensions } from "react-native";
 
 const screenHeight = Dimensions.get("screen").height;
@@ -54,36 +54,14 @@ const BlockOrdersShow = styled.View`
   margin-right: 1%;
   margin-top: 1%;
 `;
-
-const interstitial = InterstitialAd.createForAdRequest(TestIds.INTERSTITIAL, {
-  requestNonPersonalizedAdsOnly: true,
-});
-
-export default function DashboardScreen({ navigation }) {
+export default memo(function DashboardScreen({ navigation }) {
   const [createOrderModal, setCreateOrderModal] = useState(false);
   const [participants, setParticipants] = useState([]);
   const [fetchedOrders, setFetchedOrders] = useState([]);
   const [isLoaded, setIsLoaded] = useState(false);
-  const [interstitialLoaded, setInterstitialLoaded] = useState(false);
   const currentEmail = auth.currentUser.email;
   const sendPushNotification = useContext(AppContext);
 
-  const loadInterstitial = () => {
-    const unsubscribeLoaded = interstitial.addAdEventListener(AdEventType.LOADED, () => {
-      setInterstitialLoaded(true);
-      console.log("Interstitial loaded");
-    });
-
-    const unsubscribeClosed = interstitial.addAdEventListener(AdEventType.CLOSED, () => {
-      setInterstitialLoaded(false);
-      interstitial.load();
-    });
-    interstitial.load();
-    return () => {
-      unsubscribeClosed();
-      unsubscribeLoaded();
-    };
-  };
   useEffect(() => {
     onSnapshot(
       query(
@@ -96,13 +74,6 @@ export default function DashboardScreen({ navigation }) {
         setIsLoaded(true);
       }
     );
-  }, []);
-  useEffect(() => {
-    const unsubscribeInterstitialEvents = loadInterstitial();
-
-    return () => {
-      unsubscribeInterstitialEvents();
-    };
   }, []);
 
   return (
@@ -173,4 +144,4 @@ export default function DashboardScreen({ navigation }) {
       </View>
     </LinearGradient>
   );
-}
+});

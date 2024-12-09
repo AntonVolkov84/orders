@@ -1,5 +1,5 @@
 import { View, Text, TouchableOpacity, Alert, Image, TextInput, ScrollView, FlatList } from "react-native";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, memo } from "react";
 import styled from "styled-components";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import * as colors from "../variables/colors";
@@ -94,7 +94,7 @@ const ModalButtonBtn = styled.TouchableOpacity`
   height: 100%;
 `;
 
-export default function AddingParticipant({ setParticipants, participants }) {
+export default memo(function AddingParticipant({ setParticipants, participants }) {
   const auth = getAuth();
   const [inputEmail, setInputEmail] = useState("");
   const [loadingData, setLoadingData] = useState(true);
@@ -290,4 +290,4 @@ export default function AddingParticipant({ setParticipants, participants }) {
       )}
     </>
   );
-}
+});

@@ -1,5 +1,5 @@
 import { View, Text, TouchableOpacity, TextInput, FlatList, Alert, ScrollView } from "react-native";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, memo } from "react";
 import { LinearGradient } from "expo-linear-gradient";
 import * as colors from "../variables/colors";
 import { StatusBar } from "expo-status-bar";
@@ -238,7 +238,7 @@ const BlockParticipantName = styled.Text`
   text-overflow: ellipsis;
   text-align: center;
 `;
-export default function OrderScreen({ route, navigation }) {
+export default memo(function OrderScreen({ route, navigation }) {
   const [name, setName] = useState("");
   const [quantity, setQuantity] = useState("");
   const [ordersLoaded, setOrdersLoaded] = useState(false);
@@ -680,4 +680,4 @@ export default function OrderScreen({ route, navigation }) {
       ) : null}
     </LinearGradient>
   );
-}
+});

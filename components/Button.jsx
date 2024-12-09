@@ -1,5 +1,5 @@
 import { View, Text } from "react-native";
-import React from "react";
+import React, { memo } from "react";
 import styled from "styled-components";
 import { LinearGradient } from "expo-linear-gradient";
 import * as colors from "../variables/colors";
@@ -15,7 +15,7 @@ const BlockButtonText = styled.Text`
   padding-right: 2px;
 `;
 
-export default function Button({ children }) {
+export default memo(function Button({ children }) {
   return (
     <LinearGradient
       colors={[
@@ -31,4 +31,4 @@ export default function Button({ children }) {
       <BlockButtonText>{children}</BlockButtonText>
     </LinearGradient>
   );
-}
+});

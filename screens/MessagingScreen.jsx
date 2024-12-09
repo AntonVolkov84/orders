@@ -1,5 +1,5 @@
 import { View, Text, TouchableOpacity, FlatList } from "react-native";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, memo } from "react";
 import * as colors from "../variables/colors";
 import { LinearGradient } from "expo-linear-gradient";
 import { StatusBar } from "expo-status-bar";
@@ -23,7 +23,7 @@ import {
   arrayRemove,
 } from "firebase/firestore";
 import Message from "../components/Message";
-import { BannerAd, BannerAdSize, InterstitialAd, AdEventType, TestIds } from "react-native-google-mobile-ads";
+import { BannerAd, BannerAdSize } from "react-native-google-mobile-ads";
 import { Dimensions } from "react-native";
 
 const screenHeight = Dimensions.get("screen").height;
@@ -77,7 +77,7 @@ const BlockForMessage = styled.View`
   margin-bottom: 20px;
 `;
 
-export default function MessagingScreen({ route, navigation }) {
+export default memo(function MessagingScreen({ route, navigation }) {
   const { item } = route.params;
   const [message, setMessage] = useState("");
   const [fetchedMessages, setFetchedMessages] = useState([]);
@@ -88,6 +88,7 @@ export default function MessagingScreen({ route, navigation }) {
   const currentEmail = currentUser.email;
   const { t } = useTranslation();
   const nameOfOrder = item.nameOfOrder;
+  console.log("MessagingScreen");
 
   const markMessagesAsRead = async () => {
     const refForChangeMessageStatus = query(
@@ -234,4 +235,4 @@ export default function MessagingScreen({ route, navigation }) {
       </View>
     </LinearGradient>
   );
-}
+});

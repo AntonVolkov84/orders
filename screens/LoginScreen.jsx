@@ -1,5 +1,5 @@
 import { View, Alert, Text, Button, TouchableOpacity, TextInput } from "react-native";
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, memo } from "react";
 import styled from "styled-components";
 import { getAuth, GoogleAuthProvider, signInWithCredential, signInWithEmailAndPassword } from "firebase/auth";
 import { LinearGradient } from "expo-linear-gradient";
@@ -67,11 +67,12 @@ const ButtonGoogle = styled.TouchableOpacity`
   border-radius: 15px;
 `;
 
-export default function LoginScreen({ navigation }) {
+export default memo(function LoginScreen({ navigation }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const auth = getAuth();
   const expoPushToken = useContext(AppContext);
+
   const loginUser = () => {
     signInWithEmailAndPassword(auth, email, password)
       .catch((error) => {
@@ -199,4 +200,4 @@ export default function LoginScreen({ navigation }) {
       </ButtonRegistration>
     </LinearGradient>
   );
-}
+});

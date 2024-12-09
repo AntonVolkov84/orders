@@ -1,5 +1,5 @@
 import { View, Text, Button, TouchableOpacity, Image, TextInput, FlatList } from "react-native";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, memo } from "react";
 import styled from "styled-components";
 import * as colors from "../variables/colors";
 import { getAuth, signOut } from "firebase/auth";
@@ -176,7 +176,7 @@ const LanguageText = styled.Text`
 
 const auth = getAuth();
 
-export default function DashboardScreen({ navigation }) {
+export default memo(function DashboardScreen({ navigation }) {
   const [userProfileData, setUserProfileData] = useState(null);
   const [loadingUserProfileData, setLoadingUserProfileData] = useState(true);
   const [visibilityMenu, setVisibilityMenu] = useState(false);
@@ -441,4 +441,4 @@ export default function DashboardScreen({ navigation }) {
       ) : null}
     </>
   );
-}
+});

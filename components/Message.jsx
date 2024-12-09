@@ -1,5 +1,5 @@
 import { View, Text, Image } from "react-native";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, memo } from "react";
 import styled from "styled-components";
 import { doc, onSnapshot } from "firebase/firestore";
 import { auth, db } from "../firebaseConfig";
@@ -35,13 +35,14 @@ const BlockForMessageText = styled.Text`
   font-size: ${screenHeight < 760 ? "15px" : "20px"};
 `;
 
-export default function Message({ message }) {
+export default memo(function Message({ message }) {
   const [loaded, setLoaded] = useState(false);
   const [author, setAuthor] = useState(null);
   const messageAuthor = message.author;
   const currentUser = auth.currentUser;
   const email = currentUser.email;
   const isValide = email === messageAuthor;
+
   useEffect(() => {
     onSnapshot(doc(db, "users", messageAuthor), (snapshot) => {
       setAuthor(snapshot.data());
@@ -68,4 +69,4 @@ export default function Message({ message }) {
       ) : null}
     </>
   );
-}
+});

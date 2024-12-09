@@ -1,5 +1,5 @@
 import { View, Text, TouchableOpacity, TextInput, ScrollView, SafeAreaView, Alert } from "react-native";
-import React, { useState } from "react";
+import React, { useState, memo } from "react";
 import styled from "styled-components";
 import * as colors from "../variables/colors";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
@@ -41,7 +41,7 @@ const InputOrderName = styled.TextInput`
   padding-left: 1%;
   padding-right: 1%;
   color: ${colors.creatingOrderText};
-  margin-left: 5%;
+  margin-left: 2%;
   font-size: 15px;
 `;
 const BlockAddingOrderDate = styled.TouchableOpacity`
@@ -137,7 +137,7 @@ const BlockResultBtn = styled.TouchableOpacity`
   width: 100%;
 `;
 
-export default function CreatingOrder({ participants, setCreateOrderModal, setParticipants, sendPushNotification }) {
+export default memo(function CreatingOrder({ participants, setCreateOrderModal, setParticipants }) {
   const [name, setName] = useState("");
   const [quantity, setQuantity] = useState("");
   const [nameOfOrder, setNameForOrder] = useState("");
@@ -355,4 +355,4 @@ export default function CreatingOrder({ participants, setCreateOrderModal, setPa
       </BlockResultBtn>
     </BlockAddingOrder>
   );
-}
+});

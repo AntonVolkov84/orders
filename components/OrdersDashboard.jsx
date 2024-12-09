@@ -1,5 +1,5 @@
 import { View, Text, TouchableOpacity, Image, Alert } from "react-native";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, memo } from "react";
 import * as colors from "../variables/colors";
 import styled from "styled-components";
 import { db } from "../firebaseConfig";
@@ -82,7 +82,7 @@ const CloseOrderBtn = styled.TouchableOpacity`
   right: 3%;
 `;
 
-export default function OrdersDashboard({ item, navigation }) {
+export default memo(function OrdersDashboard({ item, navigation }) {
   const [orderCreatorProfile, setOrderCreatorProfile] = useState(null);
   const [loadingOrderCreatorProfile, setLoadingOrderCreatorProfile] = useState(false);
   const dateForOrder = new Date(item.dateForOrder);
@@ -167,4 +167,4 @@ export default function OrdersDashboard({ item, navigation }) {
       ) : null}
     </BlockOrderShow>
   );
-}
+});
