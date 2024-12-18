@@ -3,7 +3,7 @@
     "name": "Orders",
     "slug": "orders",
     "scheme": "com.ant-volkov.orders",
-    "version": "1.6.2",
+    "version": "1.6.4",
     "orientation": "portrait",
     "icon": "./assets/Orders3.png",
     "userInterfaceStyle": "light",
@@ -47,10 +47,7 @@
         "expo-notifications",
         {
           "icon": "./assets/OrdersNotification.png",
-          "color": "#ffffff",
-          "defaultChannel": "default",
-          "sounds": ["./assets/chimes-saved.mp3"],
-          "enableBackgroundRemoteNotifications": false
+          "sounds": ["./assets/chimes.mp3"]
         }
       ],
       [

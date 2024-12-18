@@ -42,3 +42,4 @@ export const NewMessageArrivedColor = "#f22718";
 export const OrderDashboardName = "#fa0a42";
 export const ModalNiknameBtnOk = "#34d95d";
 export const ModalNiknameBtnCancel = "#e83525";
+export const LinkColor = "#6971c9";

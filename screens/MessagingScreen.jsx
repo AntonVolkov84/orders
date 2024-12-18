@@ -88,7 +88,6 @@ export default memo(function MessagingScreen({ route, navigation }) {
   const currentEmail = currentUser.email;
   const { t } = useTranslation();
   const nameOfOrder = item.nameOfOrder;
-  console.log("MessagingScreen");
 
   const markMessagesAsRead = async () => {
     const refForChangeMessageStatus = query(

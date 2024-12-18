@@ -1,4 +1,4 @@
-import { View, Text, Button, TouchableOpacity, Image, TextInput, FlatList } from "react-native";
+import { View, Text, Button, TouchableOpacity, Image, TextInput, FlatList, Linking } from "react-native";
 import React, { useEffect, useState, memo } from "react";
 import styled from "styled-components";
 import * as colors from "../variables/colors";
@@ -136,11 +136,27 @@ const ModalNiknameBtnText = styled.Text`
 `;
 const BlockProfileSectionAvatar = styled.TouchableOpacity`
   width: 100%;
-  height: 58%;
+  height: 48%;
   flex-direction: row;
   justify-content: center;
   align-items: center;
   background-color: ${colors.menuProfile};
+`;
+const BlockSite = styled.View`
+  width: 100%;
+  height: 10%;
+`;
+const Site = styled.TouchableOpacity`
+  width: 100%;
+  height: 100%;
+`;
+const SiteText = styled.Text`
+  width: 100%;
+  height: 100%;
+  text-justify: center;
+  text-align: center;
+  color: ${colors.LinkColor};
+  font-size: ${screenHeight < 760 ? "15px" : "20px"};
 `;
 const BlockProfileText = styled.Text`
   color: ${colors.menuFrofileText};
@@ -308,6 +324,10 @@ export default memo(function DashboardScreen({ navigation }) {
       { merge: true }
     );
   };
+  const redirectToSite = () => {
+    const link = "https://orders-78c1c.web.app/";
+    Linking.openURL(link);
+  };
 
   return (
     <>
@@ -391,6 +411,15 @@ export default memo(function DashboardScreen({ navigation }) {
               }}
             />
           </BlockProfileSectionAvatar>
+          <BlockSite>
+            <Site
+              onPress={() => {
+                redirectToSite();
+              }}
+            >
+              <SiteText>{t("ProffileSite")}</SiteText>
+            </Site>
+          </BlockSite>
           <ButtonLogout
             onPress={() => {
               logOut();

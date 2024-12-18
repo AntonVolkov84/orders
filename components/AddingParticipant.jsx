@@ -259,9 +259,28 @@ export default memo(function AddingParticipant({ setParticipants, participants }
           </ModalButton>
         </Modal>
       ) : loadingData ? (
-        <Text style={{ textAlign: "center", textJustify: "center", color: colors.titleText, fontSize: 20 }}>
-          Loading...
-        </Text>
+        <View style={{ flexDirection: "row", width: 170 }}>
+          <BlockIcon style={{ width: 50, aspectRatio: 1 }} onPress={() => setAddingParticipantModal(true)}>
+            <MaterialCommunityIcons
+              name="account-plus-outline"
+              size={screenHeight < 760 ? 30 : 40}
+              color={colors.APBorderColor}
+            />
+          </BlockIcon>
+          <View style={{ justifyContent: "center", alignItems: "center" }}>
+            <Text
+              style={{
+                marginLeft: "20px",
+                textAlign: "center",
+                textJustify: "center",
+                color: colors.titleText,
+                fontSize: 20,
+              }}
+            >
+              Loading...
+            </Text>
+          </View>
+        </View>
       ) : (
         <Repair horizontal>
           <BlockIcon onPress={() => setAddingParticipantModal(true)}>

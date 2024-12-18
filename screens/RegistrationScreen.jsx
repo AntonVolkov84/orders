@@ -71,7 +71,6 @@ export default function RegistrationScreen({ navigation }) {
   const storage = getStorage(app);
   const auth = getAuth();
   const expoPushToken = useContext(AppContext);
-  console.log("RegistrationScreen");
 
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
