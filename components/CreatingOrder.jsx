@@ -1,5 +1,5 @@
 import { View, Text, TouchableOpacity, TextInput, ScrollView, SafeAreaView, Alert } from "react-native";
-import React, { useState, memo } from "react";
+import React, { useState, memo, useRef } from "react";
 import styled from "styled-components";
 import * as colors from "../variables/colors";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
@@ -145,6 +145,7 @@ export default memo(function CreatingOrder({ participants, setCreateOrderModal, 
   const [orders, setOrders] = useState([]);
   const [showPicker, setShowPicker] = useState(false);
   const { t } = useTranslation();
+  const nameRef = useRef();
 
   const handleChangeDate = (event) => {
     setShowPicker(false);
@@ -163,6 +164,7 @@ export default memo(function CreatingOrder({ participants, setCreateOrderModal, 
     setOrders((prevOrders) => [...prevOrders, { name, quantity, id: Date.parse(new Date()), made: false, madeBy: "" }]);
     setName("");
     setQuantity("");
+    nameRef.current.focus();
   };
   const delFromChart = (id) => {
     const newOrders = orders.filter((order) => order.id !== id);
@@ -293,6 +295,7 @@ export default memo(function CreatingOrder({ participants, setCreateOrderModal, 
       </AddingOrderDate>
       <BlockInput>
         <Input
+          ref={nameRef}
           onChangeText={setName}
           value={name}
           maxLength={25}

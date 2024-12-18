@@ -3,7 +3,7 @@
     "name": "Orders",
     "slug": "orders",
     "scheme": "com.ant-volkov.orders",
-    "version": "1.6.4",
+    "version": "1.6.5",
     "orientation": "portrait",
     "icon": "./assets/Orders3.png",
     "userInterfaceStyle": "light",
