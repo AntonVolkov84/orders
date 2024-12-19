@@ -204,6 +204,7 @@ export default memo(function DashboardScreen({ navigation }) {
   const [changeLanguageModal, setChangeLanguageModal] = useState(false);
   const storage = getStorage(app);
   const { t } = useTranslation();
+  const link = "https://orders-78c1c.web.app/";
 
   const images = {
     en: require("../assets/england.png"),
@@ -325,7 +326,6 @@ export default memo(function DashboardScreen({ navigation }) {
     );
   };
   const redirectToSite = () => {
-    const link = "https://orders-78c1c.web.app/";
     Linking.openURL(link);
   };
 

@@ -145,7 +145,7 @@ export default memo(function CreatingOrder({ participants, setCreateOrderModal, 
   const [orders, setOrders] = useState([]);
   const [showPicker, setShowPicker] = useState(false);
   const { t } = useTranslation();
-  const nameRef = useRef();
+  const nameRef = useRef(null);
 
   const handleChangeDate = (event) => {
     setShowPicker(false);
