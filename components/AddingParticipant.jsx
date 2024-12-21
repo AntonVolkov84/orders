@@ -93,6 +93,21 @@ const ModalButtonBtn = styled.TouchableOpacity`
   width: 25%;
   height: 100%;
 `;
+const BlockNoOne = styled.View`
+  flex-direction: row;
+`;
+const BlockNoOneIcon = styled.TouchableOpacity`
+  width: 70px;
+  height: 70px;
+  border: 2px solid;
+  border-color: ${colors.APBorderColor};
+  justify-self: center;
+  align-self: center;
+  border-radius: 100px;
+  margin-right: 1%;
+  justify-content: center;
+  align-items: center;
+`;
 
 export default memo(function AddingParticipant({ setParticipants, participants }) {
   const auth = getAuth();
@@ -259,9 +274,18 @@ export default memo(function AddingParticipant({ setParticipants, participants }
           </ModalButton>
         </Modal>
       ) : loadingData ? (
-        <Text style={{ textAlign: "center", textJustify: "center", color: colors.titleText, fontSize: 20 }}>
-          Loading...
-        </Text>
+        <BlockNoOne>
+          <BlockNoOneIcon onPress={() => setAddingParticipantModal(true)}>
+            <MaterialCommunityIcons
+              name="account-plus-outline"
+              size={screenHeight < 760 ? 30 : 40}
+              color={colors.APBorderColor}
+            />
+          </BlockNoOneIcon>
+          <Text style={{ textAlign: "center", textJustify: "center", color: colors.titleText, fontSize: 20 }}>
+            Loading...
+          </Text>
+        </BlockNoOne>
       ) : (
         <Repair horizontal>
           <BlockIcon onPress={() => setAddingParticipantModal(true)}>

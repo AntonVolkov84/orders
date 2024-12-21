@@ -347,7 +347,7 @@ export default memo(function OrderScreen({ route, navigation }) {
 
   const updateOrder = async () => {
     if (!name || !quantity) {
-      Alert.alert("Some field is empty");
+      return Alert.alert("Some field is empty");
     }
     const updatingOrder = {
       id: Date.parse(new Date()),
