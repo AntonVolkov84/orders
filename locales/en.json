@@ -41,5 +41,6 @@
   "CreatingOrderDate": "Order date:",
   "CreatingOrderPlaceholderName": "Name of product or business",
   "CreatingOrderPlaceholderQT": "Quantity",
-  "CreatingOrderMakeOrder": "Create"
+  "CreatingOrderMakeOrder": "Create",
+  "SiteText": "To visit our site or contact us click here"
 }

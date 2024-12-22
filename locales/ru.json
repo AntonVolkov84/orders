@@ -41,5 +41,6 @@
   "CreatingOrderDate": "Дата заказа:",
   "CreatingOrderPlaceholderName": "Название позиции или дела",
   "CreatingOrderPlaceholderQT": "Кол-во",
-  "CreatingOrderMakeOrder": "Создать"
+  "CreatingOrderMakeOrder": "Создать",
+  "SiteText": "Посетить сайт или связаться с нами"
 }

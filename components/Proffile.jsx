@@ -1,4 +1,4 @@
-import { View, Text, Button, TouchableOpacity, Image, TextInput, FlatList } from "react-native";
+import { View, Text, Button, TouchableOpacity, Image, TextInput, FlatList, Linking } from "react-native";
 import React, { useEffect, useState, memo } from "react";
 import styled from "styled-components";
 import * as colors from "../variables/colors";
@@ -136,7 +136,7 @@ const ModalNiknameBtnText = styled.Text`
 `;
 const BlockProfileSectionAvatar = styled.TouchableOpacity`
   width: 100%;
-  height: 58%;
+  height: 48%;
   flex-direction: row;
   justify-content: center;
   align-items: center;
@@ -173,7 +173,19 @@ const LanguageText = styled.Text`
   font-size: ${screenHeight < 760 ? "20px" : "25px"};
   text-align: center;
 `;
-
+const BlockSite = styled.View`
+  width: 100%;
+  height: 10%;
+  justify-content: center;
+  align-items: center;
+`;
+const Site = styled.TouchableOpacity`
+  width: fit-content;
+  height: 100%;
+`;
+const SiteText = styled.Text`
+  color: ${colors.SiteText};
+`;
 const auth = getAuth();
 
 export default memo(function DashboardScreen({ navigation }) {
@@ -308,6 +320,10 @@ export default memo(function DashboardScreen({ navigation }) {
       { merge: true }
     );
   };
+  const redirectToSite = () => {
+    const link = "https://orders-78c1c.web.app/";
+    Linking.openURL(link);
+  };
 
   return (
     <>
@@ -391,6 +407,11 @@ export default memo(function DashboardScreen({ navigation }) {
               }}
             />
           </BlockProfileSectionAvatar>
+          <BlockSite>
+            <Site onPress={() => redirectToSite()}>
+              <SiteText>{t("SiteText")}</SiteText>
+            </Site>
+          </BlockSite>
           <ButtonLogout
             onPress={() => {
               logOut();
