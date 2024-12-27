@@ -243,6 +243,8 @@ export default memo(function CreatingOrder({ participants, setCreateOrderModal, 
       <BlockAddingOrderName>
         <BlockAddingOrderNameText>{t("CreatingOrderName")}:</BlockAddingOrderNameText>
         <InputOrderName
+          accessibilityLabel="Order name input"
+          accessible={true}
           onChangeText={setNameForOrder}
           value={nameOfOrder}
           maxLength={14}
@@ -254,6 +256,8 @@ export default memo(function CreatingOrder({ participants, setCreateOrderModal, 
         {Boolean(participants) ? (
           <ScrollView
             horizontal
+            accessibilityLabel="Choosen participants"
+            accessible={true}
             style={{
               marginRight: "3%",
               width: "70%",
@@ -263,6 +267,8 @@ export default memo(function CreatingOrder({ participants, setCreateOrderModal, 
           >
             {participants.map((e, index) => (
               <Text
+                accessibilityLabel={`Task: ${e.nikname}`}
+                accessible={true}
                 style={{ color: colors.titleText, fontSize: screenHeight < 760 ? 15 : 20 }}
                 key={index}
                 onPress={() => {
@@ -279,6 +285,8 @@ export default memo(function CreatingOrder({ participants, setCreateOrderModal, 
         <BlockAddingOrderParticipantsText>{t("CreatingOrderDate")}</BlockAddingOrderParticipantsText>
         {showPicker && (
           <DateTimePicker
+            accessibilityLabel="Input date for order"
+            accessible={true}
             style={{ width: "80%", aspectRatio: 3 / 4 }}
             mode={"date"}
             value={new Date()}
@@ -295,6 +303,8 @@ export default memo(function CreatingOrder({ participants, setCreateOrderModal, 
       </AddingOrderDate>
       <BlockInput>
         <Input
+          accessibilityLabel="Order position name input"
+          accessible={true}
           ref={nameOrder}
           onChangeText={setName}
           value={name}
@@ -302,12 +312,16 @@ export default memo(function CreatingOrder({ participants, setCreateOrderModal, 
           placeholder={t("CreatingOrderPlaceholderName")}
         ></Input>
         <BlockInputQnt
+          accessibilityLabel="Order position quantity input"
+          accessible={true}
           onChangeText={setQuantity}
           value={quantity}
           maxLength={7}
           placeholder={t("CreatingOrderPlaceholderQT")}
         ></BlockInputQnt>
         <BlockInputBtn
+          accessibilityLabel="Button adding position to chart"
+          accessible={true}
           onPress={() => {
             addingToChart();
           }}
@@ -320,14 +334,20 @@ export default memo(function CreatingOrder({ participants, setCreateOrderModal, 
         </BlockInputBtn>
       </BlockInput>
       <SafeAreaView style={{ height: "45%", marginBottom: "1%" }}>
-        <ScrollView>
+        <ScrollView accessibilityLabel="Order selected position list" accessible={true}>
           {Boolean(orders.length) ? (
             <>
               {orders.map((order, index) => (
-                <BlockAddingOrderAdd key={index}>
+                <BlockAddingOrderAdd
+                  accessibilityLabel={`Task: ${(order.name, order.quantity)}`}
+                  accessible={true}
+                  key={index}
+                >
                   <BlockAddingOrderAddText>{order.name}</BlockAddingOrderAddText>
                   <BlockAddingOrderAddQ>{order.quantity}</BlockAddingOrderAddQ>
                   <BlockDelOrderBtn
+                    accessibilityLabel="Button delete position fron selected positions list"
+                    accessible={true}
                     onPress={() => {
                       delFromChart(order.id);
                     }}
@@ -342,12 +362,16 @@ export default memo(function CreatingOrder({ participants, setCreateOrderModal, 
       </SafeAreaView>
       <BlockResultBtn>
         <TouchableOpacity
+          accessibilityLabel="Button cancel"
+          accessible={true}
           onPress={() => setCreateOrderModal(false)}
           style={{ width: "25%", height: screenHeight < 760 ? 40 : 50 }}
         >
           <Button children={t("ProffileCancel")} />
         </TouchableOpacity>
         <TouchableOpacity
+          accessibilityLabel="Button make order"
+          accessible={true}
           onPress={() => {
             makeOrder();
           }}

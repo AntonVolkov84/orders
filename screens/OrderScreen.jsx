@@ -520,9 +520,14 @@ export default memo(function OrderScreen({ route, navigation }) {
                   {ordersLoaded ? (
                     <FlatList
                       data={orders.order.filter((e) => e.made === true)}
+                      accessibilityLabel="Task list"
+                      accessible={true}
                       renderItem={({ item }) => (
                         <BlockOrderItemOk>
-                          <BlockOrderItemOkInfo>
+                          <BlockOrderItemOkInfo
+                            accessibilityLabel={`Task: ${(item.name, item.quantity)}`}
+                            accessible={true}
+                          >
                             <BlockOrderItemNameOk>{item.name}</BlockOrderItemNameOk>
                             <BlockOrderItemQuantityOk>{item.quantity}</BlockOrderItemQuantityOk>
                           </BlockOrderItemOkInfo>
@@ -539,9 +544,15 @@ export default memo(function OrderScreen({ route, navigation }) {
                     <BlockOrderItemAll>
                       <SwipeListView
                         style={{ width: "100%", height: "100%" }}
+                        accessibilityLabel="Task list"
+                        accessible={true}
                         data={orders.order.filter((e) => e.made !== true)}
                         renderItem={(data, rowMap, index) => (
-                          <BlockOrderItem key={index}>
+                          <BlockOrderItem
+                            key={index}
+                            accessibilityLabel={`Task: ${(item.name, item.quantity)}`}
+                            accessible={true}
+                          >
                             <BlockOrderItemName>{data.item.name}</BlockOrderItemName>
                             <BlockOrderItemQuantity>{data.item.quantity}</BlockOrderItemQuantity>
                           </BlockOrderItem>

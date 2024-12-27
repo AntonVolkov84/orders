@@ -11,10 +11,6 @@ import MessagingScreen from "./screens/MessagingScreen.jsx";
 import * as Notifications from "expo-notifications";
 import { registerForPushNotificationsAsync } from "./notifications.js";
 import messaging from "@react-native-firebase/messaging";
-import { Dimensions } from "react-native";
-
-const windowHeight = Dimensions.get("screen").height;
-export const coefficientOfScreen = windowHeight / 910;
 
 const Stack = createNativeStackNavigator();
 export const AppContext = createContext(null);

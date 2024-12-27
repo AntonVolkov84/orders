@@ -54,6 +54,8 @@ export default memo(function Message({ message }) {
     <>
       {loaded ? (
         <BlockMessage
+          accessibilityLabel={`Message: ${message.messageText}`}
+          accessible={true}
           style={{
             flexDirection: isValide ? "row-reverse" : "row",
           }}

@@ -132,6 +132,8 @@ export default memo(function OrdersDashboard({ item, navigation }) {
 
   return (
     <BlockOrderShow
+      accessibilityLabel="Block which transfer You to order screen"
+      accessible={true}
       onPress={() => {
         navigation.navigate("OrderScreen", { item });
       }}

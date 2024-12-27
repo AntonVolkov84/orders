@@ -249,12 +249,16 @@ export default memo(function AddingParticipant({ setParticipants, participants }
       {addingParticipantModal ? (
         <Modal>
           <ModalInput
+            accessibilityLabel="Input of email of participant which You will use in future"
+            accessible={true}
             placeholder={t("AddingParticipantsModalPlaceholder")}
             value={inputEmail}
             onChangeText={setInputEmail}
           ></ModalInput>
           <ModalButton>
             <ModalButtonBtn
+              accessibilityLabel="Button go back from modal window adding participant to global list"
+              accessible={true}
               onPress={() => {
                 setAddingParticipantModal(false);
                 setInputEmail("");
@@ -263,6 +267,8 @@ export default memo(function AddingParticipant({ setParticipants, participants }
               <Button children={t("ProffileCancel")} />
             </ModalButtonBtn>
             <ModalButtonBtn
+              accessibilityLabel="Button adding participant to global list"
+              accessible={true}
               onPress={() => {
                 VerificationMailDublicate(inputEmail);
                 setAddingParticipantModal(false);
@@ -288,7 +294,11 @@ export default memo(function AddingParticipant({ setParticipants, participants }
         </BlockNoOne>
       ) : (
         <Repair horizontal>
-          <BlockIcon onPress={() => setAddingParticipantModal(true)}>
+          <BlockIcon
+            accessibilityLabel="Button view modal window for adding participant to global list"
+            accessible={true}
+            onPress={() => setAddingParticipantModal(true)}
+          >
             <MaterialCommunityIcons
               name="account-plus-outline"
               size={screenHeight < 760 ? 30 : 40}
@@ -298,6 +308,8 @@ export default memo(function AddingParticipant({ setParticipants, participants }
 
           {allParticipantsData.map((p, index) => (
             <BlockParticipant
+              accessibilityLabel={`Participant: ${p.nikname}`}
+              accessible={true}
               key={index}
               onPress={() => addParticipantsToOrder(p)}
               onLongPress={() => handleLongPress(p)}

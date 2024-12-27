@@ -188,6 +188,8 @@ export default memo(function MessagingScreen({ route, navigation }) {
       <StatusBar style="light" />
       <BlockButton>
         <BlockButtonBtn
+          accessibilityLabel="Button go back"
+          accessible={true}
           onPress={() => {
             navigation.goBack();
           }}
@@ -199,6 +201,8 @@ export default memo(function MessagingScreen({ route, navigation }) {
         {loaded ? (
           <BlockForMessage>
             <FlatList
+              accessibilityLabel="Messages list"
+              accessible={true}
               data={fetchedMessages}
               ref={flatList}
               renderItem={({ item }) => <Message message={item} />}
@@ -211,13 +215,15 @@ export default memo(function MessagingScreen({ route, navigation }) {
       </BlockMessaging>
       <BoxInput>
         <BoxInputText
+          accessibilityLabel="Message input"
+          accessible={true}
           placeholderTextColor={colors.MessagingPlaceholder}
           placeholder={t("MessagingMakeMessage")}
           multiline
           onChangeText={setMessage}
           value={message}
         ></BoxInputText>
-        <BlockIconMessage onPress={() => sendMessage()}>
+        <BlockIconMessage accessibilityLabel="Button add message" accessible={true} onPress={() => sendMessage()}>
           <FontAwesome name="send" size={screenHeight < 760 ? 15 : 20} color={colors.MessagingIconColor} />
         </BlockIconMessage>
       </BoxInput>

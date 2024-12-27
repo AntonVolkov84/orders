@@ -327,7 +327,11 @@ export default memo(function DashboardScreen({ navigation }) {
 
   return (
     <>
-      <BlockMenuProfile onPress={() => setVisibilityMenu(!visibilityMenu)}>
+      <BlockMenuProfile
+        accessibilityLabel="Button which toggle to open or close profile menu"
+        accessible={true}
+        onPress={() => setVisibilityMenu(!visibilityMenu)}
+      >
         <MaterialCommunityIcons
           style={{ marginLeft: "5%" }}
           name="menu"
@@ -340,15 +344,23 @@ export default memo(function DashboardScreen({ navigation }) {
         <ModalNikname>
           <ModalNiknameEntry>
             <ModalNiknameInput
+              accessibilityLabel="Input change nikname"
+              accessible={true}
               onChangeText={setNewNikname}
               maxLength={20}
               placeholder={t("ProffilePlaceholderNikname")}
             ></ModalNiknameInput>
             <ModalBlockBtn>
-              <ModalNiknameBtnCancel onPress={() => setChangeNiknameModal(false)}>
+              <ModalNiknameBtnCancel
+                accessibilityLabel="Button cancel changing nikname"
+                accessible={true}
+                onPress={() => setChangeNiknameModal(false)}
+              >
                 <ModalNiknameBtnText>{t("ProffileCancel")}</ModalNiknameBtnText>
               </ModalNiknameBtnCancel>
               <ModalNiknameBtnOk
+                accessibilityLabel="Button cange nikname"
+                accessible={true}
                 onPress={() => {
                   handleChangeNikname();
                   setChangeNiknameModal(false);
@@ -374,6 +386,8 @@ export default memo(function DashboardScreen({ navigation }) {
               {loadingUserProfileData ? <Text>Loading...</Text> : userProfileData?.nikname || "wait for Nikname"}
             </BlockProfileText>
             <ChangeNikname
+              accessibilityLabel="Button to open window change nikname "
+              accessible={true}
               onPress={() => {
                 setNewNikname("");
                 setChangeNiknameModal(true);
@@ -392,6 +406,8 @@ export default memo(function DashboardScreen({ navigation }) {
               )}
             </BlockProfileText>
             <ChangeLanguage
+              accessibilityLabel="Button to open window change language"
+              accessible={true}
               onPress={() => {
                 setChangeLanguageModal(true);
               }}
@@ -399,7 +415,11 @@ export default memo(function DashboardScreen({ navigation }) {
               <FontAwesome6 name="edit" size={screenHeight < 760 ? 20 : 30} color={colors.menuProfileText} />
             </ChangeLanguage>
           </BlockProfileSectionLanguage>
-          <BlockProfileSectionAvatar onPress={() => pickImage()}>
+          <BlockProfileSectionAvatar
+            accessibilityLabel="Button change avatar, choose from galery"
+            accessible={true}
+            onPress={() => pickImage()}
+          >
             <Image
               style={{ width: "50%", aspectRatio: 1, objectfit: "cover", borderRadius: 180 }}
               source={{
@@ -408,11 +428,13 @@ export default memo(function DashboardScreen({ navigation }) {
             />
           </BlockProfileSectionAvatar>
           <BlockSite>
-            <Site onPress={() => redirectToSite()}>
+            <Site accessibilityLabel="Redirect to site of Order App" accessible={true} onPress={() => redirectToSite()}>
               <SiteText>{t("SiteText")}</SiteText>
             </Site>
           </BlockSite>
           <ButtonLogout
+            accessibilityLabel="Button logout"
+            accessible={true}
             onPress={() => {
               logOut();
             }}
@@ -423,7 +445,7 @@ export default memo(function DashboardScreen({ navigation }) {
         </BlockProfile>
       ) : null}
       {changeLanguageModal ? (
-        <ModalLanguage>
+        <ModalLanguage accessibilityLabel="Modal window to change language" accessible={true}>
           <TouchableOpacity onPress={() => setChangeLanguageModal(false)}>
             <LanguageText style={{ color: "white", textAlign: "center", marginBottom: "20%" }}>
               {t("ProffileCancel")}
@@ -433,6 +455,8 @@ export default memo(function DashboardScreen({ navigation }) {
               renderItem={({ item }) => (
                 <View style={{ marginTop: "15%" }}>
                   <TouchableOpacity
+                    accessibilityLabel={`Button to change language to ${languageList[item].nativeName}`}
+                    accessible={true}
                     onPress={() => {
                       setLanguage(item);
                       changeLng(item);
@@ -447,6 +471,8 @@ export default memo(function DashboardScreen({ navigation }) {
                     <Image style={{ width: "100%", height: "100%" }} source={images[item]}></Image>
                   </TouchableOpacity>
                   <TouchableOpacity
+                    accessibilityLabel={`Button to change language to ${languageList[item].nativeName}`}
+                    accessible={true}
                     onPress={() => {
                       setLanguage(item);
                       changeLng(item);
