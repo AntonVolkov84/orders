@@ -238,6 +238,23 @@ const BlockParticipantName = styled.Text`
   text-overflow: ellipsis;
   text-align: center;
 `;
+const BlockAlredyPartc = styled.View`
+  background-color: ${colors.modalNiknameBackgroundWindow};
+  width: fit-content;
+  height: 100px;
+  margin-top: 5px;
+  flex-direction: column;
+  padding-left: 10px;
+  padding-right: 10px;
+`;
+const BlockAlredyPartcTitle = styled.Text`
+  text-align: center;
+  font-size: ${screenHeight < 760 ? "20px" : "25px"};
+  color: ${colors.OrderDashboardName};
+`;
+const BlockAlredyPartcText = styled.Text`
+  font-size: ${screenHeight < 760 ? "20px" : "25px"};
+`;
 export default memo(function OrderScreen({ route, navigation }) {
   const [name, setName] = useState("");
   const [quantity, setQuantity] = useState("");
@@ -667,24 +684,37 @@ export default memo(function OrderScreen({ route, navigation }) {
               {loadingData ? (
                 <Text>Loading...</Text>
               ) : (
-                <BlockAddingParticipant horizontal>
-                  {allParticipantsData.map((p, index) => (
-                    <BlockParticipant
-                      key={index}
-                      onPress={() => {
-                        updateParticipants(p.email);
-                      }}
-                    >
-                      <BlockParticipantAvatar
-                        source={{
-                          uri: `${p.photoURL}`,
+                <View>
+                  <BlockAddingParticipant horizontal>
+                    {allParticipantsData.map((p, index) => (
+                      <BlockParticipant
+                        key={index}
+                        onPress={() => {
+                          updateParticipants(p.email);
                         }}
-                      ></BlockParticipantAvatar>
-                      <BlockParticipantName numberOfLines={1}>{p.nikname || "No nikname"}</BlockParticipantName>
-                    </BlockParticipant>
-                  ))}
-                </BlockAddingParticipant>
+                      >
+                        <BlockParticipantAvatar
+                          source={{
+                            uri: `${p.photoURL}`,
+                          }}
+                        ></BlockParticipantAvatar>
+                        <BlockParticipantName numberOfLines={1}>{p.nikname || "No nikname"}</BlockParticipantName>
+                      </BlockParticipant>
+                    ))}
+                  </BlockAddingParticipant>
+                </View>
               )}
+              <BlockAlredyPartc>
+                <BlockAlredyPartcTitle>Уже участвуют:</BlockAlredyPartcTitle>
+                <FlatList
+                  data={item.participants}
+                  horizontal
+                  accessibilityLabel="Task list"
+                  accessible={true}
+                  renderItem={({ item }) => <BlockAlredyPartcText>{item}, </BlockAlredyPartcText>}
+                  keyExtractor={(item, index) => index}
+                />
+              </BlockAlredyPartc>
             </View>
           </LinearGradient>
         </AddParticipantModal>
