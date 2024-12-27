@@ -705,11 +705,11 @@ export default memo(function OrderScreen({ route, navigation }) {
                 </View>
               )}
               <BlockAlredyPartc>
-                <BlockAlredyPartcTitle>Уже участвуют:</BlockAlredyPartcTitle>
+                <BlockAlredyPartcTitle>{t("OrderScreenAlredyParticipate")}</BlockAlredyPartcTitle>
                 <FlatList
                   data={item.participants}
                   horizontal
-                  accessibilityLabel="Task list"
+                  accessibilityLabel={`Alredy participate: ${item}`}
                   accessible={true}
                   renderItem={({ item }) => <BlockAlredyPartcText>{item}, </BlockAlredyPartcText>}
                   keyExtractor={(item, index) => index}
