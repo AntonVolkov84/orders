@@ -144,6 +144,12 @@ const BlockProfileSectionAvatar = styled.TouchableOpacity`
 `;
 const BlockProfileText = styled.Text`
   color: ${colors.menuFrofileText};
+  font-size: ${screenHeight < 760 ? "20px" : "25px"};
+  margin-left: 5%;
+  overflow: wrap;
+`;
+const BlockProfileTextEmail = styled.Text`
+  color: ${colors.menuFrofileText};
   font-size: ${screenHeight < 760 ? "15px" : "20px"};
   margin-left: 5%;
   overflow: wrap;
@@ -168,9 +174,10 @@ const ModalLanguage = styled.View`
   align-items: center;
   z-index: 3;
 `;
+const ChoseLanguage = styled.TouchableOpacity``;
 const LanguageText = styled.Text`
   color: ${colors.titleText};
-  font-size: ${screenHeight < 760 ? "20px" : "25px"};
+  font-size: ${screenHeight < 760 ? "25px" : "30px"};
   text-align: center;
 `;
 const BlockSite = styled.View`
@@ -185,6 +192,7 @@ const Site = styled.TouchableOpacity`
 `;
 const SiteText = styled.Text`
   color: ${colors.SiteText};
+  font-size: ${screenHeight < 760 ? "15px" : "20px"};
 `;
 const auth = getAuth();
 
@@ -375,10 +383,10 @@ export default memo(function DashboardScreen({ navigation }) {
       {visibilityMenu ? (
         <BlockProfile>
           <BlockProfileSectionEmail>
-            <BlockProfileText>{t("ProffileEmail")}</BlockProfileText>
-            <BlockProfileText>
+            <BlockProfileTextEmail>{t("ProffileEmail")}</BlockProfileTextEmail>
+            <BlockProfileTextEmail>
               {loadingUserProfileData ? <Text>Loading...</Text> : auth.currentUser.email}
-            </BlockProfileText>
+            </BlockProfileTextEmail>
           </BlockProfileSectionEmail>
           <BlockProfileSectionNikname>
             <BlockProfileText>{t("ProffileNikname")}</BlockProfileText>
@@ -412,7 +420,7 @@ export default memo(function DashboardScreen({ navigation }) {
                 setChangeLanguageModal(true);
               }}
             >
-              <FontAwesome6 name="edit" size={screenHeight < 760 ? 20 : 30} color={colors.menuProfileText} />
+              <FontAwesome6 name="edit" size={screenHeight < 760 ? 25 : 35} color={colors.menuProfileText} />
             </ChangeLanguage>
           </BlockProfileSectionLanguage>
           <BlockProfileSectionAvatar
@@ -454,23 +462,7 @@ export default memo(function DashboardScreen({ navigation }) {
               data={Object.keys(LanguageResources)}
               renderItem={({ item }) => (
                 <View style={{ marginTop: "15%" }}>
-                  <TouchableOpacity
-                    accessibilityLabel={`Button to change language to ${languageList[item].nativeName}`}
-                    accessible={true}
-                    onPress={() => {
-                      setLanguage(item);
-                      changeLng(item);
-                    }}
-                    style={{
-                      width: "50%",
-                      aspectRatio: 1 / 1,
-                      justifyContent: "center",
-                      alignSelf: "center",
-                    }}
-                  >
-                    <Image style={{ width: "100%", height: "100%" }} source={images[item]}></Image>
-                  </TouchableOpacity>
-                  <TouchableOpacity
+                  <ChoseLanguage
                     accessibilityLabel={`Button to change language to ${languageList[item].nativeName}`}
                     accessible={true}
                     onPress={() => {
@@ -479,7 +471,7 @@ export default memo(function DashboardScreen({ navigation }) {
                     }}
                   >
                     <LanguageText>{languageList[item].nativeName}</LanguageText>
-                  </TouchableOpacity>
+                  </ChoseLanguage>
                 </View>
               )}
             />

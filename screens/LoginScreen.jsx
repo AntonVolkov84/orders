@@ -53,9 +53,10 @@ const ButtonRegistration = styled.TouchableOpacity`
   justify-content: center;
   align-items: center;
   margin-top: 15%;
+  height: fit-content;
 `;
 const ButtonRegistrationText = styled.Text`
-  font-size: ${screenHeight < 760 ? "20px" : "25px"};
+  font-size: ${screenHeight < 760 ? "25px" : "30px"};
   color: ${colors.buttonRegistrationColor};
 `;
 const ButtonGoogle = styled.TouchableOpacity`

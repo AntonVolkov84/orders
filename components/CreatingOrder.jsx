@@ -24,7 +24,7 @@ const BlockAddingOrderTitle = styled.Text`
 `;
 const BlockAddingOrderName = styled.View`
   flex-direction: row;
-  height: ${screenHeight < 760 ? "30px" : "40px"};
+  height: ${screenHeight < 760 ? "36px" : "48px"};
   align-items: center;
 `;
 const BlockAddingOrderNameText = styled.Text`
@@ -42,7 +42,7 @@ const InputOrderName = styled.TextInput`
   padding-right: 1%;
   color: ${colors.creatingOrderText};
   margin-left: 2%;
-  font-size: 15px;
+  font-size: ${screenHeight < 760 ? "15px" : "20px"};
 `;
 const BlockAddingOrderDate = styled.TouchableOpacity`
   color: ${colors.titleText};
@@ -69,6 +69,9 @@ const AddingOrderDate = styled.View`
 `;
 const BlockAddingOrderAdd = styled.View`
   color: ${colors.titleText};
+  height: 44px;
+  align-items: center;
+  padding-left: 1%;
   font-size: ${screenHeight < 760 ? "15px" : "20px"};
   flex-direction: row;
 `;
@@ -122,7 +125,7 @@ const BlockInputBtn = styled.TouchableOpacity`
   align-items: center;
 `;
 const BlockDelOrderBtn = styled.TouchableOpacity`
-  width: 12%;
+  width: 14%;
   position: absolute;
   right: 0;
   justify-content: center;
@@ -352,7 +355,7 @@ export default memo(function CreatingOrder({ participants, setCreateOrderModal, 
                       delFromChart(order.id);
                     }}
                   >
-                    <Feather name="delete" size={screenHeight < 760 ? 20 : 25} color={colors.titleText} />
+                    <Feather name="delete" size={screenHeight < 760 ? 25 : 30} color={colors.titleText} />
                   </BlockDelOrderBtn>
                 </BlockAddingOrderAdd>
               ))}

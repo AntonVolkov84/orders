@@ -49,7 +49,7 @@ const BoxInput = styled.View`
   background-color: ${colors.MessagingInputBackground};
   padding: 3px;
   width: 99%;
-  height: ${screenHeight < 760 ? "40px" : "50px"};
+  height: ${screenHeight < 760 ? "48px" : "60px"};
   position: absolute;
   bottom: 70px;
   left: 6%;
@@ -88,7 +88,6 @@ export default memo(function MessagingScreen({ route, navigation }) {
   const currentEmail = currentUser.email;
   const { t } = useTranslation();
   const nameOfOrder = item.nameOfOrder;
-  console.log("MessagingScreen");
 
   const markMessagesAsRead = async () => {
     const refForChangeMessageStatus = query(
@@ -224,7 +223,7 @@ export default memo(function MessagingScreen({ route, navigation }) {
           value={message}
         ></BoxInputText>
         <BlockIconMessage accessibilityLabel="Button add message" accessible={true} onPress={() => sendMessage()}>
-          <FontAwesome name="send" size={screenHeight < 760 ? 15 : 20} color={colors.MessagingIconColor} />
+          <FontAwesome name="send" size={screenHeight < 760 ? 20 : 25} color={colors.MessagingIconColor} />
         </BlockIconMessage>
       </BoxInput>
       <View style={{ position: "absolute", bottom: 0, paddingleft: "1%" }}>
