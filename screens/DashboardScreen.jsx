@@ -130,7 +130,7 @@ export default memo(function DashboardScreen({ navigation }) {
           </BlockOrderIcon>
         </>
       )}
-      <View style={{ position: "absolute", bottom: 0, paddingleft: "1%" }}>
+      <View style={{ position: "absolute", bottom: 0, paddingleft: "1%", zIndex: 10 }}>
         <BannerAd
           unitId="ca-app-pub-3940256099942544/6300978111"
           size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER}

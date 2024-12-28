@@ -35,7 +35,7 @@ const BlockMenuProfileText = styled.Text`
 `;
 const BlockProfile = styled.TouchableOpacity`
   width: 98%;
-  height: 92%;
+  height: 88%;
   position: absolute;
   margin-top: 3%;
   background-color: ${colors.menuProfile};
@@ -208,12 +208,6 @@ export default memo(function DashboardScreen({ navigation }) {
   const [changeLanguageModal, setChangeLanguageModal] = useState(false);
   const storage = getStorage(app);
   const { t } = useTranslation();
-
-  const images = {
-    en: require("../assets/england.png"),
-    ru: require("../assets/russia.png"),
-    ua: require("../assets/ukraine.png"),
-  };
 
   const changeLng = (lng) => {
     i18next.changeLanguage(lng);
@@ -401,7 +395,7 @@ export default memo(function DashboardScreen({ navigation }) {
                 setChangeNiknameModal(true);
               }}
             >
-              <FontAwesome6 name="edit" size={screenHeight < 760 ? 20 : 30} color={colors.menuProfileText} />
+              <FontAwesome6 name="edit" size={screenHeight < 760 ? 25 : 35} color={colors.menuProfileText} />
             </ChangeNikname>
           </BlockProfileSectionNikname>
           <BlockProfileSectionLanguage>
@@ -455,13 +449,13 @@ export default memo(function DashboardScreen({ navigation }) {
       {changeLanguageModal ? (
         <ModalLanguage accessibilityLabel="Modal window to change language" accessible={true}>
           <TouchableOpacity onPress={() => setChangeLanguageModal(false)}>
-            <LanguageText style={{ color: "white", textAlign: "center", marginBottom: "20%" }}>
+            <LanguageText style={{ color: "white", textAlign: "center", marginBottom: "15%" }}>
               {t("ProffileCancel")}
             </LanguageText>
             <FlatList
               data={Object.keys(LanguageResources)}
               renderItem={({ item }) => (
-                <View style={{ marginTop: "15%" }}>
+                <View style={{ marginTop: "5%" }}>
                   <ChoseLanguage
                     accessibilityLabel={`Button to change language to ${languageList[item].nativeName}`}
                     accessible={true}

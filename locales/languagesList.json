@@ -10,5 +10,9 @@
   "ua": {
     "name": "Український",
     "nativeName": "Українська"
+  },
+  "pl": {
+    "name": "Polski",
+    "nativeName": "Polski"
   }
 }

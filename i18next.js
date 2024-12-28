@@ -3,11 +3,13 @@ import { initReactI18next } from "react-i18next";
 import en from "./locales/en.json";
 import ru from "./locales/ru.json";
 import ua from "./locales/ua.json";
+import pl from "./locales/pl.json";
 
 export const LanguageResources = {
   en: { translation: en },
   ru: { translation: ru },
   ua: { translation: ua },
+  pl: { translation: pl },
 };
 
 i18next.use(initReactI18next).init({
