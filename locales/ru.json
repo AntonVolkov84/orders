@@ -21,6 +21,7 @@
   "OrderScreenModalUpdate": "Обновить",
   "OrderScreenAlertAdd": "Добавить",
   "OrderScreenAlertText": "Вы действительно хотите добавить этого участника:",
+  "OrderScreenAlertEmptyField": "Некоторые поля не заполнены",
   "OrderScreenAlredyParticipate": "Уже участвуют:",
   "MessagingGoBack": "Назад",
   "MessagingMakeMessage": "Создать сообщение",

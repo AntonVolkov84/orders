@@ -46,7 +46,7 @@ const BlockProfile = styled.TouchableOpacity`
 const BlockProfileSectionNikname = styled.TouchableOpacity`
   width: 100%;
   height: 10%;
-  flex-direction: row;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   background-color: ${colors.menuProfile};
@@ -193,6 +193,14 @@ const Site = styled.TouchableOpacity`
 const SiteText = styled.Text`
   color: ${colors.SiteText};
   font-size: ${screenHeight < 760 ? "15px" : "20px"};
+`;
+const BlockNameAndChangeName = styled.View`
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  width: 98%;
+  padding-left: 1%;
+  padding-right: 1%;
 `;
 const auth = getAuth();
 
@@ -384,19 +392,21 @@ export default memo(function DashboardScreen({ navigation }) {
           </BlockProfileSectionEmail>
           <BlockProfileSectionNikname>
             <BlockProfileText>{t("ProffileNikname")}</BlockProfileText>
-            <BlockProfileText>
-              {loadingUserProfileData ? <Text>Loading...</Text> : userProfileData?.nikname || "wait for Nikname"}
-            </BlockProfileText>
-            <ChangeNikname
-              accessibilityLabel="Button to open window change nikname "
-              accessible={true}
-              onPress={() => {
-                setNewNikname("");
-                setChangeNiknameModal(true);
-              }}
-            >
-              <FontAwesome6 name="edit" size={screenHeight < 760 ? 25 : 35} color={colors.menuProfileText} />
-            </ChangeNikname>
+            <BlockNameAndChangeName>
+              <BlockProfileText style={{ maxWidth: "70%" }}>
+                {loadingUserProfileData ? <Text>Loading...</Text> : userProfileData?.nikname || "wait for Nikname"}
+              </BlockProfileText>
+              <ChangeNikname
+                accessibilityLabel="Button to open window change nikname "
+                accessible={true}
+                onPress={() => {
+                  setNewNikname("");
+                  setChangeNiknameModal(true);
+                }}
+              >
+                <FontAwesome6 name="edit" size={screenHeight < 760 ? 25 : 35} color={colors.menuProfileText} />
+              </ChangeNikname>
+            </BlockNameAndChangeName>
           </BlockProfileSectionNikname>
           <BlockProfileSectionLanguage>
             <BlockProfileText>{t("ProffileLanguage")}</BlockProfileText>

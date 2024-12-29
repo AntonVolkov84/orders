@@ -21,6 +21,7 @@
   "OrderScreenModalUpdate": "Update",
   "OrderScreenAlertAdd": "Add",
   "OrderScreenAlertText": "Do you want to add this participant:",
+  "OrderScreenAlertEmptyField": "Some field is empty",
   "OrderScreenAlredyParticipate": "Already participating:",
   "MessagingGoBack": "Go back",
   "MessagingMakeMessage": "Сreate a message",

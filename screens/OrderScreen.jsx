@@ -148,8 +148,8 @@ const ModalBlockInput = styled.View`
   align-items: center;
 `;
 const ModalButton = styled.TouchableOpacity`
-  width: 25%;
-  height: ${screenHeight < 760 ? "50px" : "70px"};
+  width: 30%;
+  height: ${screenHeight < 760 ? "50px" : "60px"};
 `;
 const InputFieldName = styled.TextInput`
   width: 70%;
@@ -326,7 +326,6 @@ export default memo(function OrderScreen({ route, navigation }) {
     }
   };
   const gettAllParticipants = async () => {
-    const currentEmail = auth.currentUser.email;
     try {
       const querySnapshot = await getDocs(collection(db, "AllParticipants", currentUserEmail, "PersonalParticipant"));
       const arr = querySnapshot.docs.map((doc) => doc.data().email);
@@ -364,7 +363,7 @@ export default memo(function OrderScreen({ route, navigation }) {
 
   const updateOrder = async () => {
     if (!name || !quantity) {
-      return Alert.alert("Some field is empty");
+      return Alert.alert(`${t("OrderScreenAlertEmptyField")}`);
     }
     const updatingOrder = {
       id: Date.parse(new Date()),
@@ -649,6 +648,8 @@ export default memo(function OrderScreen({ route, navigation }) {
             style={{ height: "100%", width: "100%", paddingTop: "5%" }}
           >
             <BlockButtonBtnBack
+              accessibilityLabel="Button go back to order screen"
+              accessible={true}
               style={{ marginTop: "19%", marginLeft: "5%" }}
               onPress={() => {
                 setModalAddParticipant(false);

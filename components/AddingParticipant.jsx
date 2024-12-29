@@ -249,8 +249,6 @@ export default memo(function AddingParticipant({ setParticipants, participants }
       {addingParticipantModal ? (
         <Modal>
           <ModalInput
-            accessibilityLabel="Input of email of participant which You will use in future"
-            accessible={true}
             placeholder={t("AddingParticipantsModalPlaceholder")}
             value={inputEmail}
             onChangeText={setInputEmail}

@@ -246,8 +246,6 @@ export default memo(function CreatingOrder({ participants, setCreateOrderModal, 
       <BlockAddingOrderName>
         <BlockAddingOrderNameText>{t("CreatingOrderName")}:</BlockAddingOrderNameText>
         <InputOrderName
-          accessibilityLabel="Order name input"
-          accessible={true}
           onChangeText={setNameForOrder}
           value={nameOfOrder}
           maxLength={14}

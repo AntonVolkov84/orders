@@ -65,11 +65,12 @@ const BoxInputText = styled.TextInput`
 `;
 const BlockIconMessage = styled.TouchableOpacity`
   position: absolute;
-  right: 5%;
+  right: 0;
   height: 100%;
   align-self: center;
   justify-content: center;
   align-items: center;
+  aspect-ratio: 1;
 `;
 const BlockForMessage = styled.View`
   width: 100%;
@@ -214,8 +215,6 @@ export default memo(function MessagingScreen({ route, navigation }) {
       </BlockMessaging>
       <BoxInput>
         <BoxInputText
-          accessibilityLabel="Message input"
-          accessible={true}
           placeholderTextColor={colors.MessagingPlaceholder}
           placeholder={t("MessagingMakeMessage")}
           multiline

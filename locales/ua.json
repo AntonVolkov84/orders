@@ -21,6 +21,7 @@
   "OrderScreenModalUpdate": "Оновити",
   "OrderScreenAlertAdd": "Додати",
   "OrderScreenAlertText": "Ви дійсно бажаєте додати цього учасника:",
+  "OrderScreenAlertEmptyField": "Деякі поля порожні",
   "OrderScreenAlredyParticipate": "Вже беруть участь:",
   "MessagingGoBack": "Назад",
   "MessagingMakeMessage": "Створити листа",

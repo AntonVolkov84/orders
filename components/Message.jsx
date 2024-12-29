@@ -12,10 +12,10 @@ const BlockMessage = styled.View`
   width: 100%;
   height: fit-content;
   flex-direction: row;
-  margin-bottom: 1%;
+  margin-bottom: 5%;
 `;
 const BlockForMessageAuthor = styled.View`
-  width: 25%;
+  width: 18%;
   height: fit-content;
   justify-content: start;
   align-items: center;
@@ -64,9 +64,7 @@ export default memo(function Message({ message }) {
             <AuthorAvatar source={{ uri: author.photoURL }}></AuthorAvatar>
             <AuthorName>{author.nikname}</AuthorName>
           </BlockForMessageAuthor>
-          <BlockForMessageText style={{ textAlign: isValide ? "right" : "start" }}>
-            {message.messageText}
-          </BlockForMessageText>
+          <BlockForMessageText style={{ textAlign: "start" }}>{message.messageText}</BlockForMessageText>
         </BlockMessage>
       ) : null}
     </>

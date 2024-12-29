@@ -72,6 +72,10 @@ const BlockOrderCreatorAvatar = styled.Image`
 `;
 const BlockOrderCreatorName = styled.Text`
   font-size: ${screenHeight < 760 ? "20px" : "25px"};
+  text-overflow: ellipsis;
+  width: 100%;
+  height: 20%;
+  text-align: center;
 `;
 
 const CloseOrderBtn = styled.TouchableOpacity`
@@ -132,8 +136,6 @@ export default memo(function OrdersDashboard({ item, navigation }) {
 
   return (
     <BlockOrderShow
-      accessibilityLabel="Block which transfer You to order screen"
-      accessible={true}
       onPress={() => {
         navigation.navigate("OrderScreen", { item });
       }}
