@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, FlatList } from "react-native";
+import { Keyboard, View, Text, TouchableOpacity, FlatList } from "react-native";
 import React, { useState, useEffect, memo } from "react";
 import * as colors from "../variables/colors";
 import { LinearGradient } from "expo-linear-gradient";
@@ -201,6 +201,7 @@ export default memo(function MessagingScreen({ route, navigation }) {
         {loaded ? (
           <BlockForMessage>
             <FlatList
+              onScroll={() => Keyboard.dismiss()}
               accessibilityLabel="Messages list"
               accessible={true}
               data={fetchedMessages}
