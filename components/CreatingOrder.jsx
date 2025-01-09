@@ -34,7 +34,7 @@ const BlockAddingOrderNameText = styled.Text`
   align-self: center;
 `;
 const InputOrderName = styled.TextInput`
-  width: 50%;
+  width: 54%;
   height: 100%;
   background-color: ${colors.backgroundColorInput};
   border-radius: 5px;
@@ -295,6 +295,8 @@ export default memo(function CreatingOrder({ participants, setCreateOrderModal, 
           />
         )}
         <BlockAddingOrderDate
+          accessibilityLabel="Choose date for order"
+          accessible={true}
           onPress={() => {
             setShowPicker(true);
           }}
@@ -304,8 +306,6 @@ export default memo(function CreatingOrder({ participants, setCreateOrderModal, 
       </AddingOrderDate>
       <BlockInput>
         <Input
-          accessibilityLabel="Order position name input"
-          accessible={true}
           ref={nameOrder}
           onChangeText={setName}
           value={name}
@@ -313,8 +313,6 @@ export default memo(function CreatingOrder({ participants, setCreateOrderModal, 
           placeholder={t("CreatingOrderPlaceholderName")}
         ></Input>
         <BlockInputQnt
-          accessibilityLabel="Order position quantity input"
-          accessible={true}
           onChangeText={setQuantity}
           value={quantity}
           maxLength={7}

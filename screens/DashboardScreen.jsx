@@ -108,7 +108,7 @@ export default memo(function DashboardScreen({ navigation }) {
       ) : (
         <>
           <Proffile />
-          <BlockOrdersShow>
+          <BlockOrdersShow accessibilityLabel="Block with all orders where you are participant" accessible={true}>
             {isLoaded ? (
               <SafeAreaProvider>
                 <SafeAreaView style={{ height: "94%" }}>
@@ -132,7 +132,7 @@ export default memo(function DashboardScreen({ navigation }) {
       )}
       <View style={{ position: "absolute", bottom: 0, paddingleft: "1%", zIndex: 10 }}>
         <BannerAd
-          unitId="ca-app-pub-3940256099942544/6300978111"
+          unitId="ca-app-pub-9267417700367649/6433322697"
           size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER}
           requestOptions={{
             requestNonPersonalizedAdsOnly: true,

@@ -624,7 +624,7 @@ export default memo(function OrderScreen({ route, navigation }) {
       </Container>
       <View style={{ position: "absolute", bottom: 0, paddingleft: "1%" }}>
         <BannerAd
-          unitId="ca-app-pub-3940256099942544/6300978111"
+          unitId="ca-app-pub-9267417700367649/6433322697"
           size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER}
           requestOptions={{
             requestNonPersonalizedAdsOnly: true,

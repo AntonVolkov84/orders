@@ -351,26 +351,18 @@ export default memo(function DashboardScreen({ navigation }) {
         <BlockMenuProfileText>{t("Proffile")}</BlockMenuProfileText>
       </BlockMenuProfile>
       {changeNiknameModal ? (
-        <ModalNikname>
+        <ModalNikname accessibilityLabel="Block which change nikname" accessible={true}>
           <ModalNiknameEntry>
             <ModalNiknameInput
-              accessibilityLabel="Input change nikname"
-              accessible={true}
               onChangeText={setNewNikname}
               maxLength={20}
               placeholder={t("ProffilePlaceholderNikname")}
             ></ModalNiknameInput>
             <ModalBlockBtn>
-              <ModalNiknameBtnCancel
-                accessibilityLabel="Button cancel changing nikname"
-                accessible={true}
-                onPress={() => setChangeNiknameModal(false)}
-              >
+              <ModalNiknameBtnCancel onPress={() => setChangeNiknameModal(false)}>
                 <ModalNiknameBtnText>{t("ProffileCancel")}</ModalNiknameBtnText>
               </ModalNiknameBtnCancel>
               <ModalNiknameBtnOk
-                accessibilityLabel="Button cange nikname"
-                accessible={true}
                 onPress={() => {
                   handleChangeNikname();
                   setChangeNiknameModal(false);
@@ -383,7 +375,7 @@ export default memo(function DashboardScreen({ navigation }) {
         </ModalNikname>
       ) : null}
       {visibilityMenu ? (
-        <BlockProfile>
+        <BlockProfile accessibilityLabel="Block whith information about user" accessible={true}>
           <BlockProfileSectionEmail>
             <BlockProfileTextEmail>{t("ProffileEmail")}</BlockProfileTextEmail>
             <BlockProfileTextEmail>
@@ -458,7 +450,11 @@ export default memo(function DashboardScreen({ navigation }) {
       ) : null}
       {changeLanguageModal ? (
         <ModalLanguage accessibilityLabel="Modal window to change language" accessible={true}>
-          <TouchableOpacity onPress={() => setChangeLanguageModal(false)}>
+          <TouchableOpacity
+            accessibilityLabel="Block where you can change language"
+            accessible={true}
+            onPress={() => setChangeLanguageModal(false)}
+          >
             <LanguageText style={{ color: "white", textAlign: "center", marginBottom: "15%" }}>
               {t("ProffileCancel")}
             </LanguageText>

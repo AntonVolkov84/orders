@@ -12,6 +12,7 @@ import { doc, setDoc, serverTimestamp } from "firebase/firestore";
 import { getAuth, signOut, sendEmailVerification, createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { AppContext } from "../App.js";
 import { Dimensions } from "react-native";
+import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 
 const screenHeight = Dimensions.get("screen").height;
 
@@ -37,6 +38,35 @@ const InputField = styled.TextInput`
   border: none;
   color: ${colors.colorTextInput};
   font-size: ${screenHeight < 760 ? "15px" : "20px"};
+`;
+const InputFieldPassword = styled.TextInput`
+  width: 100%;
+  height: ${screenHeight < 760 ? "50px" : "70px"};
+  border-radius: 10px;
+  background-color: ${colors.backgroundColorInput};
+  border: none;
+  color: ${colors.colorTextInput};
+  font-size: ${screenHeight < 760 ? "15px" : "20px"};
+`;
+const InputFieldPasswordBlock = styled.View`
+  width: 80%;
+  height: ${screenHeight < 760 ? "50px" : "70px"};
+  margin-top: 5%;
+  padding-left: 5%;
+  margin-left: 10%;
+  border-radius: 10px;
+  background-color: ${colors.backgroundColorInput};
+  border: none;
+  color: ${colors.colorTextInput};
+  font-size: ${screenHeight < 760 ? "15px" : "20px"};
+  position: relative;
+`;
+const Eye = styled.TouchableOpacity`
+  position: absolute;
+  right: 5px;
+  top: ${screenHeight < 760 ? "10px" : "20px"};
+  justify-content: center;
+  align-items: center;
 `;
 const AvatarBlock = styled.TouchableOpacity`
   aspect-ratio: 1;
@@ -68,10 +98,10 @@ export default function RegistrationScreen({ navigation }) {
   const [photoURL, setPhotoURL] = useState("");
   const [nikname, setNikname] = useState("");
   const [fileName, setFileName] = useState("");
+  const [secureText, setSecureText] = useState(true);
   const storage = getStorage(app);
   const auth = getAuth();
   const expoPushToken = useContext(AppContext);
-  console.log("RegistrationScreen");
 
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -126,6 +156,7 @@ export default function RegistrationScreen({ navigation }) {
     }
   };
   const addToUsers = async (userId) => {
+    const emailInLowerCase = email.toLowerCase();
     try {
       const user = {
         language: "en",
@@ -134,18 +165,24 @@ export default function RegistrationScreen({ navigation }) {
         photoURL:
           photoURL ||
           "https://firebasestorage.googleapis.com/v0/b/orders-78c1c.appspot.com/o/avatar%2FComponent%203.png?alt=media&token=9365bf71-bcfd-44d3-adb5-28bdbf7e0bf4",
-        email: email,
+        email: emailInLowerCase,
         userId: userId,
         file: fileName,
         pushToken: expoPushToken,
       };
-      await setDoc(doc(db, "users", email), user);
+      await setDoc(doc(db, "users", emailInLowerCase), user);
     } catch (error) {
       console.log("add to users", error);
     }
   };
 
   const handleRegister = (email, password) => {
+    if (password.length < 6) {
+      return Alert.alert("Your password should be no less then 6 symbols");
+    }
+    if (nikname.length < 1) {
+      return Alert.alert("Your nikname should be no less then 1 symbols");
+    }
     createUserWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         const user = userCredential.user;
@@ -195,7 +232,22 @@ export default function RegistrationScreen({ navigation }) {
           placeholder={"Type your email"}
           onChangeText={setEmail}
         ></InputField>
-        <InputField secureTextEntry={true} placeholder={"Type your password"} onChangeText={setPassword}></InputField>
+        <InputFieldPasswordBlock>
+          <InputFieldPassword
+            secureTextEntry={secureText}
+            placeholder={"Type your password"}
+            onChangeText={setPassword}
+          ></InputFieldPassword>
+          {secureText ? (
+            <Eye onPress={() => setSecureText(false)}>
+              <FontAwesome6 name="eye" size={screenHeight < 760 ? 15 : 28} color={colors.placeolderColor} />
+            </Eye>
+          ) : (
+            <Eye onPress={() => setSecureText(true)}>
+              <FontAwesome6 name="eye-slash" size={screenHeight < 760 ? 15 : 28} color={colors.placeolderColor} />
+            </Eye>
+          )}
+        </InputFieldPasswordBlock>
         <InputField placeholder={"Type your Nikname"} onChangeText={setNikname}></InputField>
       </BlockInput>
       <AvatarBlock onPress={pickImage}>
