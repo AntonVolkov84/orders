@@ -20,6 +20,7 @@
   "OrderScreenModalPlaceholderItem": "Название позиции или дела",
   "OrderScreenModalPlaceholderQT": "Кол-во",
   "OrderScreenModalUpdate": "Обновить",
+  "OrderScreenModalAddPosition": "Добавить",
   "OrderScreenAlertAdd": "Добавить",
   "OrderScreenAlertText": "Вы действительно хотите добавить этого участника:",
   "OrderScreenAlertEmptyField": "Некоторые поля не заполнены",

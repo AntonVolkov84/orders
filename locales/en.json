@@ -20,6 +20,7 @@
   "OrderScreenModalPlaceholderItem": "Name of product or business",
   "OrderScreenModalPlaceholderQT": "Quantity",
   "OrderScreenModalUpdate": "Update",
+  "OrderScreenModalAddPosition": "Add",
   "OrderScreenAlertAdd": "Add",
   "OrderScreenAlertText": "Do you want to add this participant:",
   "OrderScreenAlertEmptyField": "Some field is empty",

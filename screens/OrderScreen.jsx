@@ -147,6 +147,21 @@ const ModalBlockInput = styled.View`
   justify-content: center;
   align-items: center;
 `;
+const ModalBlockAddNew = styled.View`
+  width: 100%;
+  height: 95%;
+  position: absolute;
+  padding-left: 1%;
+  padding-right: 1%;
+`;
+const ModalBlockAddNewInput = styled.View`
+  width: 100%;
+  margin-top: 38%;
+  height: ${screenHeight < 760 ? "180px" : "200px"};
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+`;
 const ModalButton = styled.TouchableOpacity`
   width: 30%;
   height: ${screenHeight < 760 ? "50px" : "60px"};
@@ -260,6 +275,7 @@ export default memo(function OrderScreen({ route, navigation }) {
   const [quantity, setQuantity] = useState("");
   const [ordersLoaded, setOrdersLoaded] = useState(false);
   const [modalUpdate, setModalUpdate] = useState(false);
+  const [modalAddPosition, setModalAddPosition] = useState(false);
   const [modalAddParticipant, setModalAddParticipant] = useState(false);
   const [orders, setOrders] = useState(null);
   const [dataItem, setDataItem] = useState(null);
@@ -472,7 +488,7 @@ export default memo(function OrderScreen({ route, navigation }) {
           </BlockButtonBtnBack>
           <BlockButtonBtn
             onPress={() => {
-              setModalUpdate(true);
+              setModalAddPosition(true);
             }}
           >
             <Button children={t("OrderScreenAdd")} />
@@ -719,6 +735,56 @@ export default memo(function OrderScreen({ route, navigation }) {
             </View>
           </LinearGradient>
         </AddParticipantModal>
+      ) : null}
+      {modalAddPosition ? (
+        <ModalBlockAddNew>
+          <LinearGradient
+            colors={[
+              colors.startColorForGradient,
+              colors.endColorForGradient,
+              colors.startColorForGradient,
+              colors.endColorForGradient,
+            ]}
+            start={{ x: 0.0, y: 0.0 }}
+            end={{ x: 1.0, y: 1.0 }}
+            style={{ height: "100%", width: "100%", paddingTop: "5%" }}
+          >
+            <ModalBlockAddNewInput>
+              <InputFieldName
+                onChangeText={setName}
+                maxLength={25}
+                value={name}
+                placeholder={t("OrderScreenModalPlaceholderItem")}
+              ></InputFieldName>
+              <InputFieldQuantity
+                onChangeText={setQuantity}
+                value={quantity}
+                maxLength={7}
+                placeholder={t("OrderScreenModalPlaceholderQT")}
+              ></InputFieldQuantity>
+            </ModalBlockAddNewInput>
+            <ModalBlockBtn>
+              <ModalButton
+                onPress={() => {
+                  setModalAddPosition(false);
+                  setName("");
+                  setQuantity("");
+                  setDataItem("");
+                }}
+              >
+                <Button children={t("ProffileCancel")} />
+              </ModalButton>
+              <ModalButton
+                onPress={() => {
+                  updateOrder();
+                  setModalAddPosition(false);
+                }}
+              >
+                <Button children={t("OrderScreenModalAddPosition")} />
+              </ModalButton>
+            </ModalBlockBtn>
+          </LinearGradient>
+        </ModalBlockAddNew>
       ) : null}
     </LinearGradient>
   );
