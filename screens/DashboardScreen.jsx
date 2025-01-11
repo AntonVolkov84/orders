@@ -90,7 +90,7 @@ export default memo(function DashboardScreen({ navigation }) {
       }
     );
   }, []);
-  console.log("Text", Boolean(fetchedOrders.length));
+
   return (
     <LinearGradient
       colors={[

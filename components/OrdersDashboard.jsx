@@ -7,6 +7,7 @@ import { getDoc, doc, deleteDoc, addDoc, collection, getDocs } from "firebase/fi
 import Button from "./Button";
 import { useTranslation } from "react-i18next";
 import { Dimensions } from "react-native";
+import * as Device from "expo-device";
 
 const screenHeight = Dimensions.get("screen").height;
 
@@ -145,10 +146,16 @@ export default memo(function OrdersDashboard({ item, navigation }) {
           <BlockInfoNameDate>
             <BlockOrderInfoName>{nameForOrder || "No name"}</BlockOrderInfoName>
             <BlockOrderInfoDate>
-              {new Date(dateForOrder).toLocaleDateString(`${t("OrderDashboardTime")}`, {
-                month: "long",
-                day: "numeric",
-              })}
+              {Device.osVersion <= 6 ? (
+                <>{new Date(dateForOrder).toLocaleDateString()}</>
+              ) : (
+                <>
+                  {new Date(dateForOrder).toLocaleDateString(`${t("OrderDashboardTime")}`, {
+                    month: "long",
+                    day: "numeric",
+                  })}
+                </>
+              )}
             </BlockOrderInfoDate>
           </BlockInfoNameDate>
           <View style={{ flexDirection: "row" }}>
