@@ -11,6 +11,7 @@
   "OrderDashboardTime": "pl-PL",
   "OrderDashboardAlertClose": "Zamówienie zamknięte",
   "OrderDashboardAlertNotClose": "Niektóre pozycje nie są zamknięte",
+  "OrderDashboardNoOrderText": "Kliknij koszyk, aby utworzyć pierwsze zamówienie",
   "OrderScreenAdd": "Dodaj pozycję",
   "OrderScreenMessaging": "Wiadomości",
   "OrderScreenBoughtItems": "Zrobiony",

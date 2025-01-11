@@ -80,6 +80,7 @@ export default memo(function LoginScreen({ navigation }) {
         const errorCode = error.code;
         const errorMessage = error.message;
         console.log("error in loginUser", errorCode, errorMessage);
+        Alert.alert("Wrong email or password");
       })
       .then(async () => {
         if (!auth.currentUser.emailVerified) {

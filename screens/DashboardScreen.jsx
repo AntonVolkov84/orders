@@ -15,6 +15,7 @@ import { SafeAreaView, SafeAreaProvider } from "react-native-safe-area-context";
 import { AppContext } from "../App";
 import { BannerAd, BannerAdSize } from "react-native-google-mobile-ads";
 import { Dimensions } from "react-native";
+import { useTranslation } from "react-i18next";
 
 const screenHeight = Dimensions.get("screen").height;
 
@@ -54,6 +55,19 @@ const BlockOrdersShow = styled.View`
   margin-right: 1%;
   margin-top: 1%;
 `;
+const NoOrder = styled.View`
+  width: 100%;
+  margin-top: 100px;
+  height: fit-content;
+  padding: 10px;
+  justify-content: center;
+  align-items: center;
+`;
+const NoOrderText = styled.Text`
+  font-size: ${screenHeight < 760 ? "15px" : "20px"};
+  text-align: center;
+  color: ${colors.titleText};
+`;
 export default memo(function DashboardScreen({ navigation }) {
   const [createOrderModal, setCreateOrderModal] = useState(false);
   const [participants, setParticipants] = useState([]);
@@ -61,6 +75,7 @@ export default memo(function DashboardScreen({ navigation }) {
   const [isLoaded, setIsLoaded] = useState(false);
   const currentEmail = auth.currentUser.email;
   const sendPushNotification = useContext(AppContext);
+  const { t } = useTranslation();
 
   useEffect(() => {
     onSnapshot(
@@ -75,7 +90,7 @@ export default memo(function DashboardScreen({ navigation }) {
       }
     );
   }, []);
-
+  console.log("Text", Boolean(fetchedOrders.length));
   return (
     <LinearGradient
       colors={[
@@ -109,6 +124,11 @@ export default memo(function DashboardScreen({ navigation }) {
         <>
           <Proffile />
           <BlockOrdersShow accessibilityLabel="Block with all orders where you are participant" accessible={true}>
+            {Boolean(fetchedOrders.length) ? null : (
+              <NoOrder>
+                <NoOrderText>{t("OrderDashboardNoOrderText")}</NoOrderText>
+              </NoOrder>
+            )}
             {isLoaded ? (
               <SafeAreaProvider>
                 <SafeAreaView style={{ height: "94%" }}>

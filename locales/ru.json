@@ -11,6 +11,7 @@
   "OrderDashboardTime": "ru-RU",
   "OrderDashboardAlertClose": "Заказ закрыт",
   "OrderDashboardAlertNotClose": "Какая-то позиция не закрыта",
+  "OrderDashboardNoOrderText": "Нажмите на корзину для создания первого заказа",
   "OrderScreenAdd": "Добавить позицию",
   "OrderScreenMessaging": "Сообщения",
   "OrderScreenBoughtItems": "Сделано",

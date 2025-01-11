@@ -11,6 +11,7 @@
   "OrderDashboardTime": "en-EN",
   "OrderDashboardAlertClose": "Замовлення закрито",
   "OrderDashboardAlertNotClose": "Якась позиція не закрита",
+  "OrderDashboardNoOrderText": "Натисніть на кошик для створення першого замовлення",
   "OrderScreenAdd": "Додати позицію",
   "OrderScreenMessaging": "Листування",
   "OrderScreenBoughtItems": "Зроблено",

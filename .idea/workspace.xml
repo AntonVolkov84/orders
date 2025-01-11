@@ -5,14 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="26999ed6-1ac2-4960-90f1-dc443e82ad24" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app.json" beforeDir="false" afterPath="$PROJECT_DIR$/app.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/CreatingOrder.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/CreatingOrder.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/Proffile.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/Proffile.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/screens/DashboardScreen.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/screens/DashboardScreen.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/screens/MessagingScreen.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/screens/MessagingScreen.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/screens/OrderScreen.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/screens/OrderScreen.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/screens/LoginScreen.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/screens/LoginScreen.jsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

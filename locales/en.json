@@ -11,6 +11,7 @@
   "OrderDashboardTime": "en-EN",
   "OrderDashboardAlertClose": "Order complete and close!",
   "OrderDashboardAlertNotClose": "Some position is not close!",
+  "OrderDashboardNoOrderText": "Click on the cart to create your first order",
   "OrderScreenAdd": "Add one more",
   "OrderScreenMessaging": "Messaging",
   "OrderScreenBoughtItems": "Bought items",
