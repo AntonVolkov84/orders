@@ -36,6 +36,7 @@
   "AddingParticipantsAskDelParticipant": "You want to delete this participant",
   "AddingParticipantsDelParticipant": "Participant deleted",
   "AddingParticipantsDel": "Delete",
+  "AddingParticipantsNoOne": "No one participant. Please add",
   "CreatingOrderCreate": "Creating order",
   "CreatingOrderName": "Name of order",
   "CreatingOrderNamePlaceholder": "Choose order name",

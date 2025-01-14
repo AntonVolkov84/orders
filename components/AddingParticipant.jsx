@@ -115,6 +115,7 @@ export default memo(function AddingParticipant({ setParticipants, participants }
   const [loadingData, setLoadingData] = useState(true);
   const [allParticipantsData, setAllParticipantsData] = useState([]);
   const [addingParticipantModal, setAddingParticipantModal] = useState(false);
+  const [noOneParticipant, setNoOneParticipant] = useState(true);
   const [delParticipantModal, setDelParticipantModal] = useState(false);
   const [participantForDeleting, setParticipantForDeleting] = useState("");
   const { t } = useTranslation();
@@ -187,6 +188,7 @@ export default memo(function AddingParticipant({ setParticipants, participants }
     for (i = 0; i < arr.length; i++) {
       const docSnap = await getDoc(doc(db, "users", arr[i]));
       if (docSnap.exists()) {
+        setNoOneParticipant(false);
         newArr.push(docSnap.data());
       }
       if (i === arr.length - 1) {
@@ -286,9 +288,20 @@ export default memo(function AddingParticipant({ setParticipants, participants }
               color={colors.APBorderColor}
             />
           </BlockNoOneIcon>
-          <Text style={{ textAlign: "center", textJustify: "center", color: colors.titleText, fontSize: 20 }}>
-            Loading...
-          </Text>
+          {noOneParticipant ? (
+            <Text
+              style={{
+                color: colors.titleText,
+                fontSize: 20,
+              }}
+            >
+              {t("AddingParticipantsNoOne")}
+            </Text>
+          ) : (
+            <Text style={{ textAlign: "center", textJustify: "center", color: colors.titleText, fontSize: 20 }}>
+              Loading...
+            </Text>
+          )}
         </BlockNoOne>
       ) : (
         <Repair horizontal>

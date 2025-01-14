@@ -36,6 +36,7 @@
   "AddingParticipantsAskDelParticipant": "Ви бажаєте видалити цього учасника?",
   "AddingParticipantsDelParticipant": "Учасник видален",
   "AddingParticipantsDel": "Видалити",
+  "AddingParticipantsNoOne": "Немає учасників. Додайте..",
   "CreatingOrderCreate": "Створення замовлення",
   "CreatingOrderName": "Назва замовлення",
   "CreatingOrderNamePlaceholder": "Оберіть назву",

@@ -36,6 +36,7 @@
   "AddingParticipantsAskDelParticipant": "Вы хотите удалить данного участника?",
   "AddingParticipantsDelParticipant": "Участник удален",
   "AddingParticipantsDel": "Удалить",
+  "AddingParticipantsNoOne": "Еще нет участников. Добавьте",
   "CreatingOrderCreate": "Создание заказа",
   "CreatingOrderName": "Название заказа",
   "CreatingOrderNamePlaceholder": "Выберите название",
