@@ -57,11 +57,11 @@ const BoxInput = styled.View`
   flex-direction: row;
 `;
 const BoxInputText = styled.TextInput`
-  padding: 8px;
+  padding: 5px;
   width: 90%;
   height: 100%;
   color: ${colors.MessagingInputColor};
-  font-size: ${screenHeight < 760 ? "15px" : "20px"};
+  font-size: ${screenHeight < 760 ? "13px" : "18px"};
 `;
 const BlockIconMessage = styled.TouchableOpacity`
   position: absolute;
@@ -129,7 +129,7 @@ export default memo(function MessagingScreen({ route, navigation }) {
         const pushMessage = {
           to: arrOfReseiver,
           sound: `default`,
-          title: `Comment have arrived for ORDER ${nameOfOrder}`,
+          title: `Comment for ORDER ${nameOfOrder}`,
           body: message,
         };
         await fetch("https://exp.host/--/api/v2/push/send", {
@@ -157,6 +157,8 @@ export default memo(function MessagingScreen({ route, navigation }) {
       (snapshot) => {
         setFetchedMessages(
           snapshot.docs.map((doc) => ({
+            docId: doc.id,
+            parentId: doc.ref.parent.parent.id,
             ...doc.data(),
           }))
         );

@@ -47,5 +47,7 @@
   "CreatingOrderPlaceholderName": "Nazwa artykułu lub zadania",
   "CreatingOrderPlaceholderQT": "Ilość",
   "CreatingOrderMakeOrder": "Utwórzyć",
-  "SiteText": "Odwiedź stronę lub skontaktuj się z nami"
+  "SiteText": "Odwiedź stronę lub skontaktuj się z nami",
+  "messageModalUpdate": "Zmiana",
+  "messageModalDelete": "Usuwać"
 }

@@ -123,7 +123,6 @@ export default memo(function OrdersDashboard({ item, navigation }) {
         const arr = [];
         const delMessages = await getDocs(collection(db, "messages", docId, "conversation"));
         delMessages.forEach((doc) => {
-          console.log(doc.data());
           arr.push(doc.id);
         });
         arr.forEach(async (id) => {

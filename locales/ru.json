@@ -47,5 +47,7 @@
   "CreatingOrderPlaceholderName": "Название позиции или дела",
   "CreatingOrderPlaceholderQT": "Кол-во",
   "CreatingOrderMakeOrder": "Создать",
-  "SiteText": "Посетить сайт или связаться с нами"
+  "SiteText": "Посетить сайт или связаться с нами",
+  "messageModalUpdate": "Изменить",
+  "messageModalDelete": "Удалить"
 }

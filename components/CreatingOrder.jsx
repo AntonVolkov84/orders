@@ -187,7 +187,7 @@ export default memo(function CreatingOrder({ participants, setCreateOrderModal, 
       const message = {
         to: arrOfReseiver,
         sound: "default",
-        title: `You have got a new ORDER from ${arrOfParicipantsEmail[0]} with name ${nameOfOrder}`,
+        title: `New ORDER ${nameOfOrder}`,
         body: "Do not forget to complete me!!!",
         data: { someData: orders },
       };

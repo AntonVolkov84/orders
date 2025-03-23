@@ -322,7 +322,7 @@ export default memo(function OrderScreen({ route, navigation }) {
       const message = {
         to: pushToken,
         sound: "default",
-        title: `You have got a new ORDER with name ${nameOfOrder}`,
+        title: `New ORDER with name ${nameOfOrder}`,
         body: "Do not forget to complete me!!!",
         data: { someData: item },
       };

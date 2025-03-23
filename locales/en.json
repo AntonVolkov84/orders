@@ -47,5 +47,7 @@
   "CreatingOrderPlaceholderName": "Name of product or business",
   "CreatingOrderPlaceholderQT": "Quantity",
   "CreatingOrderMakeOrder": "Create",
-  "SiteText": "To visit our site or contact us click here"
+  "SiteText": "To visit our site or contact us click here",
+  "messageModalUpdate": "Update",
+  "messageModalDelete": "Delete"
 }

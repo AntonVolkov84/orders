@@ -43,3 +43,7 @@ export const OrderDashboardName = "#fa0a42";
 export const ModalNiknameBtnOk = "#34d95d";
 export const ModalNiknameBtnCancel = "#e83525";
 export const SiteText = "#ae1fd1";
+export const MessageBackgroundColor = "#6ba3be";
+export const MessageBackgroundColorWithAuthor = "#33deb0";
+export const MessageIconUpdateMessage = "#a8dce7";
+export const MessageIconUpdateMessageBackground = "#2b85cf";
