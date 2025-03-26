@@ -74,7 +74,6 @@ export default memo(function DashboardScreen({ navigation }) {
   const [fetchedOrders, setFetchedOrders] = useState([]);
   const [isLoaded, setIsLoaded] = useState(false);
   const currentEmail = auth.currentUser.email;
-  const sendPushNotification = useContext(AppContext);
   const { t } = useTranslation();
 
   useEffect(() => {
@@ -112,7 +111,6 @@ export default memo(function DashboardScreen({ navigation }) {
             </BlockAddingParticipant>
             <BlockAddingOrder>
               <CreatingOrder
-                sendPushNotification={sendPushNotification}
                 participants={participants}
                 setParticipants={setParticipants}
                 setCreateOrderModal={setCreateOrderModal}

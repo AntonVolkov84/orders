@@ -92,7 +92,7 @@ const ModalBtnText = styled.Text`
   color: white;
 `;
 
-export default memo(function Message({ message }) {
+export default memo(function Message({ message, setMessageUpdate }) {
   const [loaded, setLoaded] = useState(false);
   const [author, setAuthor] = useState(null);
   const [messageText, setMessageText] = useState(message.messageText || null);
@@ -111,15 +111,6 @@ export default memo(function Message({ message }) {
       console.log("deleteMessage", error.message);
     }
   };
-  const updateMessage = async () => {
-    try {
-      await updateDoc(doc(db, "messages", message.parentId, "conversation", message.docId), {
-        messageText: messageText,
-      });
-    } catch (error) {
-      console.log("updateMessage", error.message);
-    }
-  };
 
   useEffect(() => {
     onSnapshot(doc(db, "users", messageAuthor), (snapshot) => {
@@ -133,46 +124,33 @@ export default memo(function Message({ message }) {
       {loaded ? (
         <>
           {modalMessage && isValide ? (
-            <>
-              {modalUpdateMessage ? (
-                <ModalInputView>
-                  <ModalInput
-                    multiline
-                    onChangeText={setMessageText}
-                    value={messageText}
-                    selectionColor="red"
-                  ></ModalInput>
-                  <ModalInputIcon
-                    onPress={() => {
-                      updateMessage();
-                      setUpdateModalMessage(false);
-                      setModalMessage(false);
-                    }}
-                  >
-                    <Entypo name="check" size={screenHeight < 760 ? 20 : 30} color={colors.MessageIconUpdateMessage} />
-                  </ModalInputIcon>
-                </ModalInputView>
-              ) : (
-                <Modal>
-                  <ModalBtn onPress={() => setModalMessage(false)}>
-                    <ModalBtnText>{t("ProffileCancel")}</ModalBtnText>
-                  </ModalBtn>
-                  <ModalBtn onPress={() => setUpdateModalMessage(true)}>
-                    <ModalBtnText>{t("messageModalUpdate")}</ModalBtnText>
-                  </ModalBtn>
-                  <ModalBtn>
-                    <ModalBtnText
-                      onPress={() => {
-                        deleteMessage();
-                        setModalMessage(false);
-                      }}
-                    >
-                      {t("messageModalDelete")}
-                    </ModalBtnText>
-                  </ModalBtn>
-                </Modal>
-              )}
-            </>
+            <Modal>
+              <ModalBtn onPress={() => setModalMessage(false)}>
+                <ModalBtnText>{t("ProffileCancel")}</ModalBtnText>
+              </ModalBtn>
+              <ModalBtn
+                onPress={() => {
+                  setMessageUpdate({
+                    messageText: message.messageText,
+                    parentId: message.parentId,
+                    docId: message.docId,
+                  });
+                  setModalMessage(false);
+                }}
+              >
+                <ModalBtnText>{t("messageModalUpdate")}</ModalBtnText>
+              </ModalBtn>
+              <ModalBtn>
+                <ModalBtnText
+                  onPress={() => {
+                    deleteMessage();
+                    setModalMessage(false);
+                  }}
+                >
+                  {t("messageModalDelete")}
+                </ModalBtnText>
+              </ModalBtn>
+            </Modal>
           ) : (
             <BlockMessage
               onLongPress={() => setModalMessage(true)}

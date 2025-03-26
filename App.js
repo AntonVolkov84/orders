@@ -10,10 +10,6 @@ import OrderScreen from "./screens/OrderScreen.jsx";
 import MessagingScreen from "./screens/MessagingScreen.jsx";
 import * as Notifications from "expo-notifications";
 import { registerForPushNotificationsAsync } from "./notifications.js";
-import messaging from "@react-native-firebase/messaging";
-
-const Stack = createNativeStackNavigator();
-export const AppContext = createContext(null);
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -22,17 +18,8 @@ Notifications.setNotificationHandler({
     shouldSetBadge: false,
   }),
 });
-async function sendPushNotification(message) {
-  await fetch("https://exp.host/--/api/v2/push/send", {
-    method: "POST",
-    headers: {
-      Accept: "application/json",
-      "Accept-encoding": "gzip, deflate",
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(message),
-  });
-}
+const Stack = createNativeStackNavigator();
+export const AppContext = createContext(null);
 
 export default function App() {
   const [user, setUser] = useState("");
@@ -49,42 +36,21 @@ export default function App() {
       setUser("");
     }
   });
-  useEffect(() => {
-    registerForPushNotificationsAsync()
-      .then((token) => setExpoPushToken(token ?? ""))
-      .catch((error) => setExpoPushToken(`${error}`));
 
+  useEffect(() => {
+    registerForPushNotificationsAsync().then((token) => setExpoPushToken(token));
     notificationListener.current = Notifications.addNotificationReceivedListener((notification) => {
       setNotification(notification);
     });
-
     responseListener.current = Notifications.addNotificationResponseReceivedListener((response) => {
       console.log(response);
     });
-    messaging()
-      .getInitialNotification()
-      .then(async (remoteMessage) => {
-        if (remoteMessage) {
-          console.log("Notify from app to quite state", remoteMessage.notification);
-        }
-      });
-    messaging().onNotificationOpenedApp((removeMessage) => {
-      console.log("Notification caused app to open", removeMessage.notification);
-    });
-    messaging().setBackgroundMessageHandler(async (remoteMessage) => {
-      console.log("Message handled in the background!", remoteMessage);
-    });
-    const unsubscribe = messaging().onMessage(async (remoteMessage) => {
-      Alert.alert(JSON.stringify(remoteMessage.data.title, remoteMessage.data.message));
-    });
-
     return () => {
-      notificationListener.current && Notifications.removeNotificationSubscription(notificationListener.current);
-      responseListener.current && Notifications.removeNotificationSubscription(responseListener.current);
-      unsubscribe;
+      Notifications.removeNotificationSubscription(notificationListener.current);
+      Notifications.removeNotificationSubscription(responseListener.current);
     };
   }, []);
-
+  console.log(expoPushToken);
   if (!user) {
     return (
       <NavigationContainer>
@@ -112,31 +78,29 @@ export default function App() {
 
   return (
     <NavigationContainer>
-      <AppContext.Provider value={sendPushNotification}>
-        <Stack.Navigator initialRouteName="Dashboard">
-          <Stack.Screen
-            name="Dashboard"
-            component={DashboardScreen}
-            options={{
-              headerShown: false,
-            }}
-          />
-          <Stack.Screen
-            name="OrderScreen"
-            component={OrderScreen}
-            options={{
-              headerShown: false,
-            }}
-          />
-          <Stack.Screen
-            name="Messaging"
-            component={MessagingScreen}
-            options={{
-              headerShown: false,
-            }}
-          />
-        </Stack.Navigator>
-      </AppContext.Provider>
+      <Stack.Navigator initialRouteName="Dashboard">
+        <Stack.Screen
+          name="Dashboard"
+          component={DashboardScreen}
+          options={{
+            headerShown: false,
+          }}
+        />
+        <Stack.Screen
+          name="OrderScreen"
+          component={OrderScreen}
+          options={{
+            headerShown: false,
+          }}
+        />
+        <Stack.Screen
+          name="Messaging"
+          component={MessagingScreen}
+          options={{
+            headerShown: false,
+          }}
+        />
+      </Stack.Navigator>
     </NavigationContainer>
   );
 }

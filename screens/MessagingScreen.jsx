@@ -81,6 +81,7 @@ const BlockForMessage = styled.View`
 export default memo(function MessagingScreen({ route, navigation }) {
   const { item } = route.params;
   const [message, setMessage] = useState("");
+  const [messageUpdate, setMessageUpdate] = useState("");
   const [fetchedMessages, setFetchedMessages] = useState([]);
   const [loaded, setLoaded] = useState(false);
   const conversationId = item.docId;
@@ -89,6 +90,10 @@ export default memo(function MessagingScreen({ route, navigation }) {
   const currentEmail = currentUser.email;
   const { t } = useTranslation();
   const nameOfOrder = item.nameOfOrder;
+
+  useEffect(() => {
+    setMessage(messageUpdate.messageText);
+  }, [messageUpdate]);
 
   const markMessagesAsRead = async () => {
     const refForChangeMessageStatus = query(
@@ -174,6 +179,17 @@ export default memo(function MessagingScreen({ route, navigation }) {
       flatList.current.scrollToEnd({ animated: true });
     }
   };
+  const updateMessage = async () => {
+    try {
+      await updateDoc(doc(db, "messages", messageUpdate.parentId, "conversation", messageUpdate.docId), {
+        messageText: message,
+      });
+      setMessageUpdate("");
+      setMessage("");
+    } catch (error) {
+      console.log("updateMessage", error.message);
+    }
+  };
 
   return (
     <LinearGradient
@@ -208,7 +224,7 @@ export default memo(function MessagingScreen({ route, navigation }) {
               accessible={true}
               data={fetchedMessages}
               ref={flatList}
-              renderItem={({ item }) => <Message message={item} />}
+              renderItem={({ item }) => <Message setMessageUpdate={setMessageUpdate} message={item} />}
               keyExtractor={(item, index) => index}
             />
           </BlockForMessage>
@@ -224,7 +240,11 @@ export default memo(function MessagingScreen({ route, navigation }) {
           onChangeText={setMessage}
           value={message}
         ></BoxInputText>
-        <BlockIconMessage accessibilityLabel="Button add message" accessible={true} onPress={() => sendMessage()}>
+        <BlockIconMessage
+          accessibilityLabel="Button add message"
+          accessible={true}
+          onPress={() => (messageUpdate ? updateMessage() : sendMessage())}
+        >
           <FontAwesome name="send" size={screenHeight < 760 ? 20 : 25} color={colors.MessagingIconColor} />
         </BlockIconMessage>
       </BoxInput>
