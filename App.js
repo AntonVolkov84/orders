@@ -9,7 +9,7 @@ import { getAuth, onAuthStateChanged } from "firebase/auth";
 import OrderScreen from "./screens/OrderScreen.jsx";
 import MessagingScreen from "./screens/MessagingScreen.jsx";
 import * as Notifications from "expo-notifications";
-import { registerForPushNotificationsAsync } from "./notifications.js";
+import { registerForPushNotificationsAsync } from "./notification.js";
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -50,7 +50,7 @@ export default function App() {
       Notifications.removeNotificationSubscription(responseListener.current);
     };
   }, []);
-  console.log(expoPushToken);
+
   if (!user) {
     return (
       <NavigationContainer>
