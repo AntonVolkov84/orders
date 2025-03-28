@@ -3,7 +3,7 @@
     "name": "Orders",
     "slug": "orders",
     "scheme": "com.ant-volkov.orders",
-    "version": "1.8.7",
+    "version": "1.8.8",
     "orientation": "portrait",
     "icon": "./assets/Orders3.png",
     "userInterfaceStyle": "light",
@@ -65,9 +65,9 @@
       [
         "react-native-google-mobile-ads",
         {
-          "androidAppId": "ca-app-pub-9267417700367649/6433322697",
+          "androidAppId": "ca-app-pub-9267417700367649~9246252513",
           "userTrackingUsageDescription": "This identifier will be used to deliver personalized ads to you.",
-          "iosAppId": "ca-app-pub-9267417700367649/4215327230"
+          "iosAppId": "ca-app-pub-9267417700367649~1053875646"
         }
       ]
     ],
