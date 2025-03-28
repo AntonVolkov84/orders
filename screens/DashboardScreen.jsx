@@ -12,7 +12,6 @@ import { db, auth } from "../firebaseConfig";
 import { collection, onSnapshot, where, orderBy, query, getDocs } from "firebase/firestore";
 import OrdersDashboard from "../components/OrdersDashboard";
 import { SafeAreaView, SafeAreaProvider } from "react-native-safe-area-context";
-import { AppContext } from "../App";
 import { BannerAd, BannerAdSize } from "react-native-google-mobile-ads";
 import { Dimensions } from "react-native";
 import { useTranslation } from "react-i18next";

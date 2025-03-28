@@ -35,6 +35,10 @@ const AuthorName = styled.Text`
   font-size: 10px;
   color: ${colors.titleText};
 `;
+const BoxForMessage = styled.View`
+  width: 84%;
+  padding-left: 5px;
+`;
 const BlockForMessageText = styled.Text`
   width: ${screenHeight < 760 ? "170px" : "200px"};
   color: white;
@@ -51,31 +55,6 @@ const Modal = styled.View`
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-`;
-const ModalInputView = styled.View`
-  width: 70%;
-  height: fit-content;
-  padding: 5px;
-  border-radius: 5px;
-  margin-top: 5px;
-  margin-left: 30%;
-  background-color: ${colors.MessageBackgroundColorWithAuthor};
-  display: flex;
-  flex-direction: row;
-`;
-const ModalInput = styled.TextInput`
-  width: 85%;
-  color: black;
-`;
-const ModalInputIcon = styled.TouchableOpacity`
-  width: 14%;
-  aspect-ratio: 1;
-  display: flex;
-  align-items: center;
-  justify-content: start;
-  background-color: ${colors.MessageIconUpdateMessageBackground};
-  margin-left: 3px;
-  border-radius: 5px;
 `;
 const ModalBtn = styled.TouchableOpacity`
   width: 70px;
@@ -95,9 +74,7 @@ const ModalBtnText = styled.Text`
 export default memo(function Message({ message, setMessageUpdate }) {
   const [loaded, setLoaded] = useState(false);
   const [author, setAuthor] = useState(null);
-  const [messageText, setMessageText] = useState(message.messageText || null);
   const [modalMessage, setModalMessage] = useState(false);
-  const [modalUpdateMessage, setUpdateModalMessage] = useState(false);
   const messageAuthor = message.author;
   const currentUser = auth.currentUser;
   const email = currentUser.email;
@@ -160,13 +137,16 @@ export default memo(function Message({ message, setMessageUpdate }) {
                 backgroundColor: isValide ? colors.MessageBackgroundColorWithAuthor : colors.MessageBackgroundColor,
                 flexDirection: isValide ? "row-reverse" : "row",
                 marginLeft: isValide ? "30%" : "0",
+                paddingLeft: isValide ? 15 : 5,
               }}
             >
               <BlockForMessageAuthor>
                 <AuthorAvatar source={{ uri: author.photoURL }}></AuthorAvatar>
                 <AuthorName>{author.nikname}</AuthorName>
               </BlockForMessageAuthor>
-              <BlockForMessageText style={{ textAlign: "start" }}>{message.messageText}</BlockForMessageText>
+              <BoxForMessage>
+                <BlockForMessageText>{message.messageText}</BlockForMessageText>
+              </BoxForMessage>
             </BlockMessage>
           )}
         </>
