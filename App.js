@@ -10,6 +10,13 @@ import OrderScreen from "./screens/OrderScreen.jsx";
 import MessagingScreen from "./screens/MessagingScreen.jsx";
 import * as Notifications from "expo-notifications";
 import { registerForPushNotificationsAsync } from "./notifications.js";
+import mobileAds from "react-native-google-mobile-ads";
+
+mobileAds()
+  .initialize()
+  .then((adapterStatuses) => {
+    console.log(adapterStatuses);
+  });
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -50,7 +57,7 @@ export default function App() {
       Notifications.removeNotificationSubscription(responseListener.current);
     };
   }, []);
-  console.log(expoPushToken);
+
   if (!user) {
     return (
       <NavigationContainer>

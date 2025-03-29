@@ -12,10 +12,9 @@ import { db, auth } from "../firebaseConfig";
 import { collection, onSnapshot, where, orderBy, query, getDocs } from "firebase/firestore";
 import OrdersDashboard from "../components/OrdersDashboard";
 import { SafeAreaView, SafeAreaProvider } from "react-native-safe-area-context";
-import { AppContext } from "../App";
-import { BannerAd, BannerAdSize } from "react-native-google-mobile-ads";
 import { Dimensions } from "react-native";
 import { useTranslation } from "react-i18next";
+import { BannerAd, BannerAdSize } from "react-native-google-mobile-ads";
 
 const screenHeight = Dimensions.get("screen").height;
 
@@ -151,13 +150,8 @@ export default memo(function DashboardScreen({ navigation }) {
       <View style={{ position: "absolute", bottom: 0, paddingleft: "1%", zIndex: 10 }}>
         <BannerAd
           unitId="ca-app-pub-9267417700367649/6433322697"
+          onAdFailedToLoad={(error) => console.log(error)}
           size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER}
-          requestOptions={{
-            requestNonPersonalizedAdsOnly: true,
-            networkExtras: {
-              collapsible: "bottom",
-            },
-          }}
         />
       </View>
     </LinearGradient>

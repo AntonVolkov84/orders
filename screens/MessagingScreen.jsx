@@ -251,13 +251,8 @@ export default memo(function MessagingScreen({ route, navigation }) {
       <View style={{ position: "absolute", bottom: 0, paddingleft: "1%" }}>
         <BannerAd
           unitId="ca-app-pub-9267417700367649/6433322697"
+          onAdFailedToLoad={(error) => console.log(error)}
           size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER}
-          requestOptions={{
-            requestNonPersonalizedAdsOnly: true,
-            networkExtras: {
-              collapsible: "bottom",
-            },
-          }}
         />
       </View>
     </LinearGradient>

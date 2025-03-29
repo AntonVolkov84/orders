@@ -49,9 +49,7 @@ export async function registerForPushNotificationsAsync() {
       alert("Failed to get push token for push notification!");
       return;
     }
-
     token = (await Notifications.getExpoPushTokenAsync()).data;
-    console.log(token);
     return token;
   } catch (error) {
     console.log("registerForPushNotificationsAsync", error.message);

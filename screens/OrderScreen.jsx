@@ -22,7 +22,7 @@ import { Ionicons } from "@expo/vector-icons";
 import Entypo from "@expo/vector-icons/Entypo";
 import Button from "../components/Button";
 import { useTranslation } from "react-i18next";
-import { BannerAd, BannerAdSize, InterstitialAd, AdEventType, TestIds } from "react-native-google-mobile-ads";
+import { BannerAd, BannerAdSize } from "react-native-google-mobile-ads";
 import { Dimensions } from "react-native";
 
 const screenHeight = Dimensions.get("screen").height;
@@ -641,13 +641,8 @@ export default memo(function OrderScreen({ route, navigation }) {
       <View style={{ position: "absolute", bottom: 0, paddingleft: "1%" }}>
         <BannerAd
           unitId="ca-app-pub-9267417700367649/6433322697"
+          onAdFailedToLoad={(error) => console.log(error)}
           size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER}
-          requestOptions={{
-            requestNonPersonalizedAdsOnly: true,
-            networkExtras: {
-              collapsible: "bottom",
-            },
-          }}
         />
       </View>
       {modalAddParticipant ? (

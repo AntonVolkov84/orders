@@ -3,7 +3,7 @@
     "name": "Orders",
     "slug": "orders",
     "scheme": "com.ant-volkov.orders",
-    "version": "1.8.3",
+    "version": "1.9.0",
     "orientation": "portrait",
     "icon": "./assets/Orders3.png",
     "userInterfaceStyle": "light",
@@ -26,8 +26,7 @@
       "permissions": [
         "android.permission.RECORD_AUDIO",
         "INTERNET",
-        "VIBRATE",
-        "WAKE_LOCK",
+        "ACCESS_NETWORK_STATE",
         "com.google.android.c2dm.permission.RECEIVE",
         "RECEIVE_BOOT_COMPLETED"
       ],
@@ -73,7 +72,6 @@
         "react-native-google-mobile-ads",
         {
           "androidAppId": "ca-app-pub-9267417700367649~9246252513",
-          "userTrackingUsageDescription": "This identifier will be used to deliver personalized ads to you.",
           "iosAppId": "ca-app-pub-9267417700367649~1053875646"
         }
       ]

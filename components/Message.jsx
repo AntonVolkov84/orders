@@ -91,13 +91,14 @@ const ModalBtnText = styled.Text`
   text-align: center;
   color: white;
 `;
-
+const BoxForMessage = styled.View`
+  width: 84%;
+  padding-left: 5px;
+`;
 export default memo(function Message({ message, setMessageUpdate }) {
   const [loaded, setLoaded] = useState(false);
   const [author, setAuthor] = useState(null);
-  const [messageText, setMessageText] = useState(message.messageText || null);
   const [modalMessage, setModalMessage] = useState(false);
-  const [modalUpdateMessage, setUpdateModalMessage] = useState(false);
   const messageAuthor = message.author;
   const currentUser = auth.currentUser;
   const email = currentUser.email;
@@ -160,13 +161,16 @@ export default memo(function Message({ message, setMessageUpdate }) {
                 backgroundColor: isValide ? colors.MessageBackgroundColorWithAuthor : colors.MessageBackgroundColor,
                 flexDirection: isValide ? "row-reverse" : "row",
                 marginLeft: isValide ? "30%" : "0",
+                paddingLeft: isValide ? 10 : 3,
               }}
             >
               <BlockForMessageAuthor>
                 <AuthorAvatar source={{ uri: author.photoURL }}></AuthorAvatar>
                 <AuthorName>{author.nikname}</AuthorName>
               </BlockForMessageAuthor>
-              <BlockForMessageText style={{ textAlign: "start" }}>{message.messageText}</BlockForMessageText>
+              <BoxForMessage>
+                <BlockForMessageText>{message.messageText}</BlockForMessageText>
+              </BoxForMessage>
             </BlockMessage>
           )}
         </>
