@@ -1,20 +1,17 @@
 import { View, Text, Image, TouchableOpacity, TextInput } from "react-native";
 import React, { useState, useEffect, memo } from "react";
 import styled from "styled-components";
-import { doc, onSnapshot, deleteDoc, updateDoc } from "firebase/firestore";
+import { doc, onSnapshot, deleteDoc, getDoc } from "firebase/firestore";
 import { auth, db } from "../firebaseConfig";
 import * as colors from "../variables/colors";
 import { Dimensions } from "react-native";
 import { useTranslation } from "react-i18next";
-import Entypo from "@expo/vector-icons/Entypo";
 
 const screenHeight = Dimensions.get("screen").height;
 
 const BlockMessage = styled.TouchableOpacity`
   width: 70%;
   height: fit-content;
-  padding-top: 5px;
-  padding-right: 5px;
   border-radius: 5px;
   flex-direction: row;
   margin-top: 5px;
@@ -52,31 +49,7 @@ const Modal = styled.View`
   flex-direction: row;
   justify-content: space-between;
 `;
-const ModalInputView = styled.View`
-  width: 70%;
-  height: fit-content;
-  padding: 5px;
-  border-radius: 5px;
-  margin-top: 5px;
-  margin-left: 30%;
-  background-color: ${colors.MessageBackgroundColorWithAuthor};
-  display: flex;
-  flex-direction: row;
-`;
-const ModalInput = styled.TextInput`
-  width: 85%;
-  color: black;
-`;
-const ModalInputIcon = styled.TouchableOpacity`
-  width: 14%;
-  aspect-ratio: 1;
-  display: flex;
-  align-items: center;
-  justify-content: start;
-  background-color: ${colors.MessageIconUpdateMessageBackground};
-  margin-left: 3px;
-  border-radius: 5px;
-`;
+
 const ModalBtn = styled.TouchableOpacity`
   width: 70px;
   height: 30px;
@@ -94,6 +67,8 @@ const ModalBtnText = styled.Text`
 const BoxForMessage = styled.View`
   width: 84%;
   padding-left: 5px;
+  overflow: wrap;
+  padding-right: 5px;
 `;
 export default memo(function Message({ message, setMessageUpdate }) {
   const [loaded, setLoaded] = useState(false);
@@ -114,11 +89,12 @@ export default memo(function Message({ message, setMessageUpdate }) {
   };
 
   useEffect(() => {
-    onSnapshot(doc(db, "users", messageAuthor), (snapshot) => {
+    const unsub = onSnapshot(doc(db, "users", messageAuthor), (snapshot) => {
       setAuthor(snapshot.data());
       setLoaded(true);
     });
-  }, []);
+    return () => unsub();
+  }, [messageAuthor]);
 
   return (
     <>
@@ -161,7 +137,7 @@ export default memo(function Message({ message, setMessageUpdate }) {
                 backgroundColor: isValide ? colors.MessageBackgroundColorWithAuthor : colors.MessageBackgroundColor,
                 flexDirection: isValide ? "row-reverse" : "row",
                 marginLeft: isValide ? "30%" : "0",
-                paddingLeft: isValide ? 10 : 3,
+                paddingLeft: isValide ? 5 : 3,
               }}
             >
               <BlockForMessageAuthor>

@@ -157,8 +157,8 @@ export default memo(function MessagingScreen({ route, navigation }) {
   };
 
   useEffect(() => {
-    onSnapshot(
-      query(collection(db, "messages", conversationId, "conversation"), orderBy("timestamp", "asc")),
+    const unsub = onSnapshot(
+      query(collection(db, "messages", conversationId, "conversation"), orderBy("timestamp", "desc")),
       (snapshot) => {
         setFetchedMessages(
           snapshot.docs.map((doc) => ({
@@ -167,18 +167,13 @@ export default memo(function MessagingScreen({ route, navigation }) {
             ...doc.data(),
           }))
         );
-        scrollToEnd();
         setLoaded(true);
       }
     );
     markMessagesAsRead();
+    return () => unsub();
   }, []);
 
-  const scrollToEnd = () => {
-    if (flatList.current) {
-      flatList.current.scrollToEnd({ animated: true });
-    }
-  };
   const updateMessage = async () => {
     try {
       await updateDoc(doc(db, "messages", messageUpdate.parentId, "conversation", messageUpdate.docId), {
