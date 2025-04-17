@@ -35,6 +35,7 @@ const AuthorName = styled.Text`
 const BlockForMessageText = styled.Text`
   width: ${screenHeight < 760 ? "170px" : "200px"};
   color: white;
+  padding-right: 8px;
   font-size: ${screenHeight < 760 ? "10px" : "15px"};
 `;
 const Modal = styled.View`
@@ -138,6 +139,7 @@ export default memo(function Message({ message, setMessageUpdate }) {
                 flexDirection: isValide ? "row-reverse" : "row",
                 marginLeft: isValide ? "30%" : "0",
                 paddingLeft: isValide ? 5 : 3,
+                paddingRight: isValide ? 3 : 5,
               }}
             >
               <BlockForMessageAuthor>
