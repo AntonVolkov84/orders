@@ -152,7 +152,14 @@ const BlockProfileTextEmail = styled.Text`
   color: ${colors.menuFrofileText};
   font-size: ${screenHeight < 760 ? "15px" : "20px"};
   margin-left: 5%;
-  overflow: wrap;
+`;
+const BlockProfileTextEmail1 = styled.Text`
+  color: ${colors.menuFrofileText};
+  font-size: ${screenHeight < 760 ? "15px" : "20px"};
+  margin-left: 5%;
+  width: 250px;
+  overflow: hidden;
+  text-overflow: ellipsis;
 `;
 const ButtonLogout = styled.TouchableOpacity`
   width: 100%;
@@ -212,7 +219,7 @@ export default memo(function DashboardScreen({ navigation }) {
   const [newNikname, setNewNikname] = useState("");
   const [newPhotoURL, setNewPhotoURL] = useState(null);
   const [fileName, setFileName] = useState(null);
-  const [language, setLanguage] = useState("");
+  const [language, setLanguage] = useState("en");
   const [changeLanguageModal, setChangeLanguageModal] = useState(false);
   const storage = getStorage(app);
   const { t } = useTranslation();
@@ -225,7 +232,7 @@ export default memo(function DashboardScreen({ navigation }) {
 
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      mediaTypes: ["images"],
       allowsEditing: true,
       aspect: [3, 3],
       quality: 1,
@@ -378,9 +385,9 @@ export default memo(function DashboardScreen({ navigation }) {
         <BlockProfile accessibilityLabel="Block whith information about user" accessible={true}>
           <BlockProfileSectionEmail>
             <BlockProfileTextEmail>{t("ProffileEmail")}</BlockProfileTextEmail>
-            <BlockProfileTextEmail>
+            <BlockProfileTextEmail1 numberOfLines={1}>
               {loadingUserProfileData ? <Text>Loading...</Text> : auth.currentUser.email}
-            </BlockProfileTextEmail>
+            </BlockProfileTextEmail1>
           </BlockProfileSectionEmail>
           <BlockProfileSectionNikname>
             <BlockProfileText>{t("ProffileNikname")}</BlockProfileText>

@@ -2,12 +2,13 @@ import { View, Text, TouchableOpacity, Image, Alert } from "react-native";
 import React, { useState, useEffect, memo } from "react";
 import * as colors from "../variables/colors";
 import styled from "styled-components";
-import { db } from "../firebaseConfig";
+import { db, app } from "../firebaseConfig";
 import { getDoc, doc, deleteDoc, addDoc, collection, getDocs } from "firebase/firestore";
 import Button from "./Button";
 import { useTranslation } from "react-i18next";
 import { Dimensions } from "react-native";
 import * as Device from "expo-device";
+import { getStorage, ref, deleteObject } from "firebase/storage";
 
 const screenHeight = Dimensions.get("screen").height;
 
@@ -93,6 +94,7 @@ export default memo(function OrdersDashboard({ item, navigation }) {
   const dateForOrder = new Date(item.dateForOrder);
   const nameForOrder = item.nameOfOrder;
   const { t } = useTranslation();
+  const storage = getStorage(app);
 
   useEffect(() => {
     getOrderCreatorProfile();
@@ -124,6 +126,10 @@ export default memo(function OrdersDashboard({ item, navigation }) {
         const delMessages = await getDocs(collection(db, "messages", docId, "conversation"));
         delMessages.forEach((doc) => {
           arr.push(doc.id);
+          if (doc.data().type === "image") {
+            console.log(doc.data().staragePath);
+            deleteImageFromStorage(doc.data().staragePath);
+          }
         });
         arr.forEach(async (id) => {
           await deleteDoc(doc(db, "messages", docId, "conversation", id));
@@ -131,6 +137,15 @@ export default memo(function OrdersDashboard({ item, navigation }) {
       } else {
         return Alert.alert(`${t("OrderDashboardAlertNotClose")}`);
       }
+    }
+  };
+
+  const deleteImageFromStorage = async (path) => {
+    const imageRef = ref(storage, `images/${path}`);
+    try {
+      await deleteObject(imageRef);
+    } catch (error) {
+      console.error(`Ошибка при удалении ${path}:`, error);
     }
   };
 

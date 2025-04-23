@@ -138,7 +138,7 @@ export default memo(function Message({ message, setMessageUpdate }) {
                 backgroundColor: isValide ? colors.MessageBackgroundColorWithAuthor : colors.MessageBackgroundColor,
                 flexDirection: isValide ? "row-reverse" : "row",
                 marginLeft: isValide ? "30%" : "0",
-                paddingLeft: isValide ? 5 : 3,
+                paddingLeft: isValide ? (message.type === "image" ? 0 : 5) : 3,
                 paddingRight: isValide ? 3 : 5,
               }}
             >
@@ -146,9 +146,16 @@ export default memo(function Message({ message, setMessageUpdate }) {
                 <AuthorAvatar source={{ uri: author.photoURL }}></AuthorAvatar>
                 <AuthorName>{author.nikname}</AuthorName>
               </BlockForMessageAuthor>
-              <BoxForMessage>
-                <BlockForMessageText>{message.messageText}</BlockForMessageText>
-              </BoxForMessage>
+              {message.type === "image" ? (
+                <Image
+                  source={{ uri: message.uri }}
+                  style={{ width: 200, height: 200, objectFit: "cover", borderRadius: 5 }}
+                />
+              ) : (
+                <BoxForMessage>
+                  <BlockForMessageText>{message.messageText}</BlockForMessageText>
+                </BoxForMessage>
+              )}
             </BlockMessage>
           )}
         </>

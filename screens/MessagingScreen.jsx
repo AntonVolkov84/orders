@@ -4,10 +4,13 @@ import * as colors from "../variables/colors";
 import { LinearGradient } from "expo-linear-gradient";
 import { StatusBar } from "expo-status-bar";
 import styled from "styled-components";
-import { db, auth } from "../firebaseConfig";
+import { db, auth, app } from "../firebaseConfig";
 import Button from "../components/Button";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { useTranslation } from "react-i18next";
+import Fontisto from "@expo/vector-icons/Fontisto";
+import * as ImagePicker from "expo-image-picker";
+import { getDownloadURL, getStorage, ref, uploadBytesResumable, deleteObject } from "firebase/storage";
 import {
   doc,
   addDoc,
@@ -72,6 +75,15 @@ const BlockIconMessage = styled.TouchableOpacity`
   align-items: center;
   aspect-ratio: 1;
 `;
+const BlockIconMessagePicture = styled.TouchableOpacity`
+  position: absolute;
+  right: 50px;
+  height: 100%;
+  align-self: center;
+  justify-content: center;
+  align-items: center;
+  aspect-ratio: 1;
+`;
 const BlockForMessage = styled.View`
   width: 100%;
   height: fit-content;
@@ -90,10 +102,69 @@ export default memo(function MessagingScreen({ route, navigation }) {
   const currentEmail = currentUser.email;
   const { t } = useTranslation();
   const nameOfOrder = item.nameOfOrder;
+  const storage = getStorage(app);
 
   useEffect(() => {
     setMessage(messageUpdate.messageText);
   }, [messageUpdate]);
+
+  const pickImage = async () => {
+    try {
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ["images"],
+        allowsEditing: true,
+        aspect: [4, 4],
+        quality: 1,
+      });
+
+      if (result) {
+        const uriForStorage = result.assets[0].uri;
+        const fileToDel = result.assets[0].fileName;
+        const storageRef = ref(storage, `images/${fileToDel}`);
+        addToFirebaseStorage(storageRef, uriForStorage, fileToDel);
+        sendMessage();
+      }
+    } catch (error) {
+      console.log("pickImage", error.message);
+    }
+  };
+
+  const addToFirebaseStorage = async (storageRef, uriForStorage, fileToDel) => {
+    try {
+      const response = await fetch(uriForStorage);
+      if (!response) {
+        console.log("Failed to fetch file");
+      }
+      const mediaBlob = await response.blob();
+      const uploadToStorage = uploadBytesResumable(storageRef, mediaBlob);
+      uploadToStorage.on(
+        "state_changed",
+        (snapshot) => {
+          const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          console.log("Upload is " + progress + "% done");
+          switch (snapshot.state) {
+            case "paused":
+              console.log("Upload is paused");
+              break;
+            case "running":
+              console.log("Upload is running");
+              break;
+          }
+        },
+        (error) => {
+          console.log(error);
+        },
+        () => {
+          getDownloadURL(uploadToStorage.snapshot.ref).then((downloadURL) => {
+            console.log("File available at", downloadURL);
+            sendMessage("image", uriForStorage, fileToDel);
+          });
+        }
+      );
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const markMessagesAsRead = async () => {
     const refForChangeMessageStatus = query(
@@ -111,14 +182,17 @@ export default memo(function MessagingScreen({ route, navigation }) {
     });
   };
 
-  const sendMessage = async () => {
+  const sendMessage = async (type = "text", uri = "", staragePath = "") => {
     try {
-      if (message.length) {
+      if (message || type === "image") {
         const arrOfReciverMessage = item.participants.filter((email) => email !== currentEmail);
         const data = {
           messageId: Date.parse(new Date()),
+          type: type,
+          uri: uri,
+          staragePath: staragePath,
           doNotReadBy: arrOfReciverMessage,
-          messageText: message,
+          messageText: message || "",
           author: currentUser.email,
           timestamp: serverTimestamp(),
         };
@@ -235,6 +309,16 @@ export default memo(function MessagingScreen({ route, navigation }) {
           onChangeText={setMessage}
           value={message}
         ></BoxInputText>
+        {!message && (
+          <BlockIconMessagePicture
+            accessibilityLabel="Button add picture"
+            accessible={true}
+            onPress={() => pickImage()}
+          >
+            <Fontisto name="picture" size={screenHeight < 760 ? 20 : 25} color={colors.MessagingIconColor} />
+          </BlockIconMessagePicture>
+        )}
+
         <BlockIconMessage
           accessibilityLabel="Button add message"
           accessible={true}
