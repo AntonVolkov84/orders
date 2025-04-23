@@ -1,11 +1,13 @@
 import { View, Text, Image, TouchableOpacity, TextInput } from "react-native";
 import React, { useState, useEffect, memo } from "react";
 import styled from "styled-components";
-import { doc, onSnapshot, deleteDoc, getDoc } from "firebase/firestore";
+import { doc, onSnapshot, deleteDoc } from "firebase/firestore";
 import { auth, db } from "../firebaseConfig";
 import * as colors from "../variables/colors";
 import { Dimensions } from "react-native";
 import { useTranslation } from "react-i18next";
+import { getStorage, ref, deleteObject } from "firebase/storage";
+import { app } from "../firebaseConfig";
 
 const screenHeight = Dimensions.get("screen").height;
 
@@ -80,9 +82,21 @@ export default memo(function Message({ message, setMessageUpdate }) {
   const email = currentUser.email;
   const isValide = email === messageAuthor;
   const { t } = useTranslation();
+  const storage = getStorage(app);
 
+  const deleteImageFromStorage = async (path) => {
+    const imageRef = ref(storage, `images/${path}`);
+    try {
+      await deleteObject(imageRef);
+    } catch (error) {
+      console.error(`Ошибка при удалении ${path}:`, error);
+    }
+  };
   const deleteMessage = async () => {
     try {
+      if (message.type === "image") {
+        deleteImageFromStorage(message.staragePath);
+      }
       await deleteDoc(doc(db, "messages", message.parentId, "conversation", message.docId));
     } catch (error) {
       console.log("deleteMessage", error.message);
@@ -106,18 +120,21 @@ export default memo(function Message({ message, setMessageUpdate }) {
               <ModalBtn onPress={() => setModalMessage(false)}>
                 <ModalBtnText>{t("ProffileCancel")}</ModalBtnText>
               </ModalBtn>
-              <ModalBtn
-                onPress={() => {
-                  setMessageUpdate({
-                    messageText: message.messageText,
-                    parentId: message.parentId,
-                    docId: message.docId,
-                  });
-                  setModalMessage(false);
-                }}
-              >
-                <ModalBtnText>{t("messageModalUpdate")}</ModalBtnText>
-              </ModalBtn>
+              {message.type === "image" ? null : (
+                <ModalBtn
+                  onPress={() => {
+                    setMessageUpdate({
+                      messageText: message.messageText,
+                      parentId: message.parentId,
+                      docId: message.docId,
+                    });
+                    setModalMessage(false);
+                  }}
+                >
+                  <ModalBtnText>{t("messageModalUpdate")}</ModalBtnText>
+                </ModalBtn>
+              )}
+
               <ModalBtn>
                 <ModalBtnText
                   onPress={() => {
