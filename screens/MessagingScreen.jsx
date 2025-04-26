@@ -156,8 +156,7 @@ export default memo(function MessagingScreen({ route, navigation }) {
         },
         () => {
           getDownloadURL(uploadToStorage.snapshot.ref).then((downloadURL) => {
-            console.log("File available at", downloadURL);
-            sendMessage("image", uriForStorage, fileToDel);
+            sendMessage("image", downloadURL, fileToDel);
           });
         }
       );
