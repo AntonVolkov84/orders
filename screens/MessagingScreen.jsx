@@ -1,5 +1,5 @@
 import { Keyboard, View, Text, TouchableOpacity, FlatList } from "react-native";
-import React, { useState, useEffect, memo } from "react";
+import React, { useState, useEffect, useRef, memo } from "react";
 import * as colors from "../variables/colors";
 import { LinearGradient } from "expo-linear-gradient";
 import { StatusBar } from "expo-status-bar";
@@ -98,11 +98,12 @@ export default memo(function MessagingScreen({ route, navigation }) {
   const [loaded, setLoaded] = useState(false);
   const conversationId = item.docId;
   const currentUser = auth.currentUser;
-  const flatList = React.useRef(null);
+  const flatList = useRef(null);
   const currentEmail = currentUser.email;
   const { t } = useTranslation();
   const nameOfOrder = item.nameOfOrder;
   const storage = getStorage(app);
+  const isScrolledToBottom = useRef(true);
 
   useEffect(() => {
     setMessage(messageUpdate.messageText);
@@ -247,6 +248,12 @@ export default memo(function MessagingScreen({ route, navigation }) {
     return () => unsub();
   }, []);
 
+  useEffect(() => {
+    if (isScrolledToBottom.current && flatList.current) {
+      flatList.current.scrollToOffset({ offset: 0, animated: true });
+    }
+  }, [fetchedMessages]);
+
   const updateMessage = async () => {
     try {
       await updateDoc(doc(db, "messages", messageUpdate.parentId, "conversation", messageUpdate.docId), {
@@ -287,7 +294,13 @@ export default memo(function MessagingScreen({ route, navigation }) {
         {loaded ? (
           <BlockForMessage>
             <FlatList
-              onScroll={() => Keyboard.dismiss()}
+              inverted
+              onScroll={(event) => {
+                Keyboard.dismiss();
+                const offsetY = event.nativeEvent.contentOffset.y;
+                isScrolledToBottom.current = offsetY < 100;
+              }}
+              scrollEventThrottle={16}
               accessibilityLabel="Messages list"
               accessible={true}
               data={fetchedMessages}
