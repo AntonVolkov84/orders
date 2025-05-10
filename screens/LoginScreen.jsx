@@ -94,7 +94,7 @@ export default memo(function LoginScreen({ navigation }) {
       });
   };
 
-  const addToUsers = async (nikname, photoURL, email, userId, pushToken) => {
+  const addToUsers = async (nikname, photoURL, email, userId, displayName) => {
     try {
       const user = {
         language: "en",
@@ -104,6 +104,7 @@ export default memo(function LoginScreen({ navigation }) {
         email: email,
         userId: userId,
         pushToken: expoPushToken,
+        displayName: displayName || "",
       };
       await setDoc(doc(db, "users", email), user);
     } catch (error) {
@@ -142,7 +143,8 @@ export default memo(function LoginScreen({ navigation }) {
           const photoURL = currentUser.photoURL;
           const email = currentUser.email;
           const userId = currentUser.uid;
-          addToUsers(nikname, photoURL, email, userId);
+          const displayName = currentUser.displayName;
+          addToUsers(nikname, photoURL, email, userId, displayName);
         });
       }
     } catch (error) {

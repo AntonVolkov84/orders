@@ -205,10 +205,11 @@ export default memo(function MessagingScreen({ route, navigation }) {
         arrOfReseiver.push(docSnap.data().pushToken);
       }
       try {
+        console.log("Push", auth.currentUser);
         const pushMessage = {
           to: arrOfReseiver,
           sound: `default`,
-          title: `Comment for ORDER ${nameOfOrder}`,
+          title: `${nameOfOrder} ${auth.currentUser.displayName || auth.currentUser.email}`,
           body: message,
         };
         await fetch("https://exp.host/--/api/v2/push/send", {

@@ -91,6 +91,7 @@ export default function RegistrationScreen({ navigation }) {
     try {
       const user = {
         language: "en",
+        displayName: "",
         timestamp: serverTimestamp(),
         nikname: nikname,
         photoURL:

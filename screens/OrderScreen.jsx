@@ -223,7 +223,7 @@ const AddParticipantModal = styled.View`
   position: absolute;
   z-index: 3;
 `;
-const BlockAddingParticipant = styled.ScrollView`
+const BlockAddingParticipant = styled.FlatList`
   width: 100%;
   height: 100px;
   background-color: ${colors.modalNiknameBackgroundWindow};
@@ -233,7 +233,6 @@ const BlockAddingParticipant = styled.ScrollView`
   margin-top: 3%;
 `;
 const BlockParticipant = styled.TouchableOpacity`
-  width: 100%;
   height: 100%;
   justify-content: center;
   width: 60px;
@@ -255,8 +254,8 @@ const BlockParticipantName = styled.Text`
 `;
 const BlockAlredyPartc = styled.View`
   background-color: ${colors.modalNiknameBackgroundWindow};
-  width: fit-content;
-  height: 100px;
+  width: 100%;
+  height: 400px;
   margin-top: 5px;
   flex-direction: column;
   padding-left: 10px;
@@ -268,7 +267,7 @@ const BlockAlredyPartcTitle = styled.Text`
   color: ${colors.OrderDashboardName};
 `;
 const BlockAlredyPartcText = styled.Text`
-  font-size: ${screenHeight < 760 ? "20px" : "25px"};
+  font-size: ${screenHeight < 760 ? "18px" : "20px"};
 `;
 export default memo(function OrderScreen({ route, navigation }) {
   const [name, setName] = useState("");
@@ -697,34 +696,31 @@ export default memo(function OrderScreen({ route, navigation }) {
                 <Text>Loading...</Text>
               ) : (
                 <View>
-                  <BlockAddingParticipant horizontal>
-                    {allParticipantsData.map((p, index) => (
+                  <BlockAddingParticipant
+                    data={allParticipantsData}
+                    keyExtractor={(item) => item.id}
+                    renderItem={({ item }) => (
                       <BlockParticipant
-                        key={index}
                         onPress={() => {
-                          updateParticipants(p.email);
+                          updateParticipants(item.email);
                         }}
                       >
-                        <BlockParticipantAvatar
-                          source={{
-                            uri: `${p.photoURL}`,
-                          }}
-                        ></BlockParticipantAvatar>
-                        <BlockParticipantName numberOfLines={1}>{p.nikname || "No nikname"}</BlockParticipantName>
+                        <BlockParticipantAvatar source={{ uri: `${item.photoURL}` }}></BlockParticipantAvatar>
+                        <BlockParticipantName numberOfLines={1}>{item.nikname}</BlockParticipantName>
                       </BlockParticipant>
-                    ))}
-                  </BlockAddingParticipant>
+                    )}
+                    horizontal
+                  />
                 </View>
               )}
               <BlockAlredyPartc>
                 <BlockAlredyPartcTitle>{t("OrderScreenAlredyParticipate")}</BlockAlredyPartcTitle>
                 <FlatList
                   data={item.participants}
-                  horizontal
                   accessibilityLabel={`Alredy participate: ${item}`}
                   accessible={true}
-                  renderItem={({ item }) => <BlockAlredyPartcText>{item}, </BlockAlredyPartcText>}
-                  keyExtractor={(item, index) => index}
+                  renderItem={({ item }) => <BlockAlredyPartcText>{item}</BlockAlredyPartcText>}
+                  keyExtractor={(index) => index}
                 />
               </BlockAlredyPartc>
             </View>
