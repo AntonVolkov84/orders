@@ -320,7 +320,7 @@ export default memo(function MessagingScreen({ route, navigation }) {
               data={fetchedMessages}
               ref={flatList}
               renderItem={({ item }) => <Message setMessageUpdate={setMessageUpdate} message={item} />}
-              keyExtractor={(item, index) => index}
+              keyExtractor={(item) => item.docId}
             />
           </BlockForMessage>
         ) : (

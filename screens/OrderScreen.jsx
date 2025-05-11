@@ -24,6 +24,7 @@ import Button from "../components/Button";
 import { useTranslation } from "react-i18next";
 import { BannerAd, BannerAdSize } from "react-native-google-mobile-ads";
 import { Dimensions } from "react-native";
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 
 const screenHeight = Dimensions.get("screen").height;
 
@@ -32,6 +33,18 @@ const Container = styled.View`
   height: 70%;
   padding: 1%;
   padding-top: 5%;
+`;
+const BlockIcon = styled.TouchableOpacity`
+  height: 70px;
+  width: 70px;
+  border: 2px solid;
+  border-color: ${colors.APBorderColor};
+  justify-self: center;
+  align-self: center;
+  border-radius: 100px;
+  margin-right: 1%;
+  justify-content: center;
+  align-items: center;
 `;
 const OrderName = styled.Text`
   font-size: ${screenHeight < 760 ? "20px" : "25px"};
@@ -227,8 +240,6 @@ const BlockAddingParticipant = styled.FlatList`
   width: 100%;
   height: 100px;
   background-color: ${colors.modalNiknameBackgroundWindow};
-  padding-left: 5%;
-  padding-right: 5%;
   flex-direction: row;
   margin-top: 3%;
 `;
@@ -236,8 +247,6 @@ const BlockParticipant = styled.TouchableOpacity`
   height: 100%;
   justify-content: center;
   width: 60px;
-  margin-right: 1%;
-  flex: 1;
 `;
 const BlockParticipantAvatar = styled.Image`
   border-radius: 100px;
@@ -282,6 +291,7 @@ export default memo(function OrderScreen({ route, navigation }) {
   const [newMessageArrived, setNewMessageArrived] = useState(false);
   const [allParticipantsData, setAllParticipantsData] = useState([]);
   const [loadingData, setLoadingData] = useState(true);
+  const [addingParticipantModal, setAddingParticipantModal] = useState(false);
   const { item } = route.params;
   const currentUserEmail = auth.currentUser.email;
   const documentId = item.docId;
@@ -352,16 +362,17 @@ export default memo(function OrderScreen({ route, navigation }) {
     }
   };
   const getdata = async (arr) => {
-    const newArr = [];
-    for (i = 0; i < arr.length; i++) {
-      const docSnap = await getDoc(doc(db, "users", arr[i]));
-      if (docSnap.exists()) {
-        newArr.push(docSnap.data());
-      }
-      if (i === arr.length - 1) {
-        setAllParticipantsData(newArr);
-        setLoadingData(false);
-      }
+    try {
+      const promises = arr.map((id) => getDoc(doc(db, "users", id)));
+      const docs = await Promise.all(promises);
+
+      const newArr = docs.filter((docSnap) => docSnap.exists()).map((docSnap) => docSnap.data());
+
+      setAllParticipantsData(newArr);
+    } catch (err) {
+      console.log("Ошибка при загрузке данных участников:", err.message);
+    } finally {
+      setLoadingData(false);
     }
   };
 
@@ -696,20 +707,40 @@ export default memo(function OrderScreen({ route, navigation }) {
                 <Text>Loading...</Text>
               ) : (
                 <View>
+                  <BlockIcon
+                    accessibilityLabel="Button view modal window for adding participant to global list"
+                    accessible={true}
+                    onPress={() => setAddingParticipantModal(true)}
+                  >
+                    <MaterialCommunityIcons
+                      name="account-plus-outline"
+                      size={screenHeight < 760 ? 30 : 40}
+                      color={colors.APBorderColor}
+                    />
+                  </BlockIcon>
                   <BlockAddingParticipant
                     data={allParticipantsData}
                     keyExtractor={(item) => item.id}
-                    renderItem={({ item }) => (
-                      <BlockParticipant
-                        onPress={() => {
-                          updateParticipants(item.email);
-                        }}
-                      >
-                        <BlockParticipantAvatar source={{ uri: `${item.photoURL}` }}></BlockParticipantAvatar>
-                        <BlockParticipantName numberOfLines={1}>{item.nikname}</BlockParticipantName>
-                      </BlockParticipant>
-                    )}
+                    contentContainerStyle={{
+                      paddingLeft: 10,
+                      paddingRight: 10,
+                    }}
                     horizontal
+                    showsHorizontalScrollIndicator={false}
+                    renderItem={({ item, index }) => {
+                      const isLast = index === allParticipantsData.length - 1;
+                      return (
+                        <BlockParticipant
+                          style={{ marginRight: isLast ? 0 : 10 }}
+                          onPress={() => {
+                            updateParticipants(item.email);
+                          }}
+                        >
+                          <BlockParticipantAvatar source={{ uri: `${item.photoURL}` }}></BlockParticipantAvatar>
+                          <BlockParticipantName numberOfLines={1}>{item.nikname}</BlockParticipantName>
+                        </BlockParticipant>
+                      );
+                    }}
                   />
                 </View>
               )}
@@ -720,7 +751,7 @@ export default memo(function OrderScreen({ route, navigation }) {
                   accessibilityLabel={`Alredy participate: ${item}`}
                   accessible={true}
                   renderItem={({ item }) => <BlockAlredyPartcText>{item}</BlockAlredyPartcText>}
-                  keyExtractor={(index) => index}
+                  keyExtractor={(item) => item}
                 />
               </BlockAlredyPartc>
             </View>

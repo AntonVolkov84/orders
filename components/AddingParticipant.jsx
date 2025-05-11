@@ -9,6 +9,7 @@ import Button from "./Button";
 import { db } from "../firebaseConfig";
 import { useTranslation } from "react-i18next";
 import { Dimensions } from "react-native";
+import ModalAddingParticipant from "./ModalAddingParticipant";
 
 const screenHeight = Dimensions.get("screen").height;
 
@@ -27,15 +28,11 @@ const BlockIcon = styled.TouchableOpacity`
   margin-right: 1%;
   justify-content: center;
   align-items: center;
-  flex: 1;
 `;
 const BlockParticipant = styled.TouchableOpacity`
-  width: 100%;
   height: 100%;
   justify-content: center;
   width: 60px;
-  margin-right: 1%;
-  flex: 1;
 `;
 const BlockParticipantAvatar = styled.Image`
   border-radius: 100px;
@@ -184,17 +181,17 @@ export default memo(function AddingParticipant({ setParticipants, participants }
   }, []);
 
   const getdata = async (arr) => {
-    const newArr = [];
-    for (i = 0; i < arr.length; i++) {
-      const docSnap = await getDoc(doc(db, "users", arr[i]));
-      if (docSnap.exists()) {
-        setNoOneParticipant(false);
-        newArr.push(docSnap.data());
-      }
-      if (i === arr.length - 1) {
-        setAllParticipantsData(newArr);
-        setLoadingData(false);
-      }
+    try {
+      const promises = arr.map((id) => getDoc(doc(db, "users", id)));
+      const docs = await Promise.all(promises);
+
+      const newArr = docs.filter((docSnap) => docSnap.exists()).map((docSnap) => docSnap.data());
+
+      setAllParticipantsData(newArr);
+    } catch (err) {
+      console.log("Ошибка при загрузке данных участников:", err.message);
+    } finally {
+      setLoadingData(false);
     }
   };
   const addParticipantsToOrder = (participant) => {
@@ -249,37 +246,41 @@ export default memo(function AddingParticipant({ setParticipants, participants }
         </ModalDelParticipant>
       ) : null}
       {addingParticipantModal ? (
-        <Modal>
-          <ModalInput
-            placeholder={t("AddingParticipantsModalPlaceholder")}
-            value={inputEmail}
-            onChangeText={setInputEmail}
-          ></ModalInput>
-          <ModalButton>
-            <ModalButtonBtn
-              accessibilityLabel="Button go back from modal window adding participant to global list"
-              accessible={true}
-              onPress={() => {
-                setAddingParticipantModal(false);
-                setInputEmail("");
-              }}
-            >
-              <Button children={t("ProffileCancel")} />
-            </ModalButtonBtn>
-            <ModalButtonBtn
-              accessibilityLabel="Button adding participant to global list"
-              accessible={true}
-              onPress={() => {
-                VerificationMailDublicate(inputEmail);
-                setAddingParticipantModal(false);
-                setInputEmail("");
-              }}
-            >
-              <Button children={t("AddingParticipantsCheck")} />
-            </ModalButtonBtn>
-          </ModalButton>
-        </Modal>
-      ) : loadingData ? (
+        <ModalAddingParticipant
+          gettAllParticipants={gettAllParticipants}
+          setAddingParticipantModal={setAddingParticipantModal}
+        />
+      ) : // <Modal>
+      //   <ModalInput
+      //     placeholder={t("AddingParticipantsModalPlaceholder")}
+      //     value={inputEmail}
+      //     onChangeText={setInputEmail}
+      //   ></ModalInput>
+      //   <ModalButton>
+      //     <ModalButtonBtn
+      //       accessibilityLabel="Button go back from modal window adding participant to global list"
+      //       accessible={true}
+      //       onPress={() => {
+      //         setAddingParticipantModal(false);
+      //         setInputEmail("");
+      //       }}
+      //     >
+      //       <Button children={t("ProffileCancel")} />
+      //     </ModalButtonBtn>
+      //     <ModalButtonBtn
+      //       accessibilityLabel="Button adding participant to global list"
+      //       accessible={true}
+      //       onPress={() => {
+      //         VerificationMailDublicate(inputEmail);
+      //         setAddingParticipantModal(false);
+      //         setInputEmail("");
+      //       }}
+      //     >
+      //       <Button children={t("AddingParticipantsCheck")} />
+      //     </ModalButtonBtn>
+      //   </ModalButton>
+      // </Modal>
+      loadingData ? (
         <BlockNoOne>
           <BlockNoOneIcon onPress={() => setAddingParticipantModal(true)}>
             <MaterialCommunityIcons
@@ -304,7 +305,7 @@ export default memo(function AddingParticipant({ setParticipants, participants }
           )}
         </BlockNoOne>
       ) : (
-        <Repair horizontal>
+        <Repair horizontal showsHorizontalScrollIndicator={false}>
           <BlockIcon
             accessibilityLabel="Button view modal window for adding participant to global list"
             accessible={true}
@@ -316,23 +317,25 @@ export default memo(function AddingParticipant({ setParticipants, participants }
               color={colors.APBorderColor}
             />
           </BlockIcon>
-
-          {allParticipantsData.map((p, index) => (
-            <BlockParticipant
-              accessibilityLabel={`Participant: ${p.nikname}`}
-              accessible={true}
-              key={index}
-              onPress={() => addParticipantsToOrder(p)}
-              onLongPress={() => handleLongPress(p)}
-            >
-              <BlockParticipantAvatar
-                source={{
-                  uri: `${p.photoURL}`,
-                }}
-              ></BlockParticipantAvatar>
-              <BlockParticipantName numberOfLines={1}>{p.nikname || "No nikname"}</BlockParticipantName>
-            </BlockParticipant>
-          ))}
+          {allParticipantsData.map((p, index) => {
+            return (
+              <BlockParticipant
+                accessibilityLabel={`Participant: ${p.nikname}`}
+                accessible={true}
+                key={p.id || index}
+                onPress={() => addParticipantsToOrder(p)}
+                onLongPress={() => handleLongPress(p)}
+                style={{ marginRight: 10 }}
+              >
+                <BlockParticipantAvatar
+                  source={{
+                    uri: `${p.photoURL}`,
+                  }}
+                ></BlockParticipantAvatar>
+                <BlockParticipantName numberOfLines={1}>{p.nikname || "No nikname"}</BlockParticipantName>
+              </BlockParticipant>
+            );
+          })}
         </Repair>
       )}
     </>

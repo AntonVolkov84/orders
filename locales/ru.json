@@ -17,7 +17,7 @@
   "OrderScreenBoughtItems": "Сделано",
   "OrderScreenOrderItems": "Не сделано",
   "OrderScreenAddParts": "Добавить участника",
-  "OrderScreenModalPlaceholderItem": "Название позиции или дела",
+  "OrderScreenModalPlaceholderItem": "Название позиции",
   "OrderScreenModalPlaceholderQT": "Кол-во",
   "OrderScreenModalUpdate": "Обновить",
   "OrderScreenModalAddPosition": "Добавить",
