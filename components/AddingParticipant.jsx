@@ -47,13 +47,7 @@ const BlockParticipantName = styled.Text`
   text-overflow: ellipsis;
   text-align: center;
 `;
-const Modal = styled.View`
-  width: 100%;
-  height: 100%;
-  padding: 2%;
-  background-color: ${colors.orderBackgroundColor};
-  z-index: 4;
-`;
+
 const ModalDelParticipant = styled.View`
   width: 100%;
   height: 100%;
@@ -68,15 +62,6 @@ const ModalDelParticipantText = styled.Text`
   background-color: ${colors.orderBackgroundColor};
   color: ${colors.titleText};
   text-align: center;
-`;
-const ModalInput = styled.TextInput`
-  width: 100%;
-  height: 50px;
-  background-color: ${colors.backgroundColorInput};
-  color: ${colors.colorTextInput};
-  font-size: 20px;
-  padding-left: 2%;
-  border-radius: 10px;
 `;
 const ModalButton = styled.View`
   width: 100%;
@@ -108,7 +93,6 @@ const BlockNoOneIcon = styled.TouchableOpacity`
 
 export default memo(function AddingParticipant({ setParticipants, participants }) {
   const auth = getAuth();
-  const [inputEmail, setInputEmail] = useState("");
   const [loadingData, setLoadingData] = useState(true);
   const [allParticipantsData, setAllParticipantsData] = useState([]);
   const [addingParticipantModal, setAddingParticipantModal] = useState(false);

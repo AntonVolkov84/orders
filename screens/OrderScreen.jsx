@@ -24,7 +24,7 @@ import Button from "../components/Button";
 import { useTranslation } from "react-i18next";
 import { BannerAd, BannerAdSize } from "react-native-google-mobile-ads";
 import { Dimensions } from "react-native";
-import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import AddingParticipant from "../components/AddingParticipant";
 
 const screenHeight = Dimensions.get("screen").height;
 
@@ -33,18 +33,6 @@ const Container = styled.View`
   height: 70%;
   padding: 1%;
   padding-top: 5%;
-`;
-const BlockIcon = styled.TouchableOpacity`
-  height: 70px;
-  width: 70px;
-  border: 2px solid;
-  border-color: ${colors.APBorderColor};
-  justify-self: center;
-  align-self: center;
-  border-radius: 100px;
-  margin-right: 1%;
-  justify-content: center;
-  align-items: center;
 `;
 const OrderName = styled.Text`
   font-size: ${screenHeight < 760 ? "20px" : "25px"};
@@ -236,31 +224,6 @@ const AddParticipantModal = styled.View`
   position: absolute;
   z-index: 3;
 `;
-const BlockAddingParticipant = styled.FlatList`
-  width: 100%;
-  height: 100px;
-  background-color: ${colors.modalNiknameBackgroundWindow};
-  flex-direction: row;
-  margin-top: 3%;
-`;
-const BlockParticipant = styled.TouchableOpacity`
-  height: 100%;
-  justify-content: center;
-  width: 60px;
-`;
-const BlockParticipantAvatar = styled.Image`
-  border-radius: 100px;
-  aspect-ratio: 1;
-  object-fit: cover;
-`;
-const BlockParticipantName = styled.Text`
-  color: ${colors.modalNiknameBackground};
-  font-size: 12px;
-  width: 100%;
-  height: 20px;
-  text-overflow: ellipsis;
-  text-align: center;
-`;
 const BlockAlredyPartc = styled.View`
   background-color: ${colors.modalNiknameBackgroundWindow};
   width: 100%;
@@ -291,7 +254,7 @@ export default memo(function OrderScreen({ route, navigation }) {
   const [newMessageArrived, setNewMessageArrived] = useState(false);
   const [allParticipantsData, setAllParticipantsData] = useState([]);
   const [loadingData, setLoadingData] = useState(true);
-  const [addingParticipantModal, setAddingParticipantModal] = useState(false);
+  const [participants, setParticipants] = useState([]);
   const { item } = route.params;
   const currentUserEmail = auth.currentUser.email;
   const documentId = item.docId;
@@ -706,42 +669,8 @@ export default memo(function OrderScreen({ route, navigation }) {
               {loadingData ? (
                 <Text>Loading...</Text>
               ) : (
-                <View>
-                  <BlockIcon
-                    accessibilityLabel="Button view modal window for adding participant to global list"
-                    accessible={true}
-                    onPress={() => setAddingParticipantModal(true)}
-                  >
-                    <MaterialCommunityIcons
-                      name="account-plus-outline"
-                      size={screenHeight < 760 ? 30 : 40}
-                      color={colors.APBorderColor}
-                    />
-                  </BlockIcon>
-                  <BlockAddingParticipant
-                    data={allParticipantsData}
-                    keyExtractor={(item) => item.id}
-                    contentContainerStyle={{
-                      paddingLeft: 10,
-                      paddingRight: 10,
-                    }}
-                    horizontal
-                    showsHorizontalScrollIndicator={false}
-                    renderItem={({ item, index }) => {
-                      const isLast = index === allParticipantsData.length - 1;
-                      return (
-                        <BlockParticipant
-                          style={{ marginRight: isLast ? 0 : 10 }}
-                          onPress={() => {
-                            updateParticipants(item.email);
-                          }}
-                        >
-                          <BlockParticipantAvatar source={{ uri: `${item.photoURL}` }}></BlockParticipantAvatar>
-                          <BlockParticipantName numberOfLines={1}>{item.nikname}</BlockParticipantName>
-                        </BlockParticipant>
-                      );
-                    }}
-                  />
+                <View style={{ height: 100, marginTop: 10, marginBottom: 10 }}>
+                  <AddingParticipant participants={participants} setParticipants={setParticipants} />
                 </View>
               )}
               <BlockAlredyPartc>

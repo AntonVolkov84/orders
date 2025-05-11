@@ -1,5 +1,5 @@
 import { View, Text, TouchableOpacity, Image, TextInput, FlatList } from "react-native";
-import React, { useState, useEffect, useContext, memo } from "react";
+import React, { useState, useEffect, memo } from "react";
 import { LinearGradient } from "expo-linear-gradient";
 import * as colors from "../variables/colors";
 import { StatusBar } from "expo-status-bar";
