@@ -1,5 +1,5 @@
 import { Keyboard, View, Text, TouchableOpacity, FlatList } from "react-native";
-import React, { useState, useEffect, useRef, memo } from "react";
+import { useState, useEffect, useRef, memo } from "react";
 import * as colors from "../variables/colors";
 import { LinearGradient } from "expo-linear-gradient";
 import { StatusBar } from "expo-status-bar";
@@ -96,6 +96,7 @@ export default memo(function MessagingScreen({ route, navigation }) {
   const [messageUpdate, setMessageUpdate] = useState("");
   const [fetchedMessages, setFetchedMessages] = useState([]);
   const [loaded, setLoaded] = useState(false);
+  const [keyboardOffset, setKeyboardOffset] = useState(10);
   const conversationId = item.docId;
   const currentUser = auth.currentUser;
   const flatList = useRef(null);
@@ -105,6 +106,19 @@ export default memo(function MessagingScreen({ route, navigation }) {
   const storage = getStorage(app);
   const isScrolledToBottom = useRef(true);
 
+  useEffect(() => {
+    const showSubscription = Keyboard.addListener("keyboardDidShow", (e) => {
+      setKeyboardOffset(85);
+    });
+    const hideSubscription = Keyboard.addListener("keyboardDidHide", () => {
+      setKeyboardOffset(10);
+    });
+
+    return () => {
+      showSubscription.remove();
+      hideSubscription.remove();
+    };
+  }, []);
   useEffect(() => {
     setMessage(messageUpdate.messageText);
   }, [messageUpdate]);
@@ -205,7 +219,6 @@ export default memo(function MessagingScreen({ route, navigation }) {
         arrOfReseiver.push(docSnap.data().pushToken);
       }
       try {
-        console.log("Push", auth.currentUser);
         const pushMessage = {
           to: arrOfReseiver,
           sound: `default`,
@@ -293,7 +306,7 @@ export default memo(function MessagingScreen({ route, navigation }) {
       </BlockButton>
       <BlockMessaging>
         {loaded ? (
-          <BlockForMessage>
+          <BlockForMessage style={{ marginBottom: keyboardOffset }}>
             <FlatList
               inverted
               onScroll={(event) => {
