@@ -91,7 +91,7 @@ const BlockNoOneIcon = styled.TouchableOpacity`
   align-items: center;
 `;
 
-export default memo(function AddingParticipant({ setParticipants, participants, updateParticipants }) {
+export default memo(function AddingParticipant({ updateParticipants, participants, setParticipants }) {
   const auth = getAuth();
   const [loadingData, setLoadingData] = useState(true);
   const [allParticipantsData, setAllParticipantsData] = useState([]);
@@ -101,40 +101,6 @@ export default memo(function AddingParticipant({ setParticipants, participants, 
   const [participantForDeleting, setParticipantForDeleting] = useState("");
   const { t } = useTranslation();
 
-  const VerificationMailDublicate = async (email) => {
-    try {
-      const docSnap = await getDocs(
-        query(
-          collection(db, "AllParticipants", auth.currentUser.email, "PersonalParticipant"),
-          where("email", "==", email)
-        )
-      );
-      if (!Boolean(docSnap.docs.length)) {
-        verificationInputMail(email);
-      } else {
-        docSnap.forEach((e) => {
-          return Alert.alert(`${t("AddingParticipantsDublicate")}`);
-        });
-      }
-    } catch (error) {
-      console.log(error.message);
-    }
-  };
-  const verificationInputMail = async (email) => {
-    if (email === auth.currentUser.email) {
-      return Alert.alert(`${t("AddingParticipantsAlertExistYourself")}`);
-    }
-    try {
-      const docSnap = await getDoc(doc(db, "users", email));
-      if (docSnap.exists()) {
-        addToParticipant(email);
-      } else {
-        Alert.alert(`${t("AddingParticipantsAlertNotIn")}`);
-      }
-    } catch (error) {
-      Alert.alert("Participant doesn`t exict", error.message);
-    }
-  };
   const addToParticipant = async (email) => {
     const currentEmail = auth.currentUser.email;
     try {
@@ -168,9 +134,7 @@ export default memo(function AddingParticipant({ setParticipants, participants, 
     try {
       const promises = arr.map((id) => getDoc(doc(db, "users", id)));
       const docs = await Promise.all(promises);
-
       const newArr = docs.filter((docSnap) => docSnap.exists()).map((docSnap) => docSnap.data());
-
       setAllParticipantsData(newArr);
     } catch (err) {
       console.log("Ошибка при загрузке данных участников:", err.message);

@@ -238,6 +238,7 @@ const BlockAlredyPartcTitle = styled.Text`
   font-size: ${screenHeight < 760 ? "20px" : "25px"};
   color: ${colors.OrderDashboardName};
 `;
+const BlockAlredyPartcTouch = styled.TouchableOpacity``;
 const BlockAlredyPartcText = styled.Text`
   font-size: ${screenHeight < 760 ? "18px" : "20px"};
 `;
@@ -252,21 +253,41 @@ export default memo(function OrderScreen({ route, navigation }) {
   const [dataItem, setDataItem] = useState(null);
   const [toggleBoughtItems, setToggleBoughtItems] = useState(false);
   const [newMessageArrived, setNewMessageArrived] = useState(false);
-  const [allParticipantsData, setAllParticipantsData] = useState([]);
-  const [loadingData, setLoadingData] = useState(true);
-  const [participants, setParticipants] = useState([]);
   const { item } = route.params;
   const currentUserEmail = auth.currentUser.email;
   const documentId = item.docId;
   const { t } = useTranslation();
   const nameOfOrder = item.nameOfOrder;
+  const isOrderCreator = item.participants[0] === currentUserEmail;
 
-  useEffect(() => {
-    gettAllParticipants();
-  }, [modalAddParticipant]);
+  const delParticipantFromOrder = async (participantForDeleting) => {
+    if (participantForDeleting === currentUserEmail) {
+      return Alert.alert(t("OrderScreenAlertDelMyself"));
+    }
+
+    Alert.alert(t("OrderScreenConfirmDeleteTitle"), `${participantForDeleting} ${t("OrderScreenConfirmDeleteText")}`, [
+      {
+        text: t("ProffileCancel"),
+        style: "cancel",
+      },
+      {
+        text: t("messageModalDelete"),
+        style: "destructive",
+        onPress: async () => {
+          try {
+            const firebaseRef = doc(db, "orders", documentId);
+            await updateDoc(firebaseRef, {
+              participants: arrayRemove(participantForDeleting),
+            });
+          } catch (error) {
+            console.log("delParticipantFromOrder", error.message);
+          }
+        },
+      },
+    ]);
+  };
 
   const updateParticipants = async (p) => {
-    console.log(p.email);
     const email = p.email;
     Alert.alert(`${t("OrderScreenAlertText")}`, `${email}`, [
       {
@@ -283,7 +304,6 @@ export default memo(function OrderScreen({ route, navigation }) {
           await updateDoc(firebaseRef, {
             participants: arrayUnion(email),
           });
-          setModalAddParticipant(false);
           sendPersonalMessage(email);
         },
       },
@@ -313,31 +333,6 @@ export default memo(function OrderScreen({ route, navigation }) {
       });
     } catch (error) {
       console.log(error);
-    }
-  };
-  const gettAllParticipants = async () => {
-    try {
-      const querySnapshot = await getDocs(collection(db, "AllParticipants", currentUserEmail, "PersonalParticipant"));
-      const arr = querySnapshot.docs.map((doc) => doc.data().email);
-      if (arr) {
-        getdata(arr);
-      }
-    } catch (error) {
-      console.log(error.message);
-    }
-  };
-  const getdata = async (arr) => {
-    try {
-      const promises = arr.map((id) => getDoc(doc(db, "users", id)));
-      const docs = await Promise.all(promises);
-
-      const newArr = docs.filter((docSnap) => docSnap.exists()).map((docSnap) => docSnap.data());
-
-      setAllParticipantsData(newArr);
-    } catch (err) {
-      console.log("Ошибка при загрузке данных участников:", err.message);
-    } finally {
-      setLoadingData(false);
     }
   };
 
@@ -639,8 +634,6 @@ export default memo(function OrderScreen({ route, navigation }) {
               style={{ marginTop: "19%", marginLeft: "5%" }}
               onPress={() => {
                 setModalAddParticipant(false);
-                setAllParticipantsData(null);
-                setLoadingData(true);
               }}
             >
               <LinearGradient
@@ -668,24 +661,20 @@ export default memo(function OrderScreen({ route, navigation }) {
               </LinearGradient>
             </BlockButtonBtnBack>
             <View style={{ height: "100px" }}>
-              {loadingData ? (
-                <Text>Loading...</Text>
-              ) : (
-                <View style={{ height: 100, marginTop: 10, marginBottom: 10 }}>
-                  <AddingParticipant
-                    participants={participants}
-                    setParticipants={setParticipants}
-                    updateParticipants={updateParticipants}
-                  />
-                </View>
-              )}
+              <View style={{ height: 100, marginTop: 10, marginBottom: 10 }}>
+                <AddingParticipant updateParticipants={updateParticipants} />
+              </View>
               <BlockAlredyPartc>
                 <BlockAlredyPartcTitle>{t("OrderScreenAlredyParticipate")}</BlockAlredyPartcTitle>
                 <FlatList
-                  data={item.participants}
+                  data={orders.participants}
                   accessibilityLabel={`Alredy participate: ${item}`}
                   accessible={true}
-                  renderItem={({ item }) => <BlockAlredyPartcText>{item}</BlockAlredyPartcText>}
+                  renderItem={({ item }) => (
+                    <BlockAlredyPartcTouch onPress={() => (isOrderCreator ? delParticipantFromOrder(item) : null)}>
+                      <BlockAlredyPartcText>{item}</BlockAlredyPartcText>
+                    </BlockAlredyPartcTouch>
+                  )}
                   keyExtractor={(item) => item}
                 />
               </BlockAlredyPartc>
