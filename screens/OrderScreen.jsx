@@ -265,7 +265,9 @@ export default memo(function OrderScreen({ route, navigation }) {
     gettAllParticipants();
   }, [modalAddParticipant]);
 
-  const updateParticipants = async (email) => {
+  const updateParticipants = async (p) => {
+    console.log(p.email);
+    const email = p.email;
     Alert.alert(`${t("OrderScreenAlertText")}`, `${email}`, [
       {
         text: `${t("ProffileCancel")}`,
@@ -670,7 +672,11 @@ export default memo(function OrderScreen({ route, navigation }) {
                 <Text>Loading...</Text>
               ) : (
                 <View style={{ height: 100, marginTop: 10, marginBottom: 10 }}>
-                  <AddingParticipant participants={participants} setParticipants={setParticipants} />
+                  <AddingParticipant
+                    participants={participants}
+                    setParticipants={setParticipants}
+                    updateParticipants={updateParticipants}
+                  />
                 </View>
               )}
               <BlockAlredyPartc>

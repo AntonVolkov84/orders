@@ -91,7 +91,7 @@ const BlockNoOneIcon = styled.TouchableOpacity`
   align-items: center;
 `;
 
-export default memo(function AddingParticipant({ setParticipants, participants }) {
+export default memo(function AddingParticipant({ setParticipants, participants, updateParticipants }) {
   const auth = getAuth();
   const [loadingData, setLoadingData] = useState(true);
   const [allParticipantsData, setAllParticipantsData] = useState([]);
@@ -234,37 +234,7 @@ export default memo(function AddingParticipant({ setParticipants, participants }
           gettAllParticipants={gettAllParticipants}
           setAddingParticipantModal={setAddingParticipantModal}
         />
-      ) : // <Modal>
-      //   <ModalInput
-      //     placeholder={t("AddingParticipantsModalPlaceholder")}
-      //     value={inputEmail}
-      //     onChangeText={setInputEmail}
-      //   ></ModalInput>
-      //   <ModalButton>
-      //     <ModalButtonBtn
-      //       accessibilityLabel="Button go back from modal window adding participant to global list"
-      //       accessible={true}
-      //       onPress={() => {
-      //         setAddingParticipantModal(false);
-      //         setInputEmail("");
-      //       }}
-      //     >
-      //       <Button children={t("ProffileCancel")} />
-      //     </ModalButtonBtn>
-      //     <ModalButtonBtn
-      //       accessibilityLabel="Button adding participant to global list"
-      //       accessible={true}
-      //       onPress={() => {
-      //         VerificationMailDublicate(inputEmail);
-      //         setAddingParticipantModal(false);
-      //         setInputEmail("");
-      //       }}
-      //     >
-      //       <Button children={t("AddingParticipantsCheck")} />
-      //     </ModalButtonBtn>
-      //   </ModalButton>
-      // </Modal>
-      loadingData ? (
+      ) : loadingData ? (
         <BlockNoOne>
           <BlockNoOneIcon onPress={() => setAddingParticipantModal(true)}>
             <MaterialCommunityIcons
@@ -307,7 +277,7 @@ export default memo(function AddingParticipant({ setParticipants, participants }
                 accessibilityLabel={`Participant: ${p.nikname}`}
                 accessible={true}
                 key={p.id || index}
-                onPress={() => addParticipantsToOrder(p)}
+                onPress={() => (updateParticipants ?? addParticipantsToOrder)(p)}
                 onLongPress={() => handleLongPress(p)}
                 style={{ marginRight: 10 }}
               >
