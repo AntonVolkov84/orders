@@ -676,6 +676,7 @@ export default memo(function OrderScreen({ route, navigation }) {
                     </BlockAlredyPartcTouch>
                   )}
                   keyExtractor={(item) => item}
+                  ItemSeparatorComponent={() => <View style={{ height: 5 }} />}
                 />
               </BlockAlredyPartc>
             </View>
