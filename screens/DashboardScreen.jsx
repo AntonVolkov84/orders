@@ -1,5 +1,5 @@
-import { View, Text, TouchableOpacity, Image, TextInput, FlatList } from "react-native";
-import React, { useState, useEffect, memo } from "react";
+import { View, Text, TouchableOpacity, StyleSheet, FlatList } from "react-native";
+import { useState, useEffect, memo } from "react";
 import { LinearGradient } from "expo-linear-gradient";
 import * as colors from "../variables/colors";
 import { StatusBar } from "expo-status-bar";
@@ -7,7 +7,6 @@ import Proffile from "../components/Proffile";
 import OrderIcon from "../components/OrderIcon";
 import CreatingOrder from "../components/CreatingOrder";
 import AddingParticipant from "../components/AddingParticipant";
-import styled from "styled-components";
 import { db, auth } from "../firebaseConfig";
 import { collection, onSnapshot, where, orderBy, query, getDocs } from "firebase/firestore";
 import OrdersDashboard from "../components/OrdersDashboard";
@@ -18,55 +17,6 @@ import { BannerAd, BannerAdSize } from "react-native-google-mobile-ads";
 
 const screenHeight = Dimensions.get("screen").height;
 
-const BlockOrderIcon = styled.TouchableOpacity`
-  width: 20%;
-  aspect-ratio: 1;
-  border-radius: 100px;
-  overflow: hidden;
-  position: absolute;
-  bottom: ${screenHeight < 760 ? "11%" : "9%"};
-  right: 8%;
-`;
-const BlockOrderCreate = styled.View`
-  width: 100%;
-  height: 100%;
-  border-top-left-radius: 12px;
-  border-top-right-radius: 12px;
-  padding-top: 3%;
-  background-color: ${colors.blockOrderCreateBackgroundColor};
-`;
-const BlockAddingParticipant = styled.View`
-  height: ${screenHeight < 760 ? "80px" : "100px"};
-  padding-left: 1%;
-  padding-right: 1%;
-`;
-const BlockAddingOrder = styled.View`
-  width: 100%;
-  height: ${screenHeight < 760 ? "80%" : "100%"};
-  margin-bottom: 1%;
-  padding-left: 3%;
-  padding-right: 3%;
-`;
-const BlockOrdersShow = styled.View`
-  height: 90%;
-  width: 98%;
-  margin-left: 1%;
-  margin-right: 1%;
-  margin-top: 1%;
-`;
-const NoOrder = styled.View`
-  width: 100%;
-  margin-top: 100px;
-  height: fit-content;
-  padding: 10px;
-  justify-content: center;
-  align-items: center;
-`;
-const NoOrderText = styled.Text`
-  font-size: ${screenHeight < 760 ? "15px" : "20px"};
-  text-align: center;
-  color: ${colors.titleText};
-`;
 export default memo(function DashboardScreen({ navigation }) {
   const [createOrderModal, setCreateOrderModal] = useState(false);
   const [participants, setParticipants] = useState([]);
@@ -76,7 +26,7 @@ export default memo(function DashboardScreen({ navigation }) {
   const { t } = useTranslation();
 
   useEffect(() => {
-    onSnapshot(
+    const unsub = onSnapshot(
       query(
         collection(db, "orders"),
         where("participants", "array-contains", currentEmail),
@@ -87,6 +37,9 @@ export default memo(function DashboardScreen({ navigation }) {
         setIsLoaded(true);
       }
     );
+    return () => {
+      unsub();
+    };
   }, []);
 
   return (
@@ -103,30 +56,32 @@ export default memo(function DashboardScreen({ navigation }) {
     >
       <StatusBar style="light" />
       {createOrderModal ? (
-        <>
-          <BlockOrderCreate>
-            <BlockAddingParticipant>
-              <AddingParticipant participants={participants} setParticipants={setParticipants} />
-            </BlockAddingParticipant>
-            <BlockAddingOrder>
-              <CreatingOrder
-                participants={participants}
-                setParticipants={setParticipants}
-                setCreateOrderModal={setCreateOrderModal}
-              />
-            </BlockAddingOrder>
-          </BlockOrderCreate>
-        </>
+        <View style={styles.blockOrderCreate}>
+          <View style={styles.blockAddingParticipant}>
+            <AddingParticipant participants={participants} setParticipants={setParticipants} />
+          </View>
+          <View style={styles.blockAddingOrder}>
+            <CreatingOrder
+              participants={participants}
+              setParticipants={setParticipants}
+              setCreateOrderModal={setCreateOrderModal}
+            />
+          </View>
+        </View>
       ) : (
         <>
           <Proffile />
-          <BlockOrdersShow accessibilityLabel="Block with all orders where you are participant" accessible={true}>
-            {Boolean(fetchedOrders.length) ? null : (
-              <NoOrder>
-                <NoOrderText>{t("OrderDashboardNoOrderText")}</NoOrderText>
-              </NoOrder>
+          <View
+            style={styles.blockOrdersShow}
+            accessibilityLabel="Block with all orders where you are participant"
+            accessible={true}
+          >
+            {fetchedOrders.length === 0 && (
+              <View style={styles.noOrder}>
+                <Text style={styles.noOrderText}>{t("OrderDashboardNoOrderText")}</Text>
+              </View>
             )}
-            {isLoaded ? (
+            {isLoaded && (
               <SafeAreaProvider>
                 <SafeAreaView style={{ height: "94%" }}>
                   <FlatList
@@ -136,15 +91,16 @@ export default memo(function DashboardScreen({ navigation }) {
                   />
                 </SafeAreaView>
               </SafeAreaProvider>
-            ) : null}
-          </BlockOrdersShow>
-          <BlockOrderIcon
+            )}
+          </View>
+          <TouchableOpacity
+            style={styles.blockOrderIcon}
             onPress={() => {
               setCreateOrderModal(true);
             }}
           >
             <OrderIcon />
-          </BlockOrderIcon>
+          </TouchableOpacity>
         </>
       )}
       <View style={{ position: "absolute", bottom: 0, paddingleft: "1%", zIndex: 10 }}>
@@ -156,4 +112,54 @@ export default memo(function DashboardScreen({ navigation }) {
       </View>
     </LinearGradient>
   );
+});
+const styles = StyleSheet.create({
+  blockOrderIcon: {
+    width: "20%",
+    aspectRatio: 1,
+    borderRadius: 100,
+    overflow: "hidden",
+    position: "absolute",
+    bottom: screenHeight < 760 ? "11%" : "9%",
+    right: "8%",
+  },
+  blockOrderCreate: {
+    width: "100%",
+    height: "100%",
+    borderTopLeftRadius: 12,
+    borderTopRightRadius: 12,
+    paddingTop: "3%",
+    backgroundColor: colors.blockOrderCreateBackgroundColor,
+  },
+  blockAddingParticipant: {
+    height: screenHeight < 760 ? 80 : 100,
+    paddingLeft: "1%",
+    paddingRight: "1%",
+  },
+  blockAddingOrder: {
+    width: "100%",
+    height: screenHeight < 760 ? "80%" : "100%",
+    marginBottom: "1%",
+    paddingLeft: "3%",
+    paddingRight: "3%",
+  },
+  blockOrdersShow: {
+    height: "90%",
+    width: "98%",
+    marginLeft: "1%",
+    marginRight: "1%",
+    marginTop: "1%",
+  },
+  noOrder: {
+    width: "100%",
+    marginTop: 100,
+    padding: 10,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  noOrderText: {
+    fontSize: screenHeight < 760 ? 15 : 20,
+    textAlign: "center",
+    color: colors.titleText,
+  },
 });

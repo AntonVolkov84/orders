@@ -1,53 +1,56 @@
-import { Keyboard, View, Text, TouchableOpacity, FlatList } from "react-native";
-import { useState, useEffect, useRef, memo } from "react";
-import * as colors from "../variables/colors";
+import React, { useState, useEffect, useRef } from "react";
+import { Keyboard, View, Text, FlatList, Dimensions } from "react-native";
+import styled from "styled-components/native";
 import { LinearGradient } from "expo-linear-gradient";
 import { StatusBar } from "expo-status-bar";
-import styled from "styled-components";
-import { db, auth, app } from "../firebaseConfig";
+import * as colors from "../variables/colors";
+import { db, auth, app, database } from "../firebaseConfig";
 import Button from "../components/Button";
+import Message from "../components/Message";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
-import { useTranslation } from "react-i18next";
 import Fontisto from "@expo/vector-icons/Fontisto";
 import * as ImagePicker from "expo-image-picker";
-import { getDownloadURL, getStorage, ref, uploadBytesResumable, deleteObject } from "firebase/storage";
+import { getStorage, ref as storageRef, uploadBytesResumable, getDownloadURL } from "firebase/storage";
+import { ref as dbRef, set } from "firebase/database";
 import {
-  doc,
-  addDoc,
-  onSnapshot,
   collection,
-  orderBy,
-  serverTimestamp,
   query,
-  getDoc,
+  orderBy,
+  onSnapshot,
   getDocs,
   where,
   updateDoc,
   arrayRemove,
+  doc,
+  addDoc,
+  getDoc,
 } from "firebase/firestore";
-import Message from "../components/Message";
+import { useTranslation } from "react-i18next";
 import { BannerAd, BannerAdSize } from "react-native-google-mobile-ads";
-import { Dimensions } from "react-native";
 
 const screenHeight = Dimensions.get("screen").height;
 
+// --- Styled components ---
 const BlockButton = styled.View`
   width: 100%;
   height: ${screenHeight < 760 ? "40px" : "50px"};
   flex-direction: row;
-  justify-content: start;
+  justify-content: flex-start;
   align-items: center;
   margin-bottom: 3%;
   margin-top: 10%;
 `;
+
 const BlockButtonBtn = styled.TouchableOpacity`
   width: 33%;
   height: 100%;
 `;
+
 const BlockMessaging = styled.View`
   width: 100%;
   height: 70%;
 `;
+
 const BoxInput = styled.View`
   background-color: ${colors.MessagingInputBackground};
   padding: 3px;
@@ -59,6 +62,7 @@ const BoxInput = styled.View`
   border-radius: 10px;
   flex-direction: row;
 `;
+
 const BoxInputText = styled.TextInput`
   padding: 5px;
   width: 90%;
@@ -66,165 +70,200 @@ const BoxInputText = styled.TextInput`
   color: ${colors.MessagingInputColor};
   font-size: ${screenHeight < 760 ? "13px" : "18px"};
 `;
+
 const BlockIconMessage = styled.TouchableOpacity`
   position: absolute;
   right: 0;
   height: 100%;
-  align-self: center;
   justify-content: center;
   align-items: center;
   aspect-ratio: 1;
 `;
+
 const BlockIconMessagePicture = styled.TouchableOpacity`
   position: absolute;
   right: 50px;
   height: 100%;
-  align-self: center;
   justify-content: center;
   align-items: center;
   aspect-ratio: 1;
 `;
+
 const BlockForMessage = styled.View`
   width: 100%;
-  height: fit-content;
   margin-bottom: 20px;
 `;
 
-export default memo(function MessagingScreen({ route, navigation }) {
+// --- Component ---
+export default function MessagingScreen({ route, navigation }) {
   const { item } = route.params;
   const [message, setMessage] = useState("");
   const [messageUpdate, setMessageUpdate] = useState("");
   const [fetchedMessages, setFetchedMessages] = useState([]);
   const [loaded, setLoaded] = useState(false);
   const [keyboardOffset, setKeyboardOffset] = useState(10);
+
   const conversationId = item.docId;
   const currentUser = auth.currentUser;
-  const flatList = useRef(null);
   const currentEmail = currentUser.email;
+  const flatList = useRef(null);
+  const isScrolledToBottom = useRef(true);
+  const storage = getStorage(app);
   const { t } = useTranslation();
   const nameOfOrder = item.nameOfOrder;
-  const storage = getStorage(app);
-  const isScrolledToBottom = useRef(true);
 
+  // --- Keyboard listeners to adjust input position ---
   useEffect(() => {
-    const showSubscription = Keyboard.addListener("keyboardDidShow", (e) => {
-      setKeyboardOffset(85);
-    });
-    const hideSubscription = Keyboard.addListener("keyboardDidHide", () => {
-      setKeyboardOffset(10);
-    });
+    const showSubscription = Keyboard.addListener("keyboardDidShow", () => setKeyboardOffset(85));
+    const hideSubscription = Keyboard.addListener("keyboardDidHide", () => setKeyboardOffset(10));
 
     return () => {
       showSubscription.remove();
       hideSubscription.remove();
     };
   }, []);
+
+  // --- Update message state when editing ---
   useEffect(() => {
-    setMessage(messageUpdate.messageText);
+    if (messageUpdate.messageText) {
+      setMessage(messageUpdate.messageText);
+    }
   }, [messageUpdate]);
 
+  // --- Fetch messages in real-time ---
+  useEffect(() => {
+    const q = query(collection(db, "messages", conversationId, "conversation"), orderBy("timestamp", "asc"));
+
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const messages = snapshot.docs.map((doc) => ({
+        docId: doc.id,
+        parentId: doc.ref.parent.parent.id,
+        timestamp: doc.data().timestamp,
+        ...doc.data(),
+      }));
+      setFetchedMessages(messages);
+      setLoaded(true);
+    });
+
+    return () => unsubscribe();
+  }, [conversationId]);
+
+  // --- Scroll to bottom when new messages arrive ---
+  useEffect(() => {
+    markMessagesAsRead();
+
+    if (isScrolledToBottom.current && flatList.current) {
+      flatList.current.scrollToOffset({ offset: 0, animated: true });
+    }
+  }, [fetchedMessages]);
+
+  // --- Mark unread messages as read ---
+  const markMessagesAsRead = async () => {
+    try {
+      const refForChangeMessageStatus = query(
+        collection(db, "messages", conversationId, "conversation"),
+        where("doNotReadBy", "array-contains", currentEmail)
+      );
+      const unreadMessages = await getDocs(refForChangeMessageStatus);
+
+      unreadMessages.forEach(async (document) => {
+        const messageRef = doc(db, "messages", conversationId, "conversation", document.id);
+        await updateDoc(messageRef, { doNotReadBy: arrayRemove(currentEmail) });
+      });
+    } catch (error) {
+      console.log("markMessagesAsRead error:", error);
+    }
+  };
+
+  // --- Pick image from gallery ---
   const pickImage = async () => {
     try {
       const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ["images"],
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
         allowsEditing: true,
         aspect: [4, 4],
         quality: 1,
       });
 
-      if (result) {
-        const uriForStorage = result.assets[0].uri;
-        const fileToDel = result.assets[0].fileName;
-        const storageRef = ref(storage, `images/${fileToDel}`);
-        addToFirebaseStorage(storageRef, uriForStorage, fileToDel);
-        sendMessage();
+      if (!result.canceled && result.assets?.length) {
+        const uri = result.assets[0].uri;
+        const fileName = result.assets[0].fileName || `image_${Date.now()}.jpg`;
+        const refStorage = storageRef(storage, `images/${fileName}`);
+
+        await uploadImageToStorage(refStorage, uri, fileName);
       }
     } catch (error) {
-      console.log("pickImage", error.message);
+      console.log("pickImage error:", error);
     }
   };
 
-  const addToFirebaseStorage = async (storageRef, uriForStorage, fileToDel) => {
+  // --- Upload image to Firebase Storage and send message with image URL ---
+  const uploadImageToStorage = async (refStorage, uri, fileName) => {
     try {
-      const response = await fetch(uriForStorage);
-      if (!response) {
-        console.log("Failed to fetch file");
-      }
-      const mediaBlob = await response.blob();
-      const uploadToStorage = uploadBytesResumable(storageRef, mediaBlob);
-      uploadToStorage.on(
+      const response = await fetch(uri);
+      const blob = await response.blob();
+
+      const uploadTask = uploadBytesResumable(refStorage, blob);
+
+      uploadTask.on(
         "state_changed",
         (snapshot) => {
           const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-          console.log("Upload is " + progress + "% done");
-          switch (snapshot.state) {
-            case "paused":
-              console.log("Upload is paused");
-              break;
-            case "running":
-              console.log("Upload is running");
-              break;
-          }
+          console.log(`Upload is ${progress}% done`);
         },
         (error) => {
-          console.log(error);
+          console.log("Upload error:", error);
         },
-        () => {
-          getDownloadURL(uploadToStorage.snapshot.ref).then((downloadURL) => {
-            sendMessage("image", downloadURL, fileToDel);
-          });
+        async () => {
+          const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+          sendMessage("image", downloadURL, fileName);
         }
       );
     } catch (error) {
-      console.log(error);
+      console.log("uploadImageToStorage error:", error);
     }
   };
 
-  const markMessagesAsRead = async () => {
-    const refForChangeMessageStatus = query(
-      collection(db, "messages", conversationId, "conversation"),
-      where("doNotReadBy", "array-contains", currentEmail)
-    );
-    const unreadMessages = await getDocs(refForChangeMessageStatus);
-    const docForUpdate = [];
-    unreadMessages.forEach(async (document) => {
-      docForUpdate.push(document.id);
-    });
-    docForUpdate.forEach(async (id) => {
-      const messageRef = doc(db, "messages", conversationId, "conversation", id);
-      await updateDoc(messageRef, { doNotReadBy: arrayRemove(currentEmail) });
-    });
-  };
+  // --- Send message (text or image) ---
+  const sendMessage = async (type = "text", uri = "", storagePath = "") => {
+    if (!message && type === "text") return;
 
-  const sendMessage = async (type = "text", uri = "", staragePath = "") => {
     try {
-      if (message || type === "image") {
-        const arrOfReciverMessage = item.participants.filter((email) => email !== currentEmail);
-        const data = {
-          messageId: Date.parse(new Date()),
-          type: type,
-          uri: uri,
-          staragePath: staragePath,
-          doNotReadBy: arrOfReciverMessage,
-          messageText: message || "",
-          author: currentUser.email,
-          timestamp: serverTimestamp(),
-        };
-        await addDoc(collection(db, "messages", conversationId, "conversation"), data);
+      const recipients = item.participants.filter((email) => email !== currentEmail);
+      const data = {
+        participants: item.participants,
+        messageId: Date.now(),
+        type,
+        uri,
+        staragePath: storagePath,
+        doNotReadBy: recipients,
+        messageText: message || "",
+        author: currentEmail,
+        timestamp: new Date().toISOString(),
+      };
+
+      // Save to Realtime Database
+      await set(dbRef(database, `messages/${conversationId}/${data.messageId}`), data);
+      // Save to Firestore
+      await addDoc(collection(db, "messages", conversationId, "conversation"), data);
+
+      // Send push notifications
+      const pushTokens = [];
+      for (const receiverEmail of recipients) {
+        const docSnap = await getDoc(doc(db, "users", receiverEmail));
+        if (docSnap.exists()) {
+          pushTokens.push(docSnap.data().pushToken);
+        }
       }
-      const arrOfReseiver = [];
-      const participantsWithoutCurrentUser = item.participants.filter((email) => email !== currentUser.email);
-      for (let i = 0; i < participantsWithoutCurrentUser.length; i++) {
-        const docSnap = await getDoc(doc(db, "users", participantsWithoutCurrentUser[i]));
-        arrOfReseiver.push(docSnap.data().pushToken);
-      }
-      try {
+
+      if (pushTokens.length) {
         const pushMessage = {
-          to: arrOfReseiver,
-          sound: `default`,
-          title: `${nameOfOrder} ${auth.currentUser.displayName || auth.currentUser.email}`,
+          to: pushTokens,
+          sound: "default",
+          title: `${nameOfOrder} ${auth.currentUser.displayName || currentEmail}`,
           body: message,
         };
+
         await fetch("https://exp.host/--/api/v2/push/send", {
           method: "POST",
           headers: {
@@ -235,39 +274,15 @@ export default memo(function MessagingScreen({ route, navigation }) {
           },
           body: JSON.stringify(pushMessage),
         });
-        setMessage("");
-      } catch (error) {
-        console.log(error);
       }
+
+      setMessage("");
     } catch (error) {
-      console.log("send message", error);
+      console.log("sendMessage error:", error);
     }
   };
 
-  useEffect(() => {
-    const unsub = onSnapshot(
-      query(collection(db, "messages", conversationId, "conversation"), orderBy("timestamp", "desc")),
-      (snapshot) => {
-        setFetchedMessages(
-          snapshot.docs.map((doc) => ({
-            docId: doc.id,
-            parentId: doc.ref.parent.parent.id,
-            ...doc.data(),
-          }))
-        );
-        setLoaded(true);
-      }
-    );
-    markMessagesAsRead();
-    return () => unsub();
-  }, []);
-
-  useEffect(() => {
-    if (isScrolledToBottom.current && flatList.current) {
-      flatList.current.scrollToOffset({ offset: 0, animated: true });
-    }
-  }, [fetchedMessages]);
-
+  // --- Update existing message ---
   const updateMessage = async () => {
     try {
       await updateDoc(doc(db, "messages", messageUpdate.parentId, "conversation", messageUpdate.docId), {
@@ -276,7 +291,7 @@ export default memo(function MessagingScreen({ route, navigation }) {
       setMessageUpdate("");
       setMessage("");
     } catch (error) {
-      console.log("updateMessage", error.message);
+      console.log("updateMessage error:", error);
     }
   };
 
@@ -308,7 +323,6 @@ export default memo(function MessagingScreen({ route, navigation }) {
         {loaded ? (
           <BlockForMessage style={{ marginBottom: keyboardOffset }}>
             <FlatList
-              inverted
               onScroll={(event) => {
                 Keyboard.dismiss();
                 const offsetY = event.nativeEvent.contentOffset.y;
@@ -334,7 +348,7 @@ export default memo(function MessagingScreen({ route, navigation }) {
           multiline
           onChangeText={setMessage}
           value={message}
-        ></BoxInputText>
+        />
         {!message && (
           <BlockIconMessagePicture
             accessibilityLabel="Button add picture"
@@ -362,4 +376,4 @@ export default memo(function MessagingScreen({ route, navigation }) {
       </View>
     </LinearGradient>
   );
-});
+}

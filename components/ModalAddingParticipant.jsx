@@ -1,65 +1,78 @@
-import { View, Text, Alert } from "react-native";
+import { View, TextInput, TouchableOpacity, Alert, StyleSheet } from "react-native";
 import { useState } from "react";
-import styled from "styled-components";
-import { doc, addDoc, collection, getDoc, getDocs, where, query, deleteDoc } from "firebase/firestore";
+import { doc, getDoc, arrayUnion, setDoc } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 import Button from "./Button";
 import { db } from "../firebaseConfig";
 import { useTranslation } from "react-i18next";
 import * as colors from "../variables/colors";
 
-const Modal = styled.View`
-  width: 100%;
-  height: 100%;
-  padding: 2%;
-  background-color: ${colors.orderBackgroundColor};
-  z-index: 4;
-`;
-const ModalInput = styled.TextInput`
-  width: 100%;
-  height: 50px;
-  background-color: ${colors.backgroundColorInput};
-  color: ${colors.colorTextInput};
-  font-size: 20px;
-  padding-left: 2%;
-  border-radius: 10px;
-`;
-const ModalButton = styled.View`
-  width: 100%;
-  height: 30px;
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-around;
-  margin-top: 1%;
-`;
-const ModalButtonBtn = styled.TouchableOpacity`
-  width: 25%;
-  height: 100%;
-`;
+const styles = StyleSheet.create({
+  modal: {
+    width: "100%",
+    height: "100%",
+    padding: "2%",
+    backgroundColor: colors.orderBackgroundColor,
+    zIndex: 4,
+  },
+  modalInput: {
+    width: "100%",
+    height: 50,
+    backgroundColor: colors.backgroundColorInput,
+    color: colors.colorTextInput,
+    fontSize: 20,
+    paddingLeft: "2%",
+    borderRadius: 10,
+  },
+  modalButton: {
+    width: "100%",
+    height: 30,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-around",
+    marginTop: "1%",
+  },
+  modalButtonBtn: {
+    width: "25%",
+    height: "100%",
+  },
+});
 
-const ModalAddingParticipant = ({ gettAllParticipants, setAddingParticipantModal }) => {
+const ModalAddingParticipant = ({ setAddingParticipantModal }) => {
   const [inputEmail, setInputEmail] = useState("");
   const { t } = useTranslation();
   const auth = getAuth();
-  const VerificationMailDublicate = async (email) => {
+
+  const isParticipantExists = async (emailToCheck) => {
+    const currentEmail = auth.currentUser.email;
+    const docRef = doc(db, "Participants", currentEmail);
     try {
-      const docSnap = await getDocs(
-        query(
-          collection(db, "AllParticipants", auth.currentUser.email, "PersonalParticipant"),
-          where("email", "==", email)
-        )
-      );
-      if (!Boolean(docSnap.docs.length)) {
-        verificationInputMail(email);
+      const docSnap = await getDoc(docRef);
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        const participants = data.participants || [];
+        return participants.includes(emailToCheck);
       } else {
-        docSnap.forEach((e) => {
-          return Alert.alert(`${t("AddingParticipantsDublicate")}`);
-        });
+        return false;
       }
     } catch (error) {
-      console.log(error.message);
+      console.log("Ошибка при проверке участника:", error.message);
+      return false;
     }
   };
+
+  const VerificationMailDublicate = async (email) => {
+    try {
+      if (!(await isParticipantExists(email))) {
+        verificationInputMail(email);
+      } else {
+        return Alert.alert(`${t("AddingParticipantsDublicate")}`);
+      }
+    } catch (error) {
+      console.log("VerificationMailDublicate", error.message);
+    }
+  };
+
   const verificationInputMail = async (email) => {
     if (email === auth.currentUser.email) {
       return Alert.alert(`${t("AddingParticipantsAlertExistYourself")}`);
@@ -67,7 +80,7 @@ const ModalAddingParticipant = ({ gettAllParticipants, setAddingParticipantModal
     try {
       const docSnap = await getDoc(doc(db, "users", email));
       if (docSnap.exists()) {
-        addToParticipant(email);
+        addToParticipantsRefactor(email);
       } else {
         Alert.alert(`${t("AddingParticipantsAlertNotIn")}`);
       }
@@ -75,38 +88,43 @@ const ModalAddingParticipant = ({ gettAllParticipants, setAddingParticipantModal
       Alert.alert("Participant doesn`t exict", error.message);
     }
   };
-  const addToParticipant = async (email) => {
+
+  const addToParticipantsRefactor = async (email) => {
     const currentEmail = auth.currentUser.email;
     try {
-      const participant = {
-        email: email,
-      };
-      await addDoc(collection(db, "AllParticipants", currentEmail, "PersonalParticipant"), participant);
-      Alert.alert(`${t("AddingParticipantsAlertExist")}`);
-      gettAllParticipants();
+      await setDoc(
+        doc(db, "Participants", currentEmail),
+        {
+          participants: arrayUnion(email),
+        },
+        { merge: true }
+      );
     } catch (error) {
-      console.log("add to participant", error.message);
+      console.log("addToParticipantsRefactor", error.message);
     }
   };
+
   return (
-    <Modal>
-      <ModalInput
+    <View style={styles.modal}>
+      <TextInput
         placeholder={t("AddingParticipantsModalPlaceholder")}
         value={inputEmail}
         onChangeText={setInputEmail}
-      ></ModalInput>
-      <ModalButton>
-        <ModalButtonBtn
+        style={styles.modalInput}
+      />
+      <View style={styles.modalButton}>
+        <TouchableOpacity
           accessibilityLabel="Button go back from modal window adding participant to global list"
           accessible={true}
           onPress={() => {
             setAddingParticipantModal(false);
             setInputEmail("");
           }}
+          style={styles.modalButtonBtn}
         >
-          <Button children={t("ProffileCancel")} />
-        </ModalButtonBtn>
-        <ModalButtonBtn
+          <Button>{t("ProffileCancel")}</Button>
+        </TouchableOpacity>
+        <TouchableOpacity
           accessibilityLabel="Button adding participant to global list"
           accessible={true}
           onPress={() => {
@@ -114,11 +132,12 @@ const ModalAddingParticipant = ({ gettAllParticipants, setAddingParticipantModal
             setAddingParticipantModal(false);
             setInputEmail("");
           }}
+          style={styles.modalButtonBtn}
         >
-          <Button children={t("AddingParticipantsCheck")} />
-        </ModalButtonBtn>
-      </ModalButton>
-    </Modal>
+          <Button>{t("AddingParticipantsCheck")}</Button>
+        </TouchableOpacity>
+      </View>
+    </View>
   );
 };
 

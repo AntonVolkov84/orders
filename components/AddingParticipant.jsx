@@ -1,95 +1,15 @@
-import { View, Text, TouchableOpacity, Alert, Image, TextInput, ScrollView, FlatList } from "react-native";
-import React, { useState, useEffect, memo } from "react";
-import styled from "styled-components";
+import { View, Text, TouchableOpacity, Image, ScrollView, StyleSheet, Dimensions } from "react-native";
+import { useState, useEffect, memo } from "react";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import * as colors from "../variables/colors";
-import { doc, addDoc, collection, getDoc, getDocs, where, query, deleteDoc } from "firebase/firestore";
+import { doc, getDoc, updateDoc, arrayRemove, onSnapshot } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 import Button from "./Button";
 import { db } from "../firebaseConfig";
 import { useTranslation } from "react-i18next";
-import { Dimensions } from "react-native";
 import ModalAddingParticipant from "./ModalAddingParticipant";
 
 const screenHeight = Dimensions.get("screen").height;
-
-const Repair = styled.ScrollView`
-  width: 100%;
-  flex-direction: row;
-`;
-const BlockIcon = styled.TouchableOpacity`
-  height: 70px;
-  width: 70px;
-  border: 2px solid;
-  border-color: ${colors.APBorderColor};
-  justify-self: center;
-  align-self: center;
-  border-radius: 100px;
-  margin-right: 1%;
-  justify-content: center;
-  align-items: center;
-`;
-const BlockParticipant = styled.TouchableOpacity`
-  height: 100%;
-  justify-content: center;
-  width: 60px;
-`;
-const BlockParticipantAvatar = styled.Image`
-  border-radius: 100px;
-  aspect-ratio: 1;
-  object-fit: cover;
-`;
-const BlockParticipantName = styled.Text`
-  color: ${colors.APBorderColor};
-  font-size: 12px;
-  width: 100%;
-  height: 20px;
-  text-overflow: ellipsis;
-  text-align: center;
-`;
-
-const ModalDelParticipant = styled.View`
-  width: 100%;
-  height: 100%;
-  padding: 2%;
-  background-color: ${colors.orderBackgroundColor};
-  position: absolute;
-  z-index: 5;
-`;
-const ModalDelParticipantText = styled.Text`
-  width: 100%;
-  padding: 2%;
-  background-color: ${colors.orderBackgroundColor};
-  color: ${colors.titleText};
-  text-align: center;
-`;
-const ModalButton = styled.View`
-  width: 100%;
-  height: 30px;
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-around;
-  margin-top: 1%;
-`;
-const ModalButtonBtn = styled.TouchableOpacity`
-  width: 25%;
-  height: 100%;
-`;
-const BlockNoOne = styled.View`
-  flex-direction: row;
-`;
-const BlockNoOneIcon = styled.TouchableOpacity`
-  width: 70px;
-  height: 70px;
-  border: 2px solid;
-  border-color: ${colors.APBorderColor};
-  justify-self: center;
-  align-self: center;
-  border-radius: 100px;
-  margin-right: 1%;
-  justify-content: center;
-  align-items: center;
-`;
 
 export default memo(function AddingParticipant({ updateParticipants, participants, setParticipants }) {
   const auth = getAuth();
@@ -99,38 +19,30 @@ export default memo(function AddingParticipant({ updateParticipants, participant
   const [noOneParticipant, setNoOneParticipant] = useState(true);
   const [delParticipantModal, setDelParticipantModal] = useState(false);
   const [participantForDeleting, setParticipantForDeleting] = useState("");
+  const [arrayOfParticipants, setArrayOfParticipants] = useState([]);
   const { t } = useTranslation();
+  const currentEmail = auth.currentUser.email;
 
-  const addToParticipant = async (email) => {
-    const currentEmail = auth.currentUser.email;
-    try {
-      const participant = {
-        email: email,
-      };
-      await addDoc(collection(db, "AllParticipants", currentEmail, "PersonalParticipant"), participant);
-      Alert.alert(`${t("AddingParticipantsAlertExist")}`);
-      gettAllParticipants();
-    } catch (error) {
-      console.log("add to participant", error.message);
-    }
-  };
-  const gettAllParticipants = async () => {
-    const currentEmail = auth.currentUser.email;
-    try {
-      const querySnapshot = await getDocs(collection(db, "AllParticipants", currentEmail, "PersonalParticipant"));
-      const arr = querySnapshot.docs.map((doc) => doc.data().email);
-      if (arr) {
-        getdata(arr);
-      }
-    } catch (error) {
-      console.log(error.message);
-    }
-  };
   useEffect(() => {
-    gettAllParticipants();
+    const unsub = onSnapshot(doc(db, "Participants", currentEmail), (snapshot) => {
+      if (snapshot.exists()) {
+        const data = snapshot.data();
+        setArrayOfParticipants(data.participants || []);
+        setNoOneParticipant(data.participants?.length === 0);
+      } else {
+        setArrayOfParticipants([]);
+        setNoOneParticipant(true);
+      }
+      setLoadingData(false);
+    });
+    return () => unsub();
   }, []);
 
-  const getdata = async (arr) => {
+  useEffect(() => {
+    getdata(arrayOfParticipants);
+  }, [arrayOfParticipants]);
+
+  const getdata = async (arr = []) => {
     try {
       const promises = arr.map((id) => getDoc(doc(db, "users", id)));
       const docs = await Promise.all(promises);
@@ -142,46 +54,47 @@ export default memo(function AddingParticipant({ updateParticipants, participant
       setLoadingData(false);
     }
   };
+
   const addParticipantsToOrder = (participant) => {
     const dublicate = participants.some((e) => e.email === participant.email);
     if (!dublicate) {
       setParticipants((prevParticipants) => [...prevParticipants, { ...participant }]);
     }
   };
+
   const handleLongPress = (participant) => {
     setDelParticipantModal(true);
     setParticipantForDeleting(participant.email);
   };
+
   const delParticipantData = async (participant) => {
-    let documentID;
-    const ref = query(
-      collection(db, "AllParticipants", auth.currentUser.email, "PersonalParticipant"),
-      where("email", "==", `${participant}`)
-    );
-    const dataForDel = await getDocs(ref);
-    dataForDel.forEach(async (e) => {
-      documentID = e.id;
-      await deleteDoc(doc(db, "AllParticipants", auth.currentUser.email, "PersonalParticipant", documentID));
-    });
-    gettAllParticipants();
+    try {
+      await updateDoc(doc(db, "Participants", currentEmail), {
+        participants: arrayRemove(participant),
+      });
+    } catch (error) {
+      console.log("delParticipantData", error.message);
+    }
   };
 
   return (
     <>
-      {delParticipantModal ? (
-        <ModalDelParticipant>
-          <ModalDelParticipantText>
+      {delParticipantModal && (
+        <View style={styles.ModalDelParticipant}>
+          <Text style={styles.ModalDelParticipantText}>
             {t("AddingParticipantsAskDelParticipant")} {participantForDeleting}
-          </ModalDelParticipantText>
-          <ModalButton>
-            <ModalButtonBtn
+          </Text>
+          <View style={styles.ModalButton}>
+            <TouchableOpacity
+              style={styles.ModalButtonBtn}
               onPress={() => {
                 setDelParticipantModal(false);
               }}
             >
               <Button children={t("ProffileCancel")} />
-            </ModalButtonBtn>
-            <ModalButtonBtn
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.ModalButtonBtn}
               onPress={() => {
                 setDelParticipantModal(false);
                 delParticipantData(participantForDeleting);
@@ -189,42 +102,40 @@ export default memo(function AddingParticipant({ updateParticipants, participant
               }}
             >
               <Button children={t("AddingParticipantsDel")} />
-            </ModalButtonBtn>
-          </ModalButton>
-        </ModalDelParticipant>
-      ) : null}
+            </TouchableOpacity>
+          </View>
+        </View>
+      )}
       {addingParticipantModal ? (
-        <ModalAddingParticipant
-          gettAllParticipants={gettAllParticipants}
-          setAddingParticipantModal={setAddingParticipantModal}
-        />
+        <ModalAddingParticipant setAddingParticipantModal={setAddingParticipantModal} />
       ) : loadingData ? (
-        <BlockNoOne>
-          <BlockNoOneIcon onPress={() => setAddingParticipantModal(true)}>
+        <View style={styles.BlockNoOne}>
+          <TouchableOpacity style={styles.BlockNoOneIcon} onPress={() => setAddingParticipantModal(true)}>
             <MaterialCommunityIcons
               name="account-plus-outline"
               size={screenHeight < 760 ? 30 : 40}
               color={colors.APBorderColor}
             />
-          </BlockNoOneIcon>
+          </TouchableOpacity>
           {noOneParticipant ? (
+            <Text style={{ color: colors.titleText, fontSize: 20 }}>{t("AddingParticipantsNoOne")}</Text>
+          ) : (
             <Text
               style={{
+                textAlign: "center",
+                textJustify: "center",
                 color: colors.titleText,
                 fontSize: 20,
               }}
             >
-              {t("AddingParticipantsNoOne")}
-            </Text>
-          ) : (
-            <Text style={{ textAlign: "center", textJustify: "center", color: colors.titleText, fontSize: 20 }}>
               Loading...
             </Text>
           )}
-        </BlockNoOne>
+        </View>
       ) : (
-        <Repair horizontal showsHorizontalScrollIndicator={false}>
-          <BlockIcon
+        <ScrollView style={styles.Repair} horizontal showsHorizontalScrollIndicator={false}>
+          <TouchableOpacity
+            style={styles.BlockIcon}
             accessibilityLabel="Button view modal window for adding participant to global list"
             accessible={true}
             onPress={() => setAddingParticipantModal(true)}
@@ -234,28 +145,102 @@ export default memo(function AddingParticipant({ updateParticipants, participant
               size={screenHeight < 760 ? 30 : 40}
               color={colors.APBorderColor}
             />
-          </BlockIcon>
+          </TouchableOpacity>
           {allParticipantsData.map((p, index) => {
             return (
-              <BlockParticipant
+              <TouchableOpacity
                 accessibilityLabel={`Participant: ${p.nikname}`}
                 accessible={true}
                 key={p.id || index}
                 onPress={() => (updateParticipants ?? addParticipantsToOrder)(p)}
                 onLongPress={() => handleLongPress(p)}
-                style={{ marginRight: 10 }}
+                style={[styles.BlockParticipant, { marginRight: 10 }]}
               >
-                <BlockParticipantAvatar
-                  source={{
-                    uri: `${p.photoURL}`,
-                  }}
-                ></BlockParticipantAvatar>
-                <BlockParticipantName numberOfLines={1}>{p.nikname || "No nikname"}</BlockParticipantName>
-              </BlockParticipant>
+                <Image style={styles.BlockParticipantAvatar} source={{ uri: `${p.photoURL}` }} />
+                <Text style={styles.BlockParticipantName} numberOfLines={1}>
+                  {p.nikname || "No nikname"}
+                </Text>
+              </TouchableOpacity>
             );
           })}
-        </Repair>
+        </ScrollView>
       )}
     </>
   );
+});
+
+const styles = StyleSheet.create({
+  Repair: {
+    width: "100%",
+    flexDirection: "row",
+  },
+  BlockIcon: {
+    height: 70,
+    width: 70,
+    borderWidth: 2,
+    borderColor: colors.APBorderColor,
+    alignSelf: "center",
+    borderRadius: 100,
+    marginRight: "1%",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  BlockParticipant: {
+    height: "100%",
+    justifyContent: "center",
+    width: 60,
+  },
+  BlockParticipantAvatar: {
+    borderRadius: 100,
+    aspectRatio: 1,
+    resizeMode: "cover",
+  },
+  BlockParticipantName: {
+    color: colors.APBorderColor,
+    fontSize: 12,
+    width: "100%",
+    height: 20,
+    textAlign: "center",
+  },
+  ModalDelParticipant: {
+    width: "100%",
+    height: "100%",
+    padding: "2%",
+    backgroundColor: colors.orderBackgroundColor,
+    position: "absolute",
+    zIndex: 5,
+  },
+  ModalDelParticipantText: {
+    width: "100%",
+    padding: "2%",
+    backgroundColor: colors.orderBackgroundColor,
+    color: colors.titleText,
+    textAlign: "center",
+  },
+  ModalButton: {
+    width: "100%",
+    height: 30,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-around",
+    marginTop: "1%",
+  },
+  ModalButtonBtn: {
+    width: "25%",
+    height: "100%",
+  },
+  BlockNoOne: {
+    flexDirection: "row",
+  },
+  BlockNoOneIcon: {
+    width: 70,
+    height: 70,
+    borderWidth: 2,
+    borderColor: colors.APBorderColor,
+    alignSelf: "center",
+    borderRadius: 100,
+    marginRight: "1%",
+    justifyContent: "center",
+    alignItems: "center",
+  },
 });

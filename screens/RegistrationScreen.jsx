@@ -1,82 +1,75 @@
-import { View, Alert, Text, TextInput, TouchableOpacity, Image, Button } from "react-native";
-import React, { useState, useEffect, useContext } from "react";
+import { View, Alert, Text, TextInput, TouchableOpacity, Dimensions, StyleSheet } from "react-native";
+import { useState, useEffect, useContext } from "react";
 import { LinearGradient } from "expo-linear-gradient";
 import * as colors from "../variables/colors";
 import { StatusBar } from "expo-status-bar";
 import * as NavigationBar from "expo-navigation-bar";
-import styled from "styled-components";
 import { db } from "../firebaseConfig";
 import { doc, setDoc, serverTimestamp } from "firebase/firestore";
-import { getAuth, signOut, sendEmailVerification, createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
+import { getAuth, signOut, sendEmailVerification, createUserWithEmailAndPassword } from "firebase/auth";
 import { AppContext } from "../App.js";
-import { Dimensions } from "react-native";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 
 const screenHeight = Dimensions.get("screen").height;
 
-const TitleText = styled.Text`
-  font-size: ${screenHeight < 760 ? "30px" : "40px"};
-  color: ${colors.titleText};
-  display: block;
-  margin: 0 auto;
-  margin-top: 5%;
-`;
-const BlockInput = styled.View`
-  width: 100%;
-  margin-top: 10%;
-`;
-const InputField = styled.TextInput`
-  width: 80%;
-  height: ${screenHeight < 760 ? "50px" : "70px"};
-  margin-top: 5%;
-  padding-left: 5%;
-  margin-left: 10%;
-  border-radius: 10px;
-  background-color: ${colors.backgroundColorInput};
-  border: none;
-  color: ${colors.colorTextInput};
-  font-size: ${screenHeight < 760 ? "15px" : "20px"};
-`;
-const InputFieldPassword = styled.TextInput`
-  width: 100%;
-  height: ${screenHeight < 760 ? "50px" : "70px"};
-  border-radius: 10px;
-  background-color: ${colors.backgroundColorInput};
-  border: none;
-  color: ${colors.colorTextInput};
-  font-size: ${screenHeight < 760 ? "15px" : "20px"};
-`;
-const InputFieldPasswordBlock = styled.View`
-  width: 80%;
-  height: ${screenHeight < 760 ? "50px" : "70px"};
-  margin-top: 5%;
-  padding-left: 5%;
-  margin-left: 10%;
-  border-radius: 10px;
-  background-color: ${colors.backgroundColorInput};
-  border: none;
-  color: ${colors.colorTextInput};
-  font-size: ${screenHeight < 760 ? "15px" : "20px"};
-  position: relative;
-`;
-const Eye = styled.TouchableOpacity`
-  position: absolute;
-  right: 5px;
-  top: ${screenHeight < 760 ? "10px" : "20px"};
-  justify-content: center;
-  align-items: center;
-`;
-const RegisterButton = styled.TouchableOpacity`
-  width: 160px;
-  height: ${screenHeight < 760 ? "50px" : "70px"};
-  border-radius: 50px;
-  margin: 0 auto;
-  margin-top: 15%;
-`;
-const RegisterButtonText = styled.Text`
-  color: ${colors.buttonRegistrationColor};
-  font-size: ${screenHeight < 760 ? "15px" : "20px"};
-`;
+const styles = StyleSheet.create({
+  titleText: {
+    fontSize: screenHeight < 760 ? 30 : 40,
+    color: colors.titleText,
+    alignSelf: "center",
+    marginTop: "5%",
+  },
+  blockInput: {
+    width: "100%",
+    marginTop: "10%",
+  },
+  inputField: {
+    width: "80%",
+    height: screenHeight < 760 ? 50 : 70,
+    marginTop: "5%",
+    paddingLeft: "5%",
+    marginLeft: "10%",
+    borderRadius: 10,
+    backgroundColor: colors.backgroundColorInput,
+    color: colors.colorTextInput,
+    fontSize: screenHeight < 760 ? 15 : 20,
+  },
+  inputFieldPasswordBlock: {
+    width: "80%",
+    height: screenHeight < 760 ? 50 : 70,
+    marginTop: "5%",
+    paddingLeft: "5%",
+    marginLeft: "10%",
+    borderRadius: 10,
+    backgroundColor: colors.backgroundColorInput,
+    position: "relative",
+    justifyContent: "center",
+  },
+  inputFieldPassword: {
+    width: "100%",
+    height: "100%",
+    color: colors.colorTextInput,
+    fontSize: screenHeight < 760 ? 15 : 20,
+  },
+  eye: {
+    position: "absolute",
+    right: 10,
+    top: screenHeight < 760 ? 10 : 20,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  registerButton: {
+    width: 160,
+    height: screenHeight < 760 ? 50 : 70,
+    borderRadius: 50,
+    alignSelf: "center",
+    marginTop: "15%",
+  },
+  registerButtonText: {
+    color: colors.buttonRegistrationColor,
+    fontSize: screenHeight < 760 ? 15 : 20,
+  },
+});
 
 export default function RegistrationScreen({ navigation }) {
   const [email, setEmail] = useState("");
@@ -120,15 +113,27 @@ export default function RegistrationScreen({ navigation }) {
         const userId = user.uid;
         if (user.uid) {
           addToUsers(userId);
-          sendEmailVerification(auth.currentUser).then(() => {
-            Alert.alert("You may recived a mail with link for authorization");
-          });
-          signOut(auth);
+          sendEmailVerification(auth.currentUser)
+            .then(() => {
+              Alert.alert("You may received a mail with link for authorization");
+            })
+            .then(() => {
+              signOut(auth);
+            })
+            .catch((error) => {
+              if (error.code === "auth/too-many-requests") {
+                Alert.alert("Слишком много запросов", "Подождите перед повторной отправкой письма.");
+              } else if (error.code === "auth/user-not-found") {
+                Alert.alert("Пользователь не найден", "Проверьте email.");
+              } else {
+                Alert.alert("Ошибка", error.message);
+              }
+            });
           navigation.navigate("Login");
         }
       })
       .catch((error) => {
-        console.log("handleRegistre", error);
+        console.log("handleRegister", error);
       });
   };
 
@@ -154,43 +159,52 @@ export default function RegistrationScreen({ navigation }) {
       style={{ height: "100%", width: "100%", paddingTop: "5%" }}
     >
       <StatusBar style="light" />
-      <TitleText>Registration</TitleText>
-      <BlockInput>
-        <InputField
-          inputMode={email}
-          keyboardType={email}
-          placeholder={"Type your email"}
-          onChangeText={setEmail}
-        ></InputField>
-        <InputFieldPasswordBlock>
-          <InputFieldPassword
-            secureTextEntry={secureText}
-            placeholder={"Type your password"}
-            onChangeText={setPassword}
-          ></InputFieldPassword>
-          {secureText ? (
-            <Eye onPress={() => setSecureText(false)}>
-              <FontAwesome6 name="eye" size={screenHeight < 760 ? 15 : 28} color={colors.placeolderColor} />
-            </Eye>
-          ) : (
-            <Eye onPress={() => setSecureText(true)}>
-              <FontAwesome6 name="eye-slash" size={screenHeight < 760 ? 15 : 28} color={colors.placeolderColor} />
-            </Eye>
-          )}
-        </InputFieldPasswordBlock>
-        <InputField placeholder={"Type your Nikname"} onChangeText={setNikname}></InputField>
-      </BlockInput>
+      <Text style={styles.titleText}>Registration</Text>
 
-      <RegisterButton onPress={() => handleRegister(email, password)}>
+      <View style={styles.blockInput}>
+        <TextInput
+          style={styles.inputField}
+          inputMode="email"
+          keyboardType="email-address"
+          placeholder="Type your email"
+          onChangeText={setEmail}
+        />
+
+        <View style={styles.inputFieldPasswordBlock}>
+          <TextInput
+            style={styles.inputFieldPassword}
+            secureTextEntry={secureText}
+            placeholder="Type your password"
+            onChangeText={setPassword}
+          />
+          <TouchableOpacity style={styles.eye} onPress={() => setSecureText(!secureText)}>
+            <FontAwesome6
+              name={secureText ? "eye" : "eye-slash"}
+              size={screenHeight < 760 ? 15 : 28}
+              color={colors.placeolderColor}
+            />
+          </TouchableOpacity>
+        </View>
+
+        <TextInput style={styles.inputField} placeholder="Type your Nikname" onChangeText={setNikname} />
+      </View>
+
+      <TouchableOpacity style={styles.registerButton} onPress={() => handleRegister(email, password)}>
         <LinearGradient
           colors={[colors.buttonStartColorForGradient, colors.buttonEndColorForGradient]}
           start={{ x: 0.0, y: 0.0 }}
           end={{ x: 1.0, y: 1.0 }}
-          style={{ height: "100%", width: "100%", justifyContent: "center", alignItems: "center", borderRadius: 50 }}
+          style={{
+            height: "100%",
+            width: "100%",
+            justifyContent: "center",
+            alignItems: "center",
+            borderRadius: 50,
+          }}
         >
-          <RegisterButtonText>Registration</RegisterButtonText>
+          <Text style={styles.registerButtonText}>Registration</Text>
         </LinearGradient>
-      </RegisterButton>
+      </TouchableOpacity>
     </LinearGradient>
   );
 }

@@ -1,6 +1,15 @@
-import { View, Text, TouchableOpacity, TextInput, ScrollView, SafeAreaView, Alert } from "react-native";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  TextInput,
+  ScrollView,
+  SafeAreaView,
+  Alert,
+  Dimensions,
+  StyleSheet,
+} from "react-native";
 import { useState, memo, useRef } from "react";
-import styled from "styled-components";
 import * as colors from "../variables/colors";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import Button from "../components/Button";
@@ -9,136 +18,8 @@ import { collection, addDoc, serverTimestamp, doc, getDoc } from "firebase/fires
 import { db, auth } from "../firebaseConfig";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { useTranslation } from "react-i18next";
-import { Dimensions } from "react-native";
 
 const screenHeight = Dimensions.get("screen").height;
-
-const BlockAddingOrder = styled.View`
-  width: 100%;
-  height: 100%;
-`;
-const BlockAddingOrderTitle = styled.Text`
-  color: ${colors.titleText};
-  font-size: ${screenHeight < 760 ? "15px" : "20px"};
-  align-self: center;
-`;
-const BlockAddingOrderName = styled.View`
-  flex-direction: row;
-  height: ${screenHeight < 760 ? "36px" : "48px"};
-  align-items: center;
-`;
-const BlockAddingOrderNameText = styled.Text`
-  color: ${colors.titleText};
-  font-size: ${screenHeight < 760 ? "15px" : "20px"};
-  align-self: flex-start;
-  align-self: center;
-`;
-const InputOrderName = styled.TextInput`
-  width: 54%;
-  height: 100%;
-  background-color: ${colors.backgroundColorInput};
-  border-radius: 5px;
-  padding-left: 1%;
-  padding-right: 1%;
-  color: ${colors.creatingOrderText};
-  margin-left: 2%;
-  font-size: ${screenHeight < 760 ? "15px" : "20px"};
-`;
-const BlockAddingOrderDate = styled.TouchableOpacity`
-  color: ${colors.titleText};
-  font-size: ${screenHeight < 760 ? "15px" : "20px"};
-  align-self: center;
-`;
-const BlockAddingOrderDateText = styled.Text`
-  color: ${colors.titleText};
-  font-size: ${screenHeight < 760 ? "15px" : "20px"};
-  align-self: center;
-  margin-left: 2%;
-`;
-const BlockAddingOrderParticipants = styled.View`
-  color: ${colors.titleText};
-  font-size: ${screenHeight < 760 ? "15px" : "20px"};
-  flex-direction: row;
-  width: 100%;
-`;
-const AddingOrderDate = styled.View`
-  color: ${colors.titleText};
-  font-size: ${screenHeight < 760 ? "15px" : "20px"};
-  flex-direction: row;
-  width: 100%;
-`;
-const BlockAddingOrderAdd = styled.View`
-  color: ${colors.titleText};
-  height: 44px;
-  align-items: center;
-  padding-left: 1%;
-  font-size: ${screenHeight < 760 ? "15px" : "20px"};
-  flex-direction: row;
-`;
-const BlockAddingOrderAddText = styled.Text`
-  color: ${colors.titleText};
-  font-size: ${screenHeight < 760 ? "15px" : "20px"};
-  width: 67%;
-`;
-const BlockAddingOrderAddQ = styled.Text`
-  color: ${colors.titleText};
-  font-size: ${screenHeight < 760 ? "15px" : "20px"};
-`;
-const BlockAddingOrderParticipantsText = styled.Text`
-  color: ${colors.titleText};
-  font-size: ${screenHeight < 760 ? "15px" : "20px"};
-`;
-const BlockInput = styled.View`
-  width: 100%;
-  height: ${screenHeight < 760 ? "40px" : "50px"};
-  padding-top: 1%;
-  font-size: ${screenHeight < 760 ? "20px" : "25px"};
-  flex-direction: row;
-`;
-const Input = styled.TextInput`
-  width: 65%;
-  height: 100%;
-  background-color: ${colors.backgroundColorInput};
-  border-radius: 5px;
-  padding-left: 1%;
-  padding-right: 1%;
-  color: ${colors.creatingOrderText};
-  font-size: 15px;
-`;
-const BlockInputQnt = styled.TextInput`
-  width: 20%;
-  height: 100%;
-  background-color: ${colors.backgroundColorInput};
-  border-radius: 5px;
-  margin-left: 1%;
-  color: ${colors.creatingOrderText};
-  font-size: 15px;
-  padding-left: 1%;
-`;
-const BlockInputBtn = styled.TouchableOpacity`
-  width: 13%;
-  height: 100%;
-  background-color: ${colors.backgroundColorInput};
-  border-radius: 5px;
-  margin-left: 1%;
-  justify-content: center;
-  align-items: center;
-`;
-const BlockDelOrderBtn = styled.TouchableOpacity`
-  width: 14%;
-  position: absolute;
-  right: 0;
-  justify-content: center;
-  align-items: center;
-`;
-const BlockResultBtn = styled.TouchableOpacity`
-  flex-direction: row;
-  justify-content: space-around;
-  align-items: center;
-  position: sticky;
-  bottom: 0;
-  width: 100%;
-`;
 
 export default memo(function CreatingOrder({ participants, setCreateOrderModal, setParticipants }) {
   const [name, setName] = useState("");
@@ -169,6 +50,7 @@ export default memo(function CreatingOrder({ participants, setCreateOrderModal, 
     setQuantity("");
     nameOrder.current.focus();
   };
+
   const delFromChart = (id) => {
     const newOrders = orders.filter((order) => order.id !== id);
     setOrders(newOrders);
@@ -176,13 +58,13 @@ export default memo(function CreatingOrder({ participants, setCreateOrderModal, 
 
   const sendNotificationWhithNewOrders = async (arrOfParicipantsEmail, orders) => {
     const arrOfReseiver = [];
-    if (arrOfParicipantsEmail.length < 2) {
-      return;
-    }
+    if (arrOfParicipantsEmail.length < 2) return;
+
     for (let i = 1; i < arrOfParicipantsEmail.length; i++) {
       const docSnap = await getDoc(doc(db, "users", arrOfParicipantsEmail[i]));
       arrOfReseiver.push(docSnap.data().pushToken);
     }
+
     try {
       const message = {
         to: arrOfReseiver,
@@ -225,160 +107,254 @@ export default memo(function CreatingOrder({ participants, setCreateOrderModal, 
       console.log("add to users", error);
     }
   };
-
   const makeOrder = async () => {
-    if (!nameOfOrder) {
-      return Alert.alert(`${t("CreatingOrderNameAlert")}`);
-    }
-    if (orders.length < 1) {
-      return Alert.alert(`${t("CreatingOrderInputAlert")}`);
-    }
+    if (!nameOfOrder) return Alert.alert(`${t("CreatingOrderNameAlert")}`);
+    if (orders.length < 1) return Alert.alert(`${t("CreatingOrderInputAlert")}`);
     fetchOrders()
       .then(() => setParticipants([]))
       .then(() => setOrders([]))
       .then(() => setNameForOrder(""))
       .then(() => setCreateOrderModal(false));
   };
-
   return (
-    <BlockAddingOrder>
-      <BlockAddingOrderTitle>{t("CreatingOrderCreate")}</BlockAddingOrderTitle>
-      <BlockAddingOrderName>
-        <BlockAddingOrderNameText>{t("CreatingOrderName")}:</BlockAddingOrderNameText>
-        <InputOrderName
+    <View style={styles.blockAddingOrder}>
+      <Text style={styles.title}>{t("CreatingOrderCreate")}</Text>
+      <View style={styles.nameRow}>
+        <Text style={styles.label}>{t("CreatingOrderName")}:</Text>
+        <TextInput
+          ref={nameOrder}
+          style={styles.inputName}
           onChangeText={setNameForOrder}
           value={nameOfOrder}
           maxLength={14}
           placeholder={t("CreatingOrderNamePlaceholder")}
-        ></InputOrderName>
-      </BlockAddingOrderName>
-      <BlockAddingOrderParticipants>
-        <BlockAddingOrderParticipantsText>{t("CreatingOrderParticipants")}</BlockAddingOrderParticipantsText>
-        {Boolean(participants) ? (
+        />
+      </View>
+      <View style={styles.participantsRow}>
+        <Text style={styles.label}>{t("CreatingOrderParticipants")}</Text>
+        {Boolean(participants.length) && (
           <ScrollView
             horizontal
             accessibilityLabel="Choosen participants"
             accessible={true}
-            style={{
-              marginRight: "3%",
-              width: "70%",
-              overflow: "scroll",
-              marginLeft: "2%",
-            }}
+            style={styles.participantsScroll}
           >
             {participants.map((e, index) => (
-              <Text
-                accessibilityLabel={`Task: ${e.nikname}`}
-                accessible={true}
-                style={{ color: colors.titleText, fontSize: screenHeight < 760 ? 15 : 20 }}
-                key={index}
-                onPress={() => {
-                  delFronArrayOfParticipants(e);
-                }}
-              >
+              <Text key={index} style={styles.participantName} onPress={() => delFronArrayOfParticipants(e)}>
                 {e.nikname + " "}
               </Text>
             ))}
           </ScrollView>
-        ) : null}
-      </BlockAddingOrderParticipants>
-      <AddingOrderDate>
-        <BlockAddingOrderParticipantsText>{t("CreatingOrderDate")}</BlockAddingOrderParticipantsText>
+        )}
+      </View>
+      <View style={styles.dateRow}>
+        <Text style={styles.label}>{t("CreatingOrderDate")}</Text>
         {showPicker && (
           <DateTimePicker
             accessibilityLabel="Input date for order"
             accessible={true}
             style={{ width: "80%", aspectRatio: 3 / 4 }}
-            mode={"date"}
+            mode="date"
             value={new Date()}
             onChange={handleChangeDate}
           />
         )}
-        <BlockAddingOrderDate
+        <TouchableOpacity
           accessibilityLabel="Choose date for order"
           accessible={true}
-          onPress={() => {
-            setShowPicker(true);
-          }}
+          onPress={() => setShowPicker(true)}
         >
-          <BlockAddingOrderDateText>{new Date(dateForOrder).toLocaleDateString("en-GB")}</BlockAddingOrderDateText>
-        </BlockAddingOrderDate>
-      </AddingOrderDate>
-      <BlockInput>
-        <Input
+          <Text style={styles.dateText}>{new Date(dateForOrder).toLocaleDateString("en-GB")}</Text>
+        </TouchableOpacity>
+      </View>
+      <View style={styles.orderInputRow}>
+        <TextInput
           ref={nameOrder}
+          style={styles.orderInputName}
           onChangeText={setName}
           value={name}
           maxLength={25}
           placeholder={t("CreatingOrderPlaceholderName")}
-        ></Input>
-        <BlockInputQnt
+        />
+        <TextInput
+          style={styles.orderInputQuantity}
           onChangeText={setQuantity}
           value={quantity}
           maxLength={7}
           placeholder={t("CreatingOrderPlaceholderQT")}
-        ></BlockInputQnt>
-        <BlockInputBtn
+        />
+        <TouchableOpacity
           accessibilityLabel="Button adding position to chart"
           accessible={true}
-          onPress={() => {
-            addingToChart();
-          }}
+          style={styles.orderAddBtn}
+          onPress={addingToChart}
         >
           <MaterialIcons
             name="shopping-cart-checkout"
             size={screenHeight < 760 ? 20 : 30}
             color={colors.placeolderColor}
           />
-        </BlockInputBtn>
-      </BlockInput>
-      <SafeAreaView style={{ height: "45%", marginBottom: "1%" }}>
+        </TouchableOpacity>
+      </View>
+      <SafeAreaView style={styles.scrollArea}>
         <ScrollView accessibilityLabel="Order selected position list" accessible={true}>
-          {Boolean(orders.length) ? (
-            <>
-              {orders.map((order, index) => (
-                <BlockAddingOrderAdd
-                  accessibilityLabel={`Task: ${(order.name, order.quantity)}`}
-                  accessible={true}
-                  key={index}
-                >
-                  <BlockAddingOrderAddText>{order.name}</BlockAddingOrderAddText>
-                  <BlockAddingOrderAddQ>{order.quantity}</BlockAddingOrderAddQ>
-                  <BlockDelOrderBtn
-                    accessibilityLabel="Button delete position fron selected positions list"
-                    accessible={true}
-                    onPress={() => {
-                      delFromChart(order.id);
-                    }}
-                  >
-                    <Feather name="delete" size={screenHeight < 760 ? 25 : 30} color={colors.titleText} />
-                  </BlockDelOrderBtn>
-                </BlockAddingOrderAdd>
-              ))}
-            </>
-          ) : null}
+          {orders.map((order, index) => (
+            <View key={index} style={styles.orderItem}>
+              <Text style={styles.orderName}>{order.name}</Text>
+              <Text style={styles.orderQuantity}>{order.quantity}</Text>
+              <TouchableOpacity
+                accessibilityLabel="Button delete position from selected positions list"
+                accessible={true}
+                onPress={() => delFromChart(order.id)}
+                style={styles.orderDeleteBtn}
+              >
+                <Feather name="delete" size={screenHeight < 760 ? 25 : 30} color={colors.titleText} />
+              </TouchableOpacity>
+            </View>
+          ))}
         </ScrollView>
       </SafeAreaView>
-      <BlockResultBtn>
+      <View style={styles.resultBtnRow}>
         <TouchableOpacity
           accessibilityLabel="Button cancel"
           accessible={true}
           onPress={() => setCreateOrderModal(false)}
-          style={{ width: "25%", height: screenHeight < 760 ? 40 : 50 }}
+          style={styles.resultBtn}
         >
-          <Button children={t("ProffileCancel")} />
+          <Button>{t("ProffileCancel")}</Button>
         </TouchableOpacity>
         <TouchableOpacity
           accessibilityLabel="Button make order"
           accessible={true}
-          onPress={() => {
-            makeOrder();
-          }}
-          style={{ width: "25%", height: screenHeight < 760 ? 40 : 50 }}
+          onPress={makeOrder}
+          style={styles.resultBtn}
         >
-          <Button children={t("CreatingOrderMakeOrder")} />
+          <Button>{t("CreatingOrderMakeOrder")}</Button>
         </TouchableOpacity>
-      </BlockResultBtn>
-    </BlockAddingOrder>
+      </View>
+    </View>
   );
+});
+
+const styles = StyleSheet.create({
+  blockAddingOrder: { flex: 1, width: "100%" },
+  title: {
+    color: colors.titleText,
+    fontSize: screenHeight < 760 ? 15 : 20,
+    alignSelf: "center",
+  },
+  nameRow: {
+    flexDirection: "row",
+    height: screenHeight < 760 ? 36 : 48,
+    alignItems: "center",
+  },
+  label: {
+    color: colors.titleText,
+    fontSize: screenHeight < 760 ? 15 : 20,
+  },
+  inputName: {
+    width: "54%",
+    height: "100%",
+    backgroundColor: colors.backgroundColorInput,
+    borderRadius: 5,
+    paddingHorizontal: "1%",
+    color: colors.creatingOrderText,
+    marginLeft: "2%",
+    fontSize: screenHeight < 760 ? 15 : 20,
+  },
+  participantsRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    width: "100%",
+  },
+  participantsScroll: {
+    marginLeft: "2%",
+    width: "70%",
+    overflow: "scroll",
+  },
+  participantName: {
+    color: colors.titleText,
+    fontSize: screenHeight < 760 ? 15 : 20,
+  },
+  dateRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    width: "100%",
+  },
+  dateText: {
+    color: colors.titleText,
+    fontSize: screenHeight < 760 ? 15 : 20,
+    marginLeft: "2%",
+  },
+  orderInputRow: {
+    flexDirection: "row",
+    width: "100%",
+    height: screenHeight < 760 ? 40 : 50,
+    paddingTop: "1%",
+  },
+  orderInputName: {
+    width: "65%",
+    height: "100%",
+    backgroundColor: colors.backgroundColorInput,
+    borderRadius: 5,
+    paddingLeft: "1%",
+    paddingRight: "1%",
+    color: colors.creatingOrderText,
+    fontSize: 15,
+  },
+  orderInputQuantity: {
+    width: "20%",
+    height: "100%",
+    backgroundColor: colors.backgroundColorInput,
+    borderRadius: 5,
+    marginLeft: "1%",
+    color: colors.creatingOrderText,
+    fontSize: 15,
+    paddingLeft: "1%",
+  },
+  orderAddBtn: {
+    width: "13%",
+    height: "100%",
+    backgroundColor: colors.backgroundColorInput,
+    borderRadius: 5,
+    marginLeft: "1%",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  scrollArea: {
+    height: "45%",
+    marginBottom: "1%",
+  },
+  orderItem: {
+    flexDirection: "row",
+    height: 44,
+    alignItems: "center",
+    paddingLeft: "1%",
+  },
+  orderName: {
+    color: colors.titleText,
+    fontSize: screenHeight < 760 ? 15 : 20,
+    width: "67%",
+  },
+  orderQuantity: {
+    color: colors.titleText,
+    fontSize: screenHeight < 760 ? 15 : 20,
+  },
+  orderDeleteBtn: {
+    position: "absolute",
+    right: 0,
+    justifyContent: "center",
+    alignItems: "center",
+    width: "14%",
+  },
+  resultBtnRow: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    alignItems: "center",
+    width: "100%",
+  },
+  resultBtn: {
+    width: "25%",
+    height: screenHeight < 760 ? 40 : 50,
+  },
 });

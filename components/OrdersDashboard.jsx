@@ -1,94 +1,91 @@
-import { View, Text, TouchableOpacity, Image, Alert } from "react-native";
-import React, { useState, useEffect, memo } from "react";
+import { View, Text, TouchableOpacity, Image, Alert, StyleSheet, Dimensions } from "react-native";
+import { useState, useEffect, memo } from "react";
 import * as colors from "../variables/colors";
-import styled from "styled-components";
 import { db, app } from "../firebaseConfig";
 import { getDoc, doc, deleteDoc, addDoc, collection, getDocs } from "firebase/firestore";
 import Button from "./Button";
 import { useTranslation } from "react-i18next";
-import { Dimensions } from "react-native";
 import * as Device from "expo-device";
 import { getStorage, ref, deleteObject } from "firebase/storage";
 
 const screenHeight = Dimensions.get("screen").height;
 
-const BlockOrderShow = styled.TouchableOpacity`
-  width: 100%;
-  background-color: ${colors.blockMenuProfile};
-  height: ${screenHeight < 760 ? "150px" : "200px"};
-  margin-top: 1%;
-`;
-const BlockOrder = styled.View`
-  width: 100%;
-  height: 100%;
-  flex-direction: column;
-`;
-const BlockOrderCreator = styled.View`
-  width: 25%;
-  height: 80%;
-  justify-content: flex-end;
-  align-items: center;
-  margin-left: 1%;
-  margin-right: 1%;
-`;
-const BlockOrderInfo = styled.View`
-  width: 73%;
-  height: 100%;
-  margin-right: 1%;
-  flex-direction: column;
-  overflow: hidden;
-`;
-const BlockInfoNameDate = styled.View`
-  width: 100%;
-  height: 18%;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-`;
-const BlockOrderInfoName = styled.Text`
-  height: 100%;
-  font-size: ${screenHeight < 760 ? "20px" : "25px"};
-  text-align: center;
-  color: ${colors.OrderDashboardName};
-  margin-right: 3%;
-`;
-const BlockOrderInfoDate = styled.Text`
-  height: 100%;
-  font-size: ${screenHeight < 760 ? "20px" : "25px"};
-  text-align: center;
-  color: ${colors.OrderDashboardName};
-`;
-const BlockOrderInfoArr = styled.Text`
-  width: 99%;
-  height: 85%;
-  margin-right: 1%;
-  font-size: ${screenHeight < 760 ? "20px" : "25px"};
-  text-align: center;
-  overflow: hidden;
-`;
-const BlockOrderCreatorAvatar = styled.Image`
-  width: 90%;
-  aspect-ratio: 1;
-  object-fit: cover;
-  border-radius: 150px;
-`;
-const BlockOrderCreatorName = styled.Text`
-  font-size: ${screenHeight < 760 ? "20px" : "25px"};
-  text-overflow: ellipsis;
-  width: 100%;
-  height: 20%;
-  text-align: center;
-`;
+const styles = StyleSheet.create({
+  blockOrderShow: {
+    width: "100%",
+    backgroundColor: colors.blockMenuProfile,
+    height: screenHeight < 760 ? 150 : 200,
+    marginTop: "1%",
+  },
+  blockOrder: {
+    width: "100%",
+    height: "100%",
+    flexDirection: "column",
+  },
+  blockOrderCreator: {
+    width: "25%",
+    height: "80%",
+    justifyContent: "center",
+    alignItems: "center",
+    marginLeft: "1%",
+    marginRight: "1%",
+  },
+  blockOrderInfo: {
+    width: "73%",
+    height: "100%",
+    marginRight: "1%",
+    flexDirection: "column",
+    overflow: "hidden",
+  },
+  blockInfoNameDate: {
+    width: "100%",
+    height: "18%",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  blockOrderInfoName: {
+    height: "100%",
+    fontSize: screenHeight < 760 ? 18 : 23,
+    textAlign: "center",
+    color: colors.OrderDashboardName,
+    marginRight: "3%",
+  },
+  blockOrderInfoDate: {
+    height: "100%",
+    fontSize: screenHeight < 760 ? 18 : 23,
+    textAlign: "center",
+    color: colors.OrderDashboardName,
+  },
+  blockOrderInfoArr: {
+    width: "99%",
+    height: "85%",
+    marginRight: "1%",
+    fontSize: screenHeight < 760 ? 18 : 23,
+    textAlign: "center",
+    overflow: "hidden",
+  },
+  blockOrderCreatorAvatar: {
+    width: "80%",
+    aspectRatio: 1,
+    borderRadius: 150,
+  },
+  blockOrderCreatorName: {
+    fontSize: screenHeight < 760 ? 15 : 20,
+    width: "100%",
+    height: "20%",
+    textAlign: "center",
+  },
+  closeOrderBtn: {
+    height: screenHeight < 760 ? 40 : 50,
+    width: "40%",
+    position: "absolute",
+    bottom: "8%",
+    right: "3%",
+  },
+});
 
-const CloseOrderBtn = styled.TouchableOpacity`
-  height: ${screenHeight < 760 ? "40px" : "50px"};
-  width: 40%;
-  position: absolute;
-  bottom: 8%;
-  right: 3%;
-`;
-
-export default memo(function OrdersDashboard({ item, navigation }) {
+const OrdersDashboard = memo(function OrdersDashboard({ item, navigation }) {
   const [orderCreatorProfile, setOrderCreatorProfile] = useState(null);
   const [loadingOrderCreatorProfile, setLoadingOrderCreatorProfile] = useState(false);
   const dateForOrder = new Date(item.dateForOrder);
@@ -150,46 +147,46 @@ export default memo(function OrdersDashboard({ item, navigation }) {
   };
 
   return (
-    <BlockOrderShow
+    <TouchableOpacity
+      style={styles.blockOrderShow}
       onPress={() => {
         navigation.navigate("OrderScreen", { item });
       }}
     >
       {loadingOrderCreatorProfile ? (
-        <BlockOrder>
-          <BlockInfoNameDate>
-            <BlockOrderInfoName>{nameForOrder || "No name"}</BlockOrderInfoName>
-            <BlockOrderInfoDate>
-              {Device.osVersion <= 6 ? (
-                <>{new Date(dateForOrder).toLocaleDateString()}</>
-              ) : (
-                <>
-                  {new Date(dateForOrder).toLocaleDateString(`${t("OrderDashboardTime")}`, {
+        <View style={styles.blockOrder}>
+          <View style={styles.blockInfoNameDate}>
+            <Text style={styles.blockOrderInfoName}>{nameForOrder || "No name"}</Text>
+            <Text style={styles.blockOrderInfoDate}>
+              {Device.osVersion <= 6
+                ? new Date(dateForOrder).toLocaleDateString()
+                : new Date(dateForOrder).toLocaleDateString(`${t("OrderDashboardTime")}`, {
                     month: "long",
                     day: "numeric",
                   })}
-                </>
-              )}
-            </BlockOrderInfoDate>
-          </BlockInfoNameDate>
+            </Text>
+          </View>
           <View style={{ flexDirection: "row" }}>
-            <BlockOrderCreator>
-              <BlockOrderCreatorAvatar
+            <View style={styles.blockOrderCreator}>
+              <Image
+                style={styles.blockOrderCreatorAvatar}
                 source={{
                   uri: orderCreatorProfile.photoURL,
                 }}
-              ></BlockOrderCreatorAvatar>
-              <BlockOrderCreatorName>{orderCreatorProfile.nikname}</BlockOrderCreatorName>
-            </BlockOrderCreator>
-            <BlockOrderInfo>
-              <BlockOrderInfoArr>{item.order.map((e) => e.name + ", ")}</BlockOrderInfoArr>
-              <CloseOrderBtn onPress={() => delCompliteOrder(item.docId)}>
-                <Button children={t("OrderDashboardCloseOrder")} />
-              </CloseOrderBtn>
-            </BlockOrderInfo>
+              />
+              <Text style={styles.blockOrderCreatorName}>{orderCreatorProfile.nikname}</Text>
+            </View>
+            <View style={styles.blockOrderInfo}>
+              <Text style={styles.blockOrderInfoArr}>{item.order.map((e) => e.name + ", ")}</Text>
+              <TouchableOpacity style={styles.closeOrderBtn} onPress={() => delCompliteOrder(item.docId)}>
+                <Button>{t("OrderDashboardCloseOrder")}</Button>
+              </TouchableOpacity>
+            </View>
           </View>
-        </BlockOrder>
+        </View>
       ) : null}
-    </BlockOrderShow>
+    </TouchableOpacity>
   );
 });
+
+export default OrdersDashboard;

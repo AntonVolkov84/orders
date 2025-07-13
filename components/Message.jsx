@@ -1,78 +1,79 @@
-import { View, Text, Image, TouchableOpacity, TextInput } from "react-native";
-import React, { useState, useEffect, memo } from "react";
-import styled from "styled-components";
+import { View, Text, Image, TouchableOpacity, StyleSheet, Dimensions } from "react-native";
+import { useState, useEffect, memo } from "react";
 import { doc, onSnapshot, deleteDoc } from "firebase/firestore";
 import { auth, db } from "../firebaseConfig";
 import * as colors from "../variables/colors";
-import { Dimensions } from "react-native";
 import { useTranslation } from "react-i18next";
 import { getStorage, ref, deleteObject } from "firebase/storage";
 import { app } from "../firebaseConfig";
 
 const screenHeight = Dimensions.get("screen").height;
 
-const BlockMessage = styled.TouchableOpacity`
-  width: 70%;
-  height: fit-content;
-  border-radius: 5px;
-  flex-direction: row;
-  margin-top: 5px;
-`;
-const BlockForMessageAuthor = styled.View`
-  width: 18%;
-  height: fit-content;
-  justify-content: start;
-  align-items: center;
-  margin-top: 3px;
-`;
-const AuthorAvatar = styled.Image`
-  width: 70%;
-  border-radius: 50px;
-  aspect-ratio: 1;
-`;
-const AuthorName = styled.Text`
-  font-size: 10px;
-  color: ${colors.titleText};
-`;
-const BlockForMessageText = styled.Text`
-  width: ${screenHeight < 760 ? "170px" : "200px"};
-  color: white;
-  padding-right: 8px;
-  font-size: ${screenHeight < 760 ? "10px" : "15px"};
-`;
-const Modal = styled.View`
-  width: 70%;
-  height: fit-content;
-  padding: 5px;
-  border-radius: 5px;
-  margin-top: 5px;
-  margin-left: 30%;
-  background-color: ${colors.MessageBackgroundColorWithAuthor};
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-`;
+const styles = StyleSheet.create({
+  blockMessage: {
+    width: "70%",
+    borderRadius: 5,
+    flexDirection: "row",
+    marginTop: 5,
+  },
+  blockForMessageAuthor: {
+    width: "18%",
+    justifyContent: "flex-start",
+    alignItems: "center",
+    marginTop: 3,
+  },
+  authorAvatar: {
+    width: "70%",
+    borderRadius: 50,
+    aspectRatio: 1,
+  },
+  authorName: {
+    fontSize: 10,
+    color: colors.titleText,
+  },
+  blockForMessageText: {
+    width: screenHeight < 760 ? 170 : 200,
+    color: "white",
+    paddingRight: 8,
+    fontSize: screenHeight < 760 ? 10 : 15,
+  },
+  modal: {
+    width: "70%",
+    padding: 5,
+    borderRadius: 5,
+    marginTop: 5,
+    marginLeft: "30%",
+    backgroundColor: colors.MessageBackgroundColorWithAuthor,
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+  modalBtn: {
+    width: 70,
+    height: 30,
+    backgroundColor: colors.MessageBackgroundColor,
+    borderRadius: 3,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  modalBtnText: {
+    fontSize: screenHeight < 760 ? 8 : 12,
+    textAlign: "center",
+    color: "white",
+  },
+  boxForMessage: {
+    width: "84%",
+    paddingLeft: 5,
+    paddingRight: 5,
+    justifyContent: "flex-start",
+  },
+  imageMessage: {
+    width: 200,
+    height: 200,
+    borderRadius: 5,
+    resizeMode: "cover",
+  },
+});
 
-const ModalBtn = styled.TouchableOpacity`
-  width: 70px;
-  height: 30px;
-  background-color: ${colors.MessageBackgroundColor};
-  border-radius: 3px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-`;
-const ModalBtnText = styled.Text`
-  font-size: ${screenHeight < 760 ? "8px" : "12px"};
-  text-align: center;
-  color: white;
-`;
-const BoxForMessage = styled.View`
-  width: 84%;
-  padding-left: 5px;
-  overflow: wrap;
-  padding-right: 5px;
-`;
 export default memo(function Message({ message, setMessageUpdate }) {
   const [loaded, setLoaded] = useState(false);
   const [author, setAuthor] = useState(null);
@@ -116,12 +117,13 @@ export default memo(function Message({ message, setMessageUpdate }) {
       {loaded ? (
         <>
           {modalMessage && isValide ? (
-            <Modal>
-              <ModalBtn onPress={() => setModalMessage(false)}>
-                <ModalBtnText>{t("ProffileCancel")}</ModalBtnText>
-              </ModalBtn>
+            <View style={styles.modal}>
+              <TouchableOpacity style={styles.modalBtn} onPress={() => setModalMessage(false)}>
+                <Text style={styles.modalBtnText}>{t("ProffileCancel")}</Text>
+              </TouchableOpacity>
               {message.type === "image" ? null : (
-                <ModalBtn
+                <TouchableOpacity
+                  style={styles.modalBtn}
                   onPress={() => {
                     setMessageUpdate({
                       messageText: message.messageText,
@@ -131,49 +133,47 @@ export default memo(function Message({ message, setMessageUpdate }) {
                     setModalMessage(false);
                   }}
                 >
-                  <ModalBtnText>{t("messageModalUpdate")}</ModalBtnText>
-                </ModalBtn>
+                  <Text style={styles.modalBtnText}>{t("messageModalUpdate")}</Text>
+                </TouchableOpacity>
               )}
-
-              <ModalBtn>
-                <ModalBtnText
-                  onPress={() => {
-                    deleteMessage();
-                    setModalMessage(false);
-                  }}
-                >
-                  {t("messageModalDelete")}
-                </ModalBtnText>
-              </ModalBtn>
-            </Modal>
+              <TouchableOpacity
+                style={styles.modalBtn}
+                onPress={() => {
+                  deleteMessage();
+                  setModalMessage(false);
+                }}
+              >
+                <Text style={styles.modalBtnText}>{t("messageModalDelete")}</Text>
+              </TouchableOpacity>
+            </View>
           ) : (
-            <BlockMessage
+            <TouchableOpacity
               onLongPress={() => setModalMessage(true)}
               accessibilityLabel={`Message: ${message.messageText}`}
               accessible={true}
-              style={{
-                backgroundColor: isValide ? colors.MessageBackgroundColorWithAuthor : colors.MessageBackgroundColor,
-                flexDirection: isValide ? "row-reverse" : "row",
-                marginLeft: isValide ? "30%" : "0",
-                paddingLeft: isValide ? (message.type === "image" ? 0 : 5) : 3,
-                paddingRight: isValide ? 3 : 5,
-              }}
+              style={[
+                styles.blockMessage,
+                {
+                  backgroundColor: isValide ? colors.MessageBackgroundColorWithAuthor : colors.MessageBackgroundColor,
+                  flexDirection: isValide ? "row-reverse" : "row",
+                  marginLeft: isValide ? "30%" : 0,
+                  paddingLeft: isValide ? (message.type === "image" ? 0 : 5) : 3,
+                  paddingRight: isValide ? 3 : 5,
+                },
+              ]}
             >
-              <BlockForMessageAuthor>
-                <AuthorAvatar source={{ uri: author.photoURL }}></AuthorAvatar>
-                <AuthorName>{author.nikname}</AuthorName>
-              </BlockForMessageAuthor>
+              <View style={styles.blockForMessageAuthor}>
+                <Image style={styles.authorAvatar} source={{ uri: author.photoURL }} />
+                <Text style={styles.authorName}>{author.nikname}</Text>
+              </View>
               {message.type === "image" ? (
-                <Image
-                  source={{ uri: message.uri }}
-                  style={{ width: 200, height: 200, objectFit: "cover", borderRadius: 5 }}
-                />
+                <Image source={{ uri: message.uri }} style={styles.imageMessage} />
               ) : (
-                <BoxForMessage>
-                  <BlockForMessageText>{message.messageText}</BlockForMessageText>
-                </BoxForMessage>
+                <View style={styles.boxForMessage}>
+                  <Text style={styles.blockForMessageText}>{message.messageText}</Text>
+                </View>
               )}
-            </BlockMessage>
+            </TouchableOpacity>
           )}
         </>
       ) : null}

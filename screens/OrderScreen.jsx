@@ -1,10 +1,12 @@
-import { View, Text, TouchableOpacity, TextInput, FlatList, Alert, ScrollView } from "react-native";
-import React, { useState, useEffect, memo } from "react";
+import { View, Text, TouchableOpacity, TextInput, FlatList, Alert, StyleSheet, ScrollView } from "react-native";
+import { useState, useEffect, memo } from "react";
 import { LinearGradient } from "expo-linear-gradient";
 import * as colors from "../variables/colors";
 import { StatusBar } from "expo-status-bar";
 import styled from "styled-components";
 import { db, auth } from "../firebaseConfig";
+import ModalAddNewPosition from "../components/ModalAddNewPosition";
+import ModalAddNewParticipant from "../components/ModalAddNewParticipant";
 import {
   doc,
   onSnapshot,
@@ -12,7 +14,6 @@ import {
   arrayUnion,
   arrayRemove,
   getDocs,
-  getDoc,
   where,
   collection,
   query,
@@ -24,7 +25,6 @@ import Button from "../components/Button";
 import { useTranslation } from "react-i18next";
 import { BannerAd, BannerAdSize } from "react-native-google-mobile-ads";
 import { Dimensions } from "react-native";
-import AddingParticipant from "../components/AddingParticipant";
 
 const screenHeight = Dimensions.get("screen").height;
 
@@ -148,21 +148,7 @@ const ModalBlockInput = styled.View`
   justify-content: center;
   align-items: center;
 `;
-const ModalBlockAddNew = styled.View`
-  width: 100%;
-  height: 95%;
-  position: absolute;
-  padding-left: 1%;
-  padding-right: 1%;
-`;
-const ModalBlockAddNewInput = styled.View`
-  width: 100%;
-  margin-top: 38%;
-  height: ${screenHeight < 760 ? "180px" : "200px"};
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-`;
+
 const ModalButton = styled.TouchableOpacity`
   width: 30%;
   height: ${screenHeight < 760 ? "50px" : "60px"};
@@ -218,30 +204,7 @@ const BlockButtonBtnBack = styled.TouchableOpacity`
   aspect-ratio: 1;
   height: ${screenHeight < 760 ? "40px" : "50px"};
 `;
-const AddParticipantModal = styled.View`
-  height: 95%;
-  width: 100%;
-  position: absolute;
-  z-index: 3;
-`;
-const BlockAlredyPartc = styled.View`
-  background-color: ${colors.modalNiknameBackgroundWindow};
-  width: 100%;
-  height: 400px;
-  margin-top: 5px;
-  flex-direction: column;
-  padding-left: 10px;
-  padding-right: 10px;
-`;
-const BlockAlredyPartcTitle = styled.Text`
-  text-align: center;
-  font-size: ${screenHeight < 760 ? "20px" : "25px"};
-  color: ${colors.OrderDashboardName};
-`;
-const BlockAlredyPartcTouch = styled.TouchableOpacity``;
-const BlockAlredyPartcText = styled.Text`
-  font-size: ${screenHeight < 760 ? "18px" : "20px"};
-`;
+
 export default memo(function OrderScreen({ route, navigation }) {
   const [name, setName] = useState("");
   const [quantity, setQuantity] = useState("");
@@ -258,83 +221,6 @@ export default memo(function OrderScreen({ route, navigation }) {
   const documentId = item.docId;
   const { t } = useTranslation();
   const nameOfOrder = item.nameOfOrder;
-  const isOrderCreator = item.participants[0] === currentUserEmail;
-
-  const delParticipantFromOrder = async (participantForDeleting) => {
-    if (participantForDeleting === currentUserEmail) {
-      return Alert.alert(t("OrderScreenAlertDelMyself"));
-    }
-
-    Alert.alert(t("OrderScreenConfirmDeleteTitle"), `${participantForDeleting} ${t("OrderScreenConfirmDeleteText")}`, [
-      {
-        text: t("ProffileCancel"),
-        style: "cancel",
-      },
-      {
-        text: t("messageModalDelete"),
-        style: "destructive",
-        onPress: async () => {
-          try {
-            const firebaseRef = doc(db, "orders", documentId);
-            await updateDoc(firebaseRef, {
-              participants: arrayRemove(participantForDeleting),
-            });
-          } catch (error) {
-            console.log("delParticipantFromOrder", error.message);
-          }
-        },
-      },
-    ]);
-  };
-
-  const updateParticipants = async (p) => {
-    const email = p.email;
-    Alert.alert(`${t("OrderScreenAlertText")}`, `${email}`, [
-      {
-        text: `${t("ProffileCancel")}`,
-        onPress: () => {
-          return;
-        },
-        style: "cancel",
-      },
-      {
-        text: `${t("OrderScreenAlertAdd")}`,
-        onPress: async () => {
-          const firebaseRef = doc(db, "orders", documentId);
-          await updateDoc(firebaseRef, {
-            participants: arrayUnion(email),
-          });
-          sendPersonalMessage(email);
-        },
-      },
-    ]);
-  };
-  const sendPersonalMessage = async (email) => {
-    const docSnap = await getDoc(doc(db, "users", email));
-    const pushToken = docSnap.data().pushToken;
-    try {
-      const message = {
-        to: pushToken,
-        sound: "default",
-        title: `New ORDER with name ${nameOfOrder}`,
-        body: "Do not forget to complete me!!!",
-        data: { someData: item },
-      };
-
-      await fetch("https://exp.host/--/api/v2/push/send", {
-        method: "POST",
-        headers: {
-          host: "exp.host",
-          Accept: "application/json",
-          "Accept-encoding": "gzip, deflate",
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(message),
-      });
-    } catch (error) {
-      console.log(error);
-    }
-  };
 
   const checkUnreadMessages = async () => {
     const refForChangeMessageStatus = query(
@@ -345,32 +231,6 @@ export default memo(function OrderScreen({ route, navigation }) {
     unreadMessages.forEach(async (document) => {
       setNewMessageArrived(true);
     });
-  };
-
-  const updateOrder = async () => {
-    if (!name || !quantity) {
-      return Alert.alert(`${t("OrderScreenAlertEmptyField")}`);
-    }
-    const updatingOrder = {
-      id: Date.parse(new Date()),
-      made: false,
-      madeBy: currentUserEmail,
-      name: name,
-      quantity: quantity,
-    };
-    const firebaseRef = doc(db, "orders", documentId);
-    await updateDoc(firebaseRef, {
-      order: arrayUnion(updatingOrder),
-    });
-    if (dataItem) {
-      await updateDoc(firebaseRef, {
-        order: arrayRemove(dataItem),
-      });
-    }
-    setModalUpdate(false);
-    setName("");
-    setQuantity("");
-    setDataItem("");
   };
 
   const okOrder = async (item) => {
@@ -395,12 +255,41 @@ export default memo(function OrderScreen({ route, navigation }) {
 
   useEffect(() => {
     setNewMessageArrived(false);
-    onSnapshot(doc(db, "orders", documentId), (snapshot) => {
+    const unsub = onSnapshot(doc(db, "orders", documentId), (snapshot) => {
       setOrders(snapshot.data());
       setOrdersLoaded(true);
     });
     checkUnreadMessages();
+    return () => unsub();
   }, []);
+  const updateOrder = async () => {
+    try {
+      if (!name || !quantity) {
+        return Alert.alert(`${t("OrderScreenAlertEmptyField")}`);
+      }
+      const updatingOrder = {
+        id: Date.parse(new Date()),
+        made: false,
+        madeBy: currentUserEmail,
+        name: name,
+        quantity: quantity,
+      };
+      const firebaseRef = doc(db, "orders", documentId);
+      await updateDoc(firebaseRef, {
+        order: arrayUnion(updatingOrder),
+      });
+      if (dataItem) {
+        await updateDoc(firebaseRef, {
+          order: arrayRemove(dataItem),
+        });
+      }
+      setModalUpdate(false);
+      setName("");
+      setQuantity("");
+    } catch (error) {
+      console.log("updateDoc", error.message);
+    }
+  };
 
   return (
     <LinearGradient
@@ -469,7 +358,7 @@ export default memo(function OrderScreen({ route, navigation }) {
               navigation.navigate("Messaging", { item });
             }}
           >
-            {newMessageArrived ? (
+            {newMessageArrived && (
               <NewMessageAlert>
                 <Ionicons
                   name="alert-circle-sharp"
@@ -477,8 +366,7 @@ export default memo(function OrderScreen({ route, navigation }) {
                   color={colors.NewMessageArrivedColor}
                 />
               </NewMessageAlert>
-            ) : null}
-
+            )}
             <Button children={t("OrderScreenMessaging")} />
           </BlockButtonBtn>
         </BlockButton>
@@ -542,7 +430,7 @@ export default memo(function OrderScreen({ route, navigation }) {
                 </>
               ) : (
                 <>
-                  {ordersLoaded ? (
+                  {ordersLoaded && (
                     <BlockOrderItemAll>
                       <SwipeListView
                         style={{ width: "100%", height: "100%" }}
@@ -584,7 +472,7 @@ export default memo(function OrderScreen({ route, navigation }) {
                         rightOpenValue={-130}
                       ></SwipeListView>
                     </BlockOrderItemAll>
-                  ) : null}
+                  )}
                 </>
               )}
             </BlockOrder>
@@ -615,124 +503,201 @@ export default memo(function OrderScreen({ route, navigation }) {
           size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER}
         />
       </View>
-      {modalAddParticipant ? (
-        <AddParticipantModal>
-          <LinearGradient
-            colors={[
-              colors.startColorForGradient,
-              colors.endColorForGradient,
-              colors.startColorForGradient,
-              colors.endColorForGradient,
-            ]}
-            start={{ x: 0.0, y: 0.0 }}
-            end={{ x: 1.0, y: 1.0 }}
-            style={{ height: "100%", width: "100%", paddingTop: "5%" }}
-          >
-            <BlockButtonBtnBack
-              accessibilityLabel="Button go back to order screen"
-              accessible={true}
-              style={{ marginTop: "19%", marginLeft: "5%" }}
-              onPress={() => {
-                setModalAddParticipant(false);
-              }}
-            >
-              <LinearGradient
-                colors={[
-                  colors.startColorForGradientButton,
-                  colors.endColorForGradientButton,
-                  colors.startColorForGradientButton,
-                  colors.endColorForGradientButton,
-                ]}
-                start={{ x: 0.0, y: 0.0 }}
-                end={{ x: 1.0, y: 1.0 }}
-                style={{
-                  height: "100%",
-                  width: "100%",
-                  borderRadius: 30,
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-              >
-                <Ionicons
-                  name="arrow-back-circle-outline"
-                  size={screenHeight < 760 ? 30 : 40}
-                  color={colors.BlockButtonText}
-                />
-              </LinearGradient>
-            </BlockButtonBtnBack>
-            <View style={{ height: "100px" }}>
-              <View style={{ height: 100, marginTop: 10, marginBottom: 10 }}>
-                <AddingParticipant updateParticipants={updateParticipants} />
-              </View>
-              <BlockAlredyPartc>
-                <BlockAlredyPartcTitle>{t("OrderScreenAlredyParticipate")}</BlockAlredyPartcTitle>
-                <FlatList
-                  data={orders.participants}
-                  accessibilityLabel={`Alredy participate: ${item}`}
-                  accessible={true}
-                  renderItem={({ item }) => (
-                    <BlockAlredyPartcTouch onPress={() => (isOrderCreator ? delParticipantFromOrder(item) : null)}>
-                      <BlockAlredyPartcText>{item}</BlockAlredyPartcText>
-                    </BlockAlredyPartcTouch>
-                  )}
-                  keyExtractor={(item) => item}
-                  ItemSeparatorComponent={() => <View style={{ height: 5 }} />}
-                />
-              </BlockAlredyPartc>
-            </View>
-          </LinearGradient>
-        </AddParticipantModal>
-      ) : null}
-      {modalAddPosition ? (
-        <ModalBlockAddNew>
-          <LinearGradient
-            colors={[
-              colors.startColorForGradient,
-              colors.endColorForGradient,
-              colors.startColorForGradient,
-              colors.endColorForGradient,
-            ]}
-            start={{ x: 0.0, y: 0.0 }}
-            end={{ x: 1.0, y: 1.0 }}
-            style={{ height: "100%", width: "100%", paddingTop: "5%" }}
-          >
-            <ModalBlockAddNewInput>
-              <InputFieldName
-                onChangeText={setName}
-                maxLength={25}
-                value={name}
-                placeholder={t("OrderScreenModalPlaceholderItem")}
-              ></InputFieldName>
-              <InputFieldQuantity
-                onChangeText={setQuantity}
-                value={quantity}
-                maxLength={7}
-                placeholder={t("OrderScreenModalPlaceholderQT")}
-              ></InputFieldQuantity>
-            </ModalBlockAddNewInput>
-            <ModalBlockBtn>
-              <ModalButton
-                onPress={() => {
-                  setModalAddPosition(false);
-                  setName("");
-                  setQuantity("");
-                  setDataItem("");
-                }}
-              >
-                <Button children={t("ProffileCancel")} />
-              </ModalButton>
-              <ModalButton
-                onPress={() => {
-                  updateOrder();
-                  setModalAddPosition(false);
-                }}
-              >
-                <Button children={t("OrderScreenModalAddPosition")} />
-              </ModalButton>
-            </ModalBlockBtn>
-          </LinearGradient>
-        </ModalBlockAddNew>
-      ) : null}
+      {modalAddParticipant && (
+        <ModalAddNewParticipant
+          setModalAddParticipant={setModalAddParticipant}
+          item={item}
+          currentUserEmail={currentUserEmail}
+          orders={orders}
+          documentId={documentId}
+          nameOfOrder={nameOfOrder}
+        />
+      )}
+      {modalAddPosition && (
+        <ModalAddNewPosition
+          documentId={documentId}
+          currentUserEmail={currentUserEmail}
+          setDataItem={setDataItem}
+          setModalAddPosition={setModalAddPosition}
+        />
+      )}
     </LinearGradient>
   );
+});
+const styles = StyleSheet.create({
+  container: {
+    width: "100%",
+    height: "70%",
+    padding: "1%",
+    paddingTop: "5%",
+  },
+  orderName: {
+    fontSize: screenHeight < 760 ? 20 : 25,
+    color: colors.titleText,
+    alignSelf: "center",
+    marginBottom: "2%",
+  },
+  blockOrder: {
+    height: "99%",
+  },
+  blockOrderItemAll: {
+    height: "100%",
+    marginBottom: "2%",
+  },
+  blockOrderItem: {
+    flexDirection: "row",
+    height: screenHeight < 760 ? 50 : 70,
+    alignItems: "center",
+    backgroundColor: colors.orderScreenItemBackground,
+    marginBottom: "1%",
+  },
+  blockOrderItemOk: {
+    flexDirection: "column",
+    height: screenHeight < 760 ? 50 : 70,
+    alignItems: "center",
+    backgroundColor: colors.orderScreenItemBackgroundOk,
+    marginBottom: "1%",
+  },
+  blockOrderItemOkInfo: {
+    flexDirection: "row",
+    height: "70%",
+    alignItems: "center",
+    backgroundColor: colors.orderScreenItemBackgroundOk,
+  },
+  blockOrderItemOkAuthor: {
+    textAlign: "center",
+    width: "100%",
+    height: "20%",
+    backgroundColor: colors.orderScreenItemBackgroundOk,
+    fontSize: screenHeight < 760 ? 8 : 10,
+  },
+  blockOrderItemName: {
+    width: "70%",
+    fontSize: screenHeight < 760 ? 15 : 20,
+    color: colors.orderScreenItemText,
+    marginLeft: "2%",
+  },
+  blockOrderItemQuantity: {
+    fontSize: screenHeight < 760 ? 15 : 20,
+    color: colors.orderScreenItemText,
+    marginLeft: "1%",
+    width: "26%",
+  },
+  blockOrderItemNameOk: {
+    width: "70%",
+    fontSize: screenHeight < 760 ? 15 : 20,
+    color: colors.orderScreenItemText,
+    marginLeft: "2%",
+  },
+  blockOrderItemQuantityOk: {
+    fontSize: screenHeight < 760 ? 15 : 20,
+    color: colors.orderScreenItemText,
+    marginLeft: "1%",
+    width: "26%",
+  },
+  blockSafeAreaView: {
+    width: "100%",
+    height: "100%",
+  },
+  hidenOk: {
+    backgroundColor: colors.orderScreenHiddenUpdate,
+    width: "45%",
+    aspectRatio: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 8,
+  },
+  hidenUpdate: {
+    backgroundColor: colors.orderScreenHiddenOk,
+    width: "45%",
+    aspectRatio: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 8,
+  },
+  hiden: {
+    height: screenHeight < 760 ? 50 : 70,
+    width: "30%",
+    flexDirection: "row",
+    position: "absolute",
+    justifyContent: "space-around",
+    alignItems: "center",
+    right: 0,
+  },
+  modalBlock: {
+    width: "100%",
+    height: "95%",
+  },
+  modalBlockBtn: {
+    width: "100%",
+    height: screenHeight < 760 ? 50 : 70,
+    flexDirection: "row",
+    justifyContent: "space-around",
+  },
+  modalBlockInput: {
+    width: "100%",
+    height: screenHeight < 760 ? 180 : 200,
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  modalButton: {
+    width: "30%",
+    height: screenHeight < 760 ? 50 : 60,
+  },
+  inputFieldName: {
+    width: "70%",
+    height: screenHeight < 760 ? 50 : 70,
+    backgroundColor: colors.orderScreenModalInputBackgroung,
+    borderRadius: 18,
+    paddingLeft: "2%",
+    fontSize: screenHeight < 760 ? 15 : 20,
+  },
+  inputFieldQuantity: {
+    width: "25%",
+    height: screenHeight < 760 ? 50 : 70,
+    backgroundColor: colors.orderScreenModalInputBackgroung,
+    marginLeft: "5%",
+    borderRadius: 12,
+    fontSize: screenHeight < 760 ? 15 : 20,
+    textAlign: "center",
+  },
+  blockButton: {
+    width: "100%",
+    height: screenHeight < 760 ? 60 : 80,
+    flexDirection: "row",
+    justifyContent: "space-around",
+    alignItems: "center",
+    marginBottom: "2%",
+  },
+  newMessageAlert: {
+    position: "absolute",
+    right: 15,
+    top: -10,
+    width: 20,
+    height: 20,
+    justifyContent: "center",
+    alignItems: "center",
+    zIndex: 2,
+  },
+  blockButtonToggle: {
+    width: "95%",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
+    paddingHorizontal: 2,
+  },
+  blockButtonBtn: {
+    width: "30%",
+    height: screenHeight < 760 ? 40 : 50,
+  },
+  blockButtonBtnBack: {
+    aspectRatio: 1,
+    height: screenHeight < 760 ? 40 : 50,
+  },
+  bannerAdContainer: {
+    position: "absolute",
+    bottom: 0,
+    paddingLeft: "1%",
+  },
 });
