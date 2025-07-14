@@ -3,7 +3,7 @@
     "name": "Orders",
     "slug": "orders",
     "scheme": "com.ant-volkov.orders",
-    "version": "2.0.1",
+    "version": "2.0.2",
     "orientation": "portrait",
     "icon": "./assets/Orders3.png",
     "userInterfaceStyle": "light",
@@ -18,6 +18,9 @@
       "googleServicesFile": "./GoogleService-Info.plist"
     },
     "android": {
+      "compileSdkVersion": 35,
+      "targetSdkVersion": 35,
+      "buildToolsVersion": "35.0.0",
       "googleServicesFile": "./google-services.json",
       "adaptiveIcon": {
         "foregroundImage": "./assets/Orders3.png",
