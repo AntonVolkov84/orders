@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Keyboard, View, Text, FlatList, Dimensions } from "react-native";
-import styled from "styled-components/native";
+import { Keyboard, View, Text, FlatList, Dimensions, TextInput, TouchableOpacity, StyleSheet } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { StatusBar } from "expo-status-bar";
 import * as colors from "../variables/colors";
@@ -30,71 +29,6 @@ import { BannerAd, BannerAdSize } from "react-native-google-mobile-ads";
 
 const screenHeight = Dimensions.get("screen").height;
 
-// --- Styled components ---
-const BlockButton = styled.View`
-  width: 100%;
-  height: ${screenHeight < 760 ? "40px" : "50px"};
-  flex-direction: row;
-  justify-content: flex-start;
-  align-items: center;
-  margin-bottom: 3%;
-  margin-top: 10%;
-`;
-
-const BlockButtonBtn = styled.TouchableOpacity`
-  width: 33%;
-  height: 100%;
-`;
-
-const BlockMessaging = styled.View`
-  width: 100%;
-  height: 70%;
-`;
-
-const BoxInput = styled.View`
-  background-color: ${colors.MessagingInputBackground};
-  padding: 3px;
-  width: 99%;
-  height: ${screenHeight < 760 ? "48px" : "60px"};
-  position: absolute;
-  bottom: 70px;
-  left: 6%;
-  border-radius: 10px;
-  flex-direction: row;
-`;
-
-const BoxInputText = styled.TextInput`
-  padding: 5px;
-  width: 90%;
-  height: 100%;
-  color: ${colors.MessagingInputColor};
-  font-size: ${screenHeight < 760 ? "13px" : "18px"};
-`;
-
-const BlockIconMessage = styled.TouchableOpacity`
-  position: absolute;
-  right: 0;
-  height: 100%;
-  justify-content: center;
-  align-items: center;
-  aspect-ratio: 1;
-`;
-
-const BlockIconMessagePicture = styled.TouchableOpacity`
-  position: absolute;
-  right: 50px;
-  height: 100%;
-  justify-content: center;
-  align-items: center;
-  aspect-ratio: 1;
-`;
-
-const BlockForMessage = styled.View`
-  width: 100%;
-  margin-bottom: 20px;
-`;
-
-// --- Component ---
 export default function MessagingScreen({ route, navigation }) {
   const { item } = route.params;
   const [message, setMessage] = useState("");
@@ -112,7 +46,6 @@ export default function MessagingScreen({ route, navigation }) {
   const { t } = useTranslation();
   const nameOfOrder = item.nameOfOrder;
 
-  // --- Keyboard listeners to adjust input position ---
   useEffect(() => {
     const showSubscription = Keyboard.addListener("keyboardDidShow", () => setKeyboardOffset(85));
     const hideSubscription = Keyboard.addListener("keyboardDidHide", () => setKeyboardOffset(10));
@@ -123,14 +56,12 @@ export default function MessagingScreen({ route, navigation }) {
     };
   }, []);
 
-  // --- Update message state when editing ---
   useEffect(() => {
     if (messageUpdate.messageText) {
       setMessage(messageUpdate.messageText);
     }
   }, [messageUpdate]);
 
-  // --- Fetch messages in real-time ---
   useEffect(() => {
     const q = query(collection(db, "messages", conversationId, "conversation"), orderBy("timestamp", "asc"));
 
@@ -148,7 +79,6 @@ export default function MessagingScreen({ route, navigation }) {
     return () => unsubscribe();
   }, [conversationId]);
 
-  // --- Scroll to bottom when new messages arrive ---
   useEffect(() => {
     markMessagesAsRead();
 
@@ -157,7 +87,6 @@ export default function MessagingScreen({ route, navigation }) {
     }
   }, [fetchedMessages]);
 
-  // --- Mark unread messages as read ---
   const markMessagesAsRead = async () => {
     try {
       const refForChangeMessageStatus = query(
@@ -175,7 +104,6 @@ export default function MessagingScreen({ route, navigation }) {
     }
   };
 
-  // --- Pick image from gallery ---
   const pickImage = async () => {
     try {
       const result = await ImagePicker.launchImageLibraryAsync({
@@ -197,7 +125,6 @@ export default function MessagingScreen({ route, navigation }) {
     }
   };
 
-  // --- Upload image to Firebase Storage and send message with image URL ---
   const uploadImageToStorage = async (refStorage, uri, fileName) => {
     try {
       const response = await fetch(uri);
@@ -224,7 +151,6 @@ export default function MessagingScreen({ route, navigation }) {
     }
   };
 
-  // --- Send message (text or image) ---
   const sendMessage = async (type = "text", uri = "", storagePath = "") => {
     if (!message && type === "text") return;
 
@@ -242,12 +168,9 @@ export default function MessagingScreen({ route, navigation }) {
         timestamp: new Date().toISOString(),
       };
 
-      // Save to Realtime Database
       await set(dbRef(database, `messages/${conversationId}/${data.messageId}`), data);
-      // Save to Firestore
       await addDoc(collection(db, "messages", conversationId, "conversation"), data);
 
-      // Send push notifications
       const pushTokens = [];
       for (const receiverEmail of recipients) {
         const docSnap = await getDoc(doc(db, "users", receiverEmail));
@@ -282,7 +205,6 @@ export default function MessagingScreen({ route, navigation }) {
     }
   };
 
-  // --- Update existing message ---
   const updateMessage = async () => {
     try {
       await updateDoc(doc(db, "messages", messageUpdate.parentId, "conversation", messageUpdate.docId), {
@@ -305,23 +227,23 @@ export default function MessagingScreen({ route, navigation }) {
       ]}
       start={{ x: 0.0, y: 0.0 }}
       end={{ x: 1.0, y: 1.0 }}
-      style={{ height: "100%", width: "100%", paddingTop: "5%", paddingHorizontal: "5%" }}
+      style={styles.linearGradient}
     >
       <StatusBar style="light" />
-      <BlockButton>
-        <BlockButtonBtn
+      <View style={styles.blockButton}>
+        <TouchableOpacity
           accessibilityLabel="Button go back"
           accessible={true}
-          onPress={() => {
-            navigation.goBack();
-          }}
+          onPress={() => navigation.goBack()}
+          style={styles.blockButtonBtn}
         >
-          <Button children={t("MessagingGoBack")} />
-        </BlockButtonBtn>
-      </BlockButton>
-      <BlockMessaging>
+          <Button>{t("MessagingGoBack")}</Button>
+        </TouchableOpacity>
+      </View>
+
+      <View style={styles.blockMessaging}>
         {loaded ? (
-          <BlockForMessage style={{ marginBottom: keyboardOffset }}>
+          <View style={[styles.blockForMessage, { marginBottom: keyboardOffset }]}>
             <FlatList
               onScroll={(event) => {
                 Keyboard.dismiss();
@@ -335,39 +257,45 @@ export default function MessagingScreen({ route, navigation }) {
               ref={flatList}
               renderItem={({ item }) => <Message setMessageUpdate={setMessageUpdate} message={item} />}
               keyExtractor={(item) => item.docId}
+              inverted
             />
-          </BlockForMessage>
+          </View>
         ) : (
-          <Text style={{ color: colors.titleText, fontSize: screenHeight < 760 ? 15 : 20 }}>Loading...</Text>
+          <Text style={styles.loadingText}>Loading...</Text>
         )}
-      </BlockMessaging>
-      <BoxInput>
-        <BoxInputText
+      </View>
+
+      <View style={styles.boxInput}>
+        <TextInput
           placeholderTextColor={colors.MessagingPlaceholder}
           placeholder={t("MessagingMakeMessage")}
           multiline
           onChangeText={setMessage}
           value={message}
+          style={styles.boxInputText}
         />
         {!message && (
-          <BlockIconMessagePicture
+          <TouchableOpacity
             accessibilityLabel="Button add picture"
             accessible={true}
-            onPress={() => pickImage()}
+            onPress={pickImage}
+            style={styles.blockIconMessagePicture}
           >
             <Fontisto name="picture" size={screenHeight < 760 ? 20 : 25} color={colors.MessagingIconColor} />
-          </BlockIconMessagePicture>
+          </TouchableOpacity>
         )}
 
-        <BlockIconMessage
+        <TouchableOpacity
           accessibilityLabel="Button add message"
           accessible={true}
           onPress={() => (messageUpdate ? updateMessage() : sendMessage())}
+          style={styles.blockIconMessage}
         >
           <FontAwesome name="send" size={screenHeight < 760 ? 20 : 25} color={colors.MessagingIconColor} />
-        </BlockIconMessage>
-      </BoxInput>
-      <View style={{ position: "absolute", bottom: 0, paddingleft: "1%" }}>
+        </TouchableOpacity>
+      </View>
+
+      <View style={styles.adContainer}>
         <BannerAd
           unitId="ca-app-pub-9267417700367649/6433322697"
           onAdFailedToLoad={(error) => console.log(error)}
@@ -377,3 +305,77 @@ export default function MessagingScreen({ route, navigation }) {
     </LinearGradient>
   );
 }
+
+const styles = StyleSheet.create({
+  linearGradient: {
+    height: "100%",
+    width: "100%",
+    paddingTop: "5%",
+    paddingHorizontal: "5%",
+  },
+  blockButton: {
+    width: "100%",
+    height: screenHeight < 760 ? 40 : 50,
+    flexDirection: "row",
+    justifyContent: "flex-start",
+    alignItems: "center",
+    marginBottom: "3%",
+    marginTop: "10%",
+  },
+  blockButtonBtn: {
+    width: "33%",
+    height: "100%",
+  },
+  blockMessaging: {
+    width: "100%",
+    height: "70%",
+  },
+  blockForMessage: {
+    width: "100%",
+    marginBottom: 20,
+  },
+  loadingText: {
+    color: colors.titleText,
+    fontSize: screenHeight < 760 ? 15 : 20,
+  },
+  boxInput: {
+    backgroundColor: colors.MessagingInputBackground,
+    padding: 3,
+    width: "99%",
+    height: screenHeight < 760 ? 48 : 60,
+    position: "absolute",
+    bottom: 70,
+    left: "6%",
+    borderRadius: 10,
+    flexDirection: "row",
+  },
+  boxInputText: {
+    padding: 5,
+    width: "90%",
+    height: "100%",
+    color: colors.MessagingInputColor,
+    fontSize: screenHeight < 760 ? 13 : 18,
+  },
+  blockIconMessage: {
+    position: "absolute",
+    right: 0,
+    height: "100%",
+    justifyContent: "center",
+    alignItems: "center",
+    aspectRatio: 1,
+  },
+  blockIconMessagePicture: {
+    position: "absolute",
+    right: 50,
+    height: "100%",
+    justifyContent: "center",
+    alignItems: "center",
+    aspectRatio: 1,
+  },
+  adContainer: {
+    position: "absolute",
+    bottom: 0,
+    paddingLeft: "1%",
+    width: "100%",
+  },
+});

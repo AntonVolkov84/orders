@@ -1,9 +1,8 @@
 import { View, Text, TouchableOpacity, TextInput, FlatList, Alert, StyleSheet, ScrollView } from "react-native";
-import { useState, useEffect, memo } from "react";
+import { useState, useEffect, memo, useRef } from "react";
 import { LinearGradient } from "expo-linear-gradient";
 import * as colors from "../variables/colors";
 import { StatusBar } from "expo-status-bar";
-import styled from "styled-components";
 import { db, auth } from "../firebaseConfig";
 import ModalAddNewPosition from "../components/ModalAddNewPosition";
 import ModalAddNewParticipant from "../components/ModalAddNewParticipant";
@@ -28,183 +27,6 @@ import { Dimensions } from "react-native";
 
 const screenHeight = Dimensions.get("screen").height;
 
-const Container = styled.View`
-  width: 100%;
-  height: 70%;
-  padding: 1%;
-  padding-top: 5%;
-`;
-const OrderName = styled.Text`
-  font-size: ${screenHeight < 760 ? "20px" : "25px"};
-  color: ${colors.titleText};
-  justify-self: center;
-  align-self: center;
-  margin-bottom: 2%;
-`;
-const BlockOrder = styled.View`
-  height: 99%;
-`;
-const BlockOrderItemAll = styled.View`
-  height: 100%;
-  margin-bottom: 2%;
-`;
-const BlockOrderItem = styled.View`
-  flex-direction: row;
-  height: ${screenHeight < 760 ? "50px" : "70px"};
-  align-items: center;
-  background-color: ${colors.orderScreenItemBackground};
-  margin-bottom: 1%;
-`;
-const BlockOrderItemOk = styled.View`
-  flex-direction: column;
-  height: ${screenHeight < 760 ? "50px" : "70px"};
-  align-items: center;
-  background-color: ${colors.orderScreenItemBackgroundOk};
-  margin-bottom: 1%;
-`;
-const BlockOrderItemOkInfo = styled.View`
-  flex-direction: row;
-  height: 70%;
-  align-items: center;
-  background-color: ${colors.orderScreenItemBackgroundOk};
-`;
-const BlockOrderItemOkAuthor = styled.Text`
-  text-align: center;
-  width: 100%;
-  height: 20%;
-  background-color: ${colors.orderScreenItemBackgroundOk};
-  font-size: ${screenHeight < 760 ? "8px" : "10px"};
-`;
-const BlockOrderItemName = styled.Text`
-  width: 70%;
-  font-size: ${screenHeight < 760 ? "15px" : "20px"};
-  color: ${colors.orderScreenItemText};
-  margin-left: 2%;
-`;
-const BlockOrderItemQuantity = styled.Text`
-  font-size: ${screenHeight < 760 ? "15px" : "20px"};
-  color: ${colors.orderScreenItemText};
-  margin-left: 1%;
-  width: 26%;
-`;
-const BlockOrderItemNameOk = styled.Text`
-  width: 70%;
-  font-size: ${screenHeight < 760 ? "15px" : "20px"};
-  color: ${colors.orderScreenItemText};
-  margin-left: 2%;
-`;
-const BlockOrderItemQuantityOk = styled.Text`
-  font-size: ${screenHeight < 760 ? "15px" : "20px"};
-  color: ${colors.orderScreenItemText};
-  margin-left: 1%;
-  width: 26%;
-`;
-const BlockSafeAreaView = styled.View`
-  width: 100%;
-  height: 100%;
-`;
-
-const HidenOk = styled.TouchableOpacity`
-  background-color: ${colors.orderScreenHiddenUpdate};
-  width: 45%;
-  aspect-ratio: 1;
-  justify-content: center;
-  align-items: center;
-  border-radius: 8px;
-`;
-
-const HidenUpdate = styled.TouchableOpacity`
-  background-color: ${colors.orderScreenHiddenOk};
-  width: 45%;
-  aspect-ratio: 1;
-  justify-content: center;
-  align-items: center;
-  border-radius: 8px;
-`;
-
-const Hiden = styled.View`
-  height: ${screenHeight < 760 ? "50px" : "70px"};
-  width: 30%;
-  flex-direction: row;
-  position: absolute;
-  justify-content: space-around;
-  align-items: center;
-  right: 0;
-`;
-const ModalBlock = styled.View`
-  width: 100%;
-  height: 95%;
-`;
-const ModalBlockBtn = styled.View`
-  width: 100%;
-  height: ${screenHeight < 760 ? "50px" : "70px"};
-  flex-direction: row;
-  justify-content: space-around;
-`;
-const ModalBlockInput = styled.View`
-  width: 100%;
-  height: ${screenHeight < 760 ? "180px" : "200px"};
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-`;
-
-const ModalButton = styled.TouchableOpacity`
-  width: 30%;
-  height: ${screenHeight < 760 ? "50px" : "60px"};
-`;
-const InputFieldName = styled.TextInput`
-  width: 70%;
-  height: ${screenHeight < 760 ? "50px" : "70px"};
-  background-color: ${colors.orderScreenModalInputBackgroung};
-  border-radius: 18px;
-  padding-left: 2%;
-  font-size: ${screenHeight < 760 ? "15px" : "20px"};
-`;
-const InputFieldQuantity = styled.TextInput`
-  width: 25%;
-  height: ${screenHeight < 760 ? "50px" : "70px"};
-  background-color: ${colors.orderScreenModalInputBackgroung};
-  margin-left: 5%;
-  border-radius: 12px;
-  font-size: ${screenHeight < 760 ? "15px" : "20px"};
-  text-align: center;
-`;
-
-const BlockButton = styled.View`
-  width: 100%;
-  height: ${screenHeight < 760 ? "60px" : "80px"};
-  flex-direction: row;
-  justify-content: space-around;
-  align-items: center;
-  margin-bottom: 2%;
-`;
-const NewMessageAlert = styled.View`
-  position: absolute;
-  right: 15px;
-  top: -10px;
-  width: 20px;
-  height: 20px;
-  justify-content: center;
-  align-items: center;
-  z-index: 2;
-`;
-const BlockButtonToggle = styled.View`
-  width: 95%;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: flex-start;
-  padding: 0 2px;
-`;
-const BlockButtonBtn = styled.TouchableOpacity`
-  width: 30%;
-  height: ${screenHeight < 760 ? "40px" : "50px"};
-`;
-const BlockButtonBtnBack = styled.TouchableOpacity`
-  aspect-ratio: 1;
-  height: ${screenHeight < 760 ? "40px" : "50px"};
-`;
-
 export default memo(function OrderScreen({ route, navigation }) {
   const [name, setName] = useState("");
   const [quantity, setQuantity] = useState("");
@@ -221,6 +43,7 @@ export default memo(function OrderScreen({ route, navigation }) {
   const documentId = item.docId;
   const { t } = useTranslation();
   const nameOfOrder = item.nameOfOrder;
+  const swipeListRef = useRef(null);
 
   const checkUnreadMessages = async () => {
     const refForChangeMessageStatus = query(
@@ -301,26 +124,21 @@ export default memo(function OrderScreen({ route, navigation }) {
       ]}
       start={{ x: 0.0, y: 0.0 }}
       end={{ x: 1.0, y: 1.0 }}
-      style={{ height: "100%", width: "100%", paddingTop: "5%" }}
+      style={styles.linearGradient}
     >
       <StatusBar style="light" />
-      <Container>
-        <OrderName>
+      <View style={styles.container}>
+        <Text style={[styles.orderName, { color: colors.titleText }]}>
           {ordersLoaded
-            ? nameOfOrder +
-              " " +
-              new Date(new Date(orders.dateForOrder)).toLocaleDateString(`${t("OrderDashboardTime")}`, {
+            ? `${nameOfOrder} ${new Date(orders.dateForOrder).toLocaleDateString(t("OrderDashboardTime"), {
                 month: "long",
                 day: "numeric",
-              })
+              })}`
             : "loading..."}
-        </OrderName>
-        <BlockButton>
-          <BlockButtonBtnBack
-            onPress={() => {
-              navigation.goBack();
-            }}
-          >
+        </Text>
+
+        <View style={styles.blockButton}>
+          <TouchableOpacity style={styles.blockButtonBack} onPress={() => navigation.goBack()}>
             <LinearGradient
               colors={[
                 colors.startColorForGradientButton,
@@ -330,13 +148,7 @@ export default memo(function OrderScreen({ route, navigation }) {
               ]}
               start={{ x: 0.0, y: 0.0 }}
               end={{ x: 1.0, y: 1.0 }}
-              style={{
-                height: "100%",
-                width: "100%",
-                borderRadius: 30,
-                justifyContent: "center",
-                alignItems: "center",
-              }}
+              style={styles.buttonGradient}
             >
               <Ionicons
                 name="arrow-back-circle-outline"
@@ -344,51 +156,55 @@ export default memo(function OrderScreen({ route, navigation }) {
                 color={colors.BlockButtonText}
               />
             </LinearGradient>
-          </BlockButtonBtnBack>
-          <BlockButtonBtn
-            onPress={() => {
-              setModalAddPosition(true);
-            }}
-          >
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.blockButtonBtn} onPress={() => setModalAddPosition(true)}>
             <Button children={t("OrderScreenAdd")} />
-          </BlockButtonBtn>
-          <BlockButtonBtn
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.blockButtonBtn}
             onPress={() => {
               setNewMessageArrived(false);
               navigation.navigate("Messaging", { item });
             }}
           >
             {newMessageArrived && (
-              <NewMessageAlert>
+              <View style={styles.newMessageAlert}>
                 <Ionicons
                   name="alert-circle-sharp"
                   size={screenHeight < 760 ? 15 : 20}
                   color={colors.NewMessageArrivedColor}
                 />
-              </NewMessageAlert>
+              </View>
             )}
             <Button children={t("OrderScreenMessaging")} />
-          </BlockButtonBtn>
-        </BlockButton>
-        <BlockSafeAreaView style={{ height: screenHeight < 760 ? "93%" : "98%" }}>
+          </TouchableOpacity>
+        </View>
+
+        <View style={[styles.blockSafeAreaView, { height: screenHeight < 760 ? "93%" : "98%" }]}>
           {modalUpdate ? (
-            <ModalBlock>
-              <ModalBlockInput>
-                <InputFieldName
+            <View style={styles.modalBlock}>
+              <View style={styles.modalBlockInput}>
+                <TextInput
+                  style={[styles.inputFieldName, { backgroundColor: colors.orderScreenModalInputBackgroung }]}
                   onChangeText={setName}
                   maxLength={25}
                   value={name}
                   placeholder={t("OrderScreenModalPlaceholderItem")}
-                ></InputFieldName>
-                <InputFieldQuantity
+                />
+                <TextInput
+                  style={[styles.inputFieldQuantity, { backgroundColor: colors.orderScreenModalInputBackgroung }]}
                   onChangeText={setQuantity}
                   value={quantity}
                   maxLength={7}
                   placeholder={t("OrderScreenModalPlaceholderQT")}
-                ></InputFieldQuantity>
-              </ModalBlockInput>
-              <ModalBlockBtn>
-                <ModalButton
+                  keyboardType="numeric"
+                />
+              </View>
+              <View style={styles.modalBlockBtn}>
+                <TouchableOpacity
+                  style={styles.modalButton}
                   onPress={() => {
                     setModalUpdate(false);
                     setName("");
@@ -397,106 +213,97 @@ export default memo(function OrderScreen({ route, navigation }) {
                   }}
                 >
                   <Button children={t("ProffileCancel")} />
-                </ModalButton>
-                <ModalButton onPress={() => updateOrder()}>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.modalButton} onPress={updateOrder}>
                   <Button children={t("OrderScreenModalUpdate")} />
-                </ModalButton>
-              </ModalBlockBtn>
-            </ModalBlock>
+                </TouchableOpacity>
+              </View>
+            </View>
           ) : (
-            <BlockOrder>
-              {toggleBoughtItems ? (
-                <>
-                  {ordersLoaded ? (
+            <View style={styles.blockOrder}>
+              {toggleBoughtItems
+                ? ordersLoaded && (
                     <FlatList
                       data={orders.order.filter((e) => e.made === true)}
-                      accessibilityLabel="Task list"
-                      accessible={true}
+                      keyExtractor={(_, index) => index.toString()}
                       renderItem={({ item }) => (
-                        <BlockOrderItemOk>
-                          <BlockOrderItemOkInfo
-                            accessibilityLabel={`Task: ${(item.name, item.quantity)}`}
-                            accessible={true}
-                          >
-                            <BlockOrderItemNameOk>{item.name}</BlockOrderItemNameOk>
-                            <BlockOrderItemQuantityOk>{item.quantity}</BlockOrderItemQuantityOk>
-                          </BlockOrderItemOkInfo>
-                          <BlockOrderItemOkAuthor>{item.madeByDisplayName}</BlockOrderItemOkAuthor>
-                        </BlockOrderItemOk>
+                        <View
+                          style={[styles.blockOrderItemOk, { backgroundColor: colors.orderScreenItemBackgroundOk }]}
+                        >
+                          <View style={styles.blockOrderItemOkInfo}>
+                            <Text style={[styles.itemTextOk, { color: colors.orderScreenItemText }]}>{item.name}</Text>
+                            <Text style={[styles.itemQuantityOk, { color: colors.orderScreenItemText }]}>
+                              {item.quantity}
+                            </Text>
+                          </View>
+                          <Text style={styles.blockOrderItemOkAuthor}>{item.madeByDisplayName}</Text>
+                        </View>
                       )}
-                      keyExtractor={(item, index) => index}
                     />
-                  ) : null}
-                </>
-              ) : (
-                <>
-                  {ordersLoaded && (
-                    <BlockOrderItemAll>
+                  )
+                : ordersLoaded && (
+                    <View style={styles.blockOrderItemAll}>
                       <SwipeListView
-                        style={{ width: "100%", height: "100%" }}
-                        accessibilityLabel="Task list"
-                        accessible={true}
+                        ref={swipeListRef}
+                        style={styles.swipeList}
                         data={orders.order.filter((e) => e.made !== true)}
-                        renderItem={(data, rowMap, index) => (
-                          <BlockOrderItem
-                            key={index}
-                            accessibilityLabel={`Task: ${(item.name, item.quantity)}`}
-                            accessible={true}
-                          >
-                            <BlockOrderItemName>{data.item.name}</BlockOrderItemName>
-                            <BlockOrderItemQuantity>{data.item.quantity}</BlockOrderItemQuantity>
-                          </BlockOrderItem>
+                        keyExtractor={(_, index) => index.toString()}
+                        renderItem={({ item }) => (
+                          <View style={[styles.blockOrderItem, { backgroundColor: colors.orderScreenItemBackground }]}>
+                            <Text style={[styles.itemText, { color: colors.orderScreenItemText }]}>{item.name}</Text>
+                            <Text style={[styles.itemQuantity, { color: colors.orderScreenItemText }]}>
+                              {item.quantity}
+                            </Text>
+                          </View>
                         )}
-                        renderHiddenItem={(data, rowMap) => (
-                          <Hiden>
-                            <HidenUpdate
+                        renderHiddenItem={({ item, index }, rowMap) => (
+                          <View style={styles.hiden}>
+                            <TouchableOpacity
+                              style={[styles.hidenUpdate, { backgroundColor: colors.orderScreenHiddenOk }]}
                               onPress={() => {
-                                setName(data.item.name);
-                                setQuantity(data.item.quantity);
-                                setDataItem(data.item);
+                                setName(item.name);
+                                setQuantity(item.quantity);
+                                setDataItem(item);
                                 setModalUpdate(true);
                               }}
                             >
-                              <Ionicons color="white" size={screenHeight < 760 ? 20 : 30} name="create"></Ionicons>
-                            </HidenUpdate>
-                            <HidenOk
+                              <Ionicons color="white" size={screenHeight < 760 ? 20 : 30} name="create" />
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                              style={[styles.hidenOk, { backgroundColor: colors.orderScreenHiddenUpdate }]}
                               onPress={() => {
-                                setDataItem(data.item);
-                                okOrder(data.item);
+                                setDataItem(item);
+                                okOrder(item);
+                                if (rowMap[index]) {
+                                  rowMap[index].closeRow();
+                                }
                               }}
                             >
                               <Entypo name="check" size={screenHeight < 760 ? 20 : 30} color="white" />
-                            </HidenOk>
-                          </Hiden>
+                            </TouchableOpacity>
+                          </View>
                         )}
                         rightOpenValue={-130}
-                      ></SwipeListView>
-                    </BlockOrderItemAll>
+                      />
+                    </View>
                   )}
-                </>
-              )}
-            </BlockOrder>
+            </View>
           )}
-        </BlockSafeAreaView>
-        <BlockButtonToggle>
-          <BlockButtonBtn
-            style={{ marginLeft: "5%" }}
-            onPress={() => {
-              setModalAddParticipant(true);
-            }}
+        </View>
+
+        <View style={styles.blockButtonToggle}>
+          <TouchableOpacity
+            style={[styles.blockButtonBtn, { marginLeft: "5%" }]}
+            onPress={() => setModalAddParticipant(true)}
           >
             <Button children={t("OrderScreenAddParts")} />
-          </BlockButtonBtn>
-          <BlockButtonBtn
-            onPress={() => {
-              setToggleBoughtItems(!toggleBoughtItems);
-            }}
-          >
-            <Button children={toggleBoughtItems ? `${t("OrderScreenOrderItems")}` : `${t("OrderScreenBoughtItems")}`} />
-          </BlockButtonBtn>
-        </BlockButtonToggle>
-      </Container>
-      <View style={{ position: "absolute", bottom: 0, paddingleft: "1%" }}>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.blockButtonBtn} onPress={() => setToggleBoughtItems(!toggleBoughtItems)}>
+            <Button children={toggleBoughtItems ? t("OrderScreenOrderItems") : t("OrderScreenBoughtItems")} />
+          </TouchableOpacity>
+        </View>
+      </View>
+      <View style={styles.bannerAd}>
         <BannerAd
           unitId="ca-app-pub-9267417700367649/6433322697"
           onAdFailedToLoad={(error) => console.log(error)}
@@ -525,6 +332,11 @@ export default memo(function OrderScreen({ route, navigation }) {
   );
 });
 const styles = StyleSheet.create({
+  linearGradient: {
+    height: "100%",
+    width: "100%",
+    paddingTop: "5%",
+  },
   container: {
     width: "100%",
     height: "70%",
@@ -533,9 +345,44 @@ const styles = StyleSheet.create({
   },
   orderName: {
     fontSize: screenHeight < 760 ? 20 : 25,
-    color: colors.titleText,
-    alignSelf: "center",
+    textAlign: "center",
     marginBottom: "2%",
+  },
+  blockButton: {
+    width: "100%",
+    height: screenHeight < 760 ? 60 : 80,
+    flexDirection: "row",
+    justifyContent: "space-around",
+    alignItems: "center",
+    marginBottom: "2%",
+  },
+  blockButtonBtn: {
+    width: "30%",
+    height: screenHeight < 760 ? 40 : 50,
+  },
+  blockButtonBack: {
+    aspectRatio: 1,
+    height: screenHeight < 760 ? 40 : 50,
+  },
+  buttonGradient: {
+    height: "100%",
+    width: "100%",
+    borderRadius: 30,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  newMessageAlert: {
+    position: "absolute",
+    right: 15,
+    top: -10,
+    width: 20,
+    height: 20,
+    justifyContent: "center",
+    alignItems: "center",
+    zIndex: 2,
+  },
+  blockSafeAreaView: {
+    width: "100%",
   },
   blockOrder: {
     height: "99%",
@@ -548,91 +395,72 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     height: screenHeight < 760 ? 50 : 70,
     alignItems: "center",
-    backgroundColor: colors.orderScreenItemBackground,
     marginBottom: "1%",
   },
-  blockOrderItemOk: {
-    flexDirection: "column",
-    height: screenHeight < 760 ? 50 : 70,
-    alignItems: "center",
-    backgroundColor: colors.orderScreenItemBackgroundOk,
-    marginBottom: "1%",
-  },
-  blockOrderItemOkInfo: {
-    flexDirection: "row",
-    height: "70%",
-    alignItems: "center",
-    backgroundColor: colors.orderScreenItemBackgroundOk,
-  },
-  blockOrderItemOkAuthor: {
-    textAlign: "center",
-    width: "100%",
-    height: "20%",
-    backgroundColor: colors.orderScreenItemBackgroundOk,
-    fontSize: screenHeight < 760 ? 8 : 10,
-  },
-  blockOrderItemName: {
+  itemText: {
     width: "70%",
     fontSize: screenHeight < 760 ? 15 : 20,
-    color: colors.orderScreenItemText,
     marginLeft: "2%",
   },
-  blockOrderItemQuantity: {
+  itemQuantity: {
     fontSize: screenHeight < 760 ? 15 : 20,
-    color: colors.orderScreenItemText,
     marginLeft: "1%",
     width: "26%",
-  },
-  blockOrderItemNameOk: {
-    width: "70%",
-    fontSize: screenHeight < 760 ? 15 : 20,
-    color: colors.orderScreenItemText,
-    marginLeft: "2%",
-  },
-  blockOrderItemQuantityOk: {
-    fontSize: screenHeight < 760 ? 15 : 20,
-    color: colors.orderScreenItemText,
-    marginLeft: "1%",
-    width: "26%",
-  },
-  blockSafeAreaView: {
-    width: "100%",
-    height: "100%",
-  },
-  hidenOk: {
-    backgroundColor: colors.orderScreenHiddenUpdate,
-    width: "45%",
-    aspectRatio: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    borderRadius: 8,
-  },
-  hidenUpdate: {
-    backgroundColor: colors.orderScreenHiddenOk,
-    width: "45%",
-    aspectRatio: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    borderRadius: 8,
   },
   hiden: {
     height: screenHeight < 760 ? 50 : 70,
     width: "30%",
     flexDirection: "row",
     position: "absolute",
+    right: 0,
     justifyContent: "space-around",
     alignItems: "center",
-    right: 0,
+  },
+  hidenUpdate: {
+    width: "45%",
+    aspectRatio: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 8,
+  },
+  hidenOk: {
+    width: "45%",
+    aspectRatio: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 8,
+  },
+  blockOrderItemOk: {
+    flexDirection: "column",
+    height: screenHeight < 760 ? 50 : 70,
+    alignItems: "center",
+    marginBottom: "1%",
+  },
+  blockOrderItemOkInfo: {
+    flexDirection: "row",
+    height: "70%",
+    alignItems: "center",
+    width: "100%",
+  },
+  itemTextOk: {
+    width: "70%",
+    fontSize: screenHeight < 760 ? 15 : 20,
+    marginLeft: "2%",
+  },
+  itemQuantityOk: {
+    fontSize: screenHeight < 760 ? 15 : 20,
+    marginLeft: "1%",
+    width: "26%",
+  },
+  blockOrderItemOkAuthor: {
+    textAlign: "center",
+    width: "100%",
+    height: "20%",
+    fontSize: screenHeight < 760 ? 8 : 10,
   },
   modalBlock: {
     width: "100%",
     height: "95%",
-  },
-  modalBlockBtn: {
-    width: "100%",
-    height: screenHeight < 760 ? 50 : 70,
-    flexDirection: "row",
-    justifyContent: "space-around",
   },
   modalBlockInput: {
     width: "100%",
@@ -641,6 +469,12 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
+  modalBlockBtn: {
+    width: "100%",
+    height: screenHeight < 760 ? 50 : 70,
+    flexDirection: "row",
+    justifyContent: "space-around",
+  },
   modalButton: {
     width: "30%",
     height: screenHeight < 760 ? 50 : 60,
@@ -648,7 +482,6 @@ const styles = StyleSheet.create({
   inputFieldName: {
     width: "70%",
     height: screenHeight < 760 ? 50 : 70,
-    backgroundColor: colors.orderScreenModalInputBackgroung,
     borderRadius: 18,
     paddingLeft: "2%",
     fontSize: screenHeight < 760 ? 15 : 20,
@@ -656,29 +489,10 @@ const styles = StyleSheet.create({
   inputFieldQuantity: {
     width: "25%",
     height: screenHeight < 760 ? 50 : 70,
-    backgroundColor: colors.orderScreenModalInputBackgroung,
     marginLeft: "5%",
     borderRadius: 12,
     fontSize: screenHeight < 760 ? 15 : 20,
     textAlign: "center",
-  },
-  blockButton: {
-    width: "100%",
-    height: screenHeight < 760 ? 60 : 80,
-    flexDirection: "row",
-    justifyContent: "space-around",
-    alignItems: "center",
-    marginBottom: "2%",
-  },
-  newMessageAlert: {
-    position: "absolute",
-    right: 15,
-    top: -10,
-    width: 20,
-    height: 20,
-    justifyContent: "center",
-    alignItems: "center",
-    zIndex: 2,
   },
   blockButtonToggle: {
     width: "95%",
@@ -687,17 +501,13 @@ const styles = StyleSheet.create({
     alignItems: "flex-start",
     paddingHorizontal: 2,
   },
-  blockButtonBtn: {
-    width: "30%",
-    height: screenHeight < 760 ? 40 : 50,
-  },
-  blockButtonBtnBack: {
-    aspectRatio: 1,
-    height: screenHeight < 760 ? 40 : 50,
-  },
-  bannerAdContainer: {
+  bannerAd: {
     position: "absolute",
     bottom: 0,
     paddingLeft: "1%",
+  },
+  swipeList: {
+    width: "100%",
+    height: "100%",
   },
 });
