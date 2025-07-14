@@ -45,46 +45,43 @@ export default memo(function OrderScreen({ route, navigation }) {
   const nameOfOrder = item.nameOfOrder;
   const swipeListRef = useRef(null);
 
-  const checkUnreadMessages = async () => {
-    const refForChangeMessageStatus = query(
-      collection(db, "messages", documentId, "conversation"),
-      where("doNotReadBy", "array-contains", currentUserEmail)
-    );
-    const unreadMessages = await getDocs(refForChangeMessageStatus);
-    unreadMessages.forEach(async (document) => {
-      setNewMessageArrived(true);
-    });
-  };
-
-  const okOrder = async (item) => {
-    const updatingOrder = {
-      id: Date.parse(new Date()),
-      made: true,
-      madeBy: currentUserEmail,
-      madeByDisplayName: auth.currentUser.displayName || currentUserEmail,
-      name: item.name,
-      quantity: item.quantity,
-    };
-    const firebaseRef = doc(db, "orders", documentId);
-    await updateDoc(firebaseRef, {
-      order: arrayRemove(item),
-    });
-    await updateDoc(firebaseRef, {
-      order: arrayUnion(updatingOrder),
-    });
-
-    setModalUpdate(false);
-  };
-
   useEffect(() => {
-    setNewMessageArrived(false);
     const unsub = onSnapshot(doc(db, "orders", documentId), (snapshot) => {
       setOrders(snapshot.data());
       setOrdersLoaded(true);
     });
-    checkUnreadMessages();
     return () => unsub();
   }, []);
+  useEffect(() => {
+    if (orders?.doNotReadBy?.includes(currentUserEmail)) {
+      setNewMessageArrived(true);
+    } else {
+      setNewMessageArrived(false);
+    }
+  }, [orders?.doNotReadBy, currentUserEmail]);
+  const okOrder = async (item) => {
+    try {
+      const updatingOrder = {
+        id: Date.parse(new Date()),
+        made: true,
+        madeBy: currentUserEmail,
+        madeByDisplayName: auth.currentUser.displayName || currentUserEmail,
+        name: item.name,
+        quantity: item.quantity,
+      };
+      const firebaseRef = doc(db, "orders", documentId);
+      await updateDoc(firebaseRef, {
+        order: arrayRemove(item),
+      });
+      await updateDoc(firebaseRef, {
+        order: arrayUnion(updatingOrder),
+      });
+      setModalUpdate(false);
+    } catch (error) {
+      console.log("okOrder", error);
+    }
+  };
+
   const updateOrder = async () => {
     try {
       if (!name || !quantity) {
@@ -209,7 +206,7 @@ export default memo(function OrderScreen({ route, navigation }) {
                     setModalUpdate(false);
                     setName("");
                     setQuantity("");
-                    setDataItem("");
+                    setDataItem(null);
                   }}
                 >
                   <Button children={t("ProffileCancel")} />

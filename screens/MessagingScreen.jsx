@@ -16,8 +16,6 @@ import {
   query,
   orderBy,
   onSnapshot,
-  getDocs,
-  where,
   updateDoc,
   arrayRemove,
   doc,
@@ -36,7 +34,6 @@ export default function MessagingScreen({ route, navigation }) {
   const [fetchedMessages, setFetchedMessages] = useState([]);
   const [loaded, setLoaded] = useState(false);
   const [keyboardOffset, setKeyboardOffset] = useState(10);
-
   const conversationId = item.docId;
   const currentUser = auth.currentUser;
   const currentEmail = currentUser.email;
@@ -64,7 +61,6 @@ export default function MessagingScreen({ route, navigation }) {
 
   useEffect(() => {
     const q = query(collection(db, "messages", conversationId, "conversation"), orderBy("timestamp", "asc"));
-
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const messages = snapshot.docs.map((doc) => ({
         docId: doc.id,
@@ -89,15 +85,9 @@ export default function MessagingScreen({ route, navigation }) {
 
   const markMessagesAsRead = async () => {
     try {
-      const refForChangeMessageStatus = query(
-        collection(db, "messages", conversationId, "conversation"),
-        where("doNotReadBy", "array-contains", currentEmail)
-      );
-      const unreadMessages = await getDocs(refForChangeMessageStatus);
-
-      unreadMessages.forEach(async (document) => {
-        const messageRef = doc(db, "messages", conversationId, "conversation", document.id);
-        await updateDoc(messageRef, { doNotReadBy: arrayRemove(currentEmail) });
+      const orderRef = doc(db, "orders", conversationId);
+      await updateDoc(orderRef, {
+        doNotReadBy: arrayRemove(currentEmail),
       });
     } catch (error) {
       console.log("markMessagesAsRead error:", error);
@@ -153,7 +143,6 @@ export default function MessagingScreen({ route, navigation }) {
 
   const sendMessage = async (type = "text", uri = "", storagePath = "") => {
     if (!message && type === "text") return;
-
     try {
       const recipients = item.participants.filter((email) => email !== currentEmail);
       const data = {
@@ -167,10 +156,12 @@ export default function MessagingScreen({ route, navigation }) {
         author: currentEmail,
         timestamp: new Date().toISOString(),
       };
-
       await set(dbRef(database, `messages/${conversationId}/${data.messageId}`), data);
       await addDoc(collection(db, "messages", conversationId, "conversation"), data);
-
+      const orderRef = doc(db, "orders", conversationId);
+      await updateDoc(orderRef, {
+        doNotReadBy: recipients,
+      });
       const pushTokens = [];
       for (const receiverEmail of recipients) {
         const docSnap = await getDoc(doc(db, "users", receiverEmail));
@@ -178,7 +169,6 @@ export default function MessagingScreen({ route, navigation }) {
           pushTokens.push(docSnap.data().pushToken);
         }
       }
-
       if (pushTokens.length) {
         const pushMessage = {
           to: pushTokens,
@@ -186,7 +176,6 @@ export default function MessagingScreen({ route, navigation }) {
           title: `${nameOfOrder} ${auth.currentUser.displayName || currentEmail}`,
           body: message,
         };
-
         await fetch("https://exp.host/--/api/v2/push/send", {
           method: "POST",
           headers: {

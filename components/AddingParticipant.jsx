@@ -1,27 +1,27 @@
 import { View, Text, TouchableOpacity, Image, ScrollView, StyleSheet, Dimensions } from "react-native";
-import { useState, useEffect, memo } from "react";
+import { useState, useEffect, useContext, memo } from "react";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import * as colors from "../variables/colors";
 import { doc, getDoc, updateDoc, arrayRemove, onSnapshot } from "firebase/firestore";
-import { getAuth } from "firebase/auth";
 import Button from "./Button";
 import { db } from "../firebaseConfig";
 import { useTranslation } from "react-i18next";
 import ModalAddingParticipant from "./ModalAddingParticipant";
+import { AppContext } from "../App";
 
 const screenHeight = Dimensions.get("screen").height;
 
 export default memo(function AddingParticipant({ updateParticipants, participants, setParticipants }) {
-  const auth = getAuth();
+  const { user } = useContext(AppContext);
+  const [arrayOfParticipants, setArrayOfParticipants] = useState([]);
+  const [noOneParticipant, setNoOneParticipant] = useState(true);
   const [loadingData, setLoadingData] = useState(true);
   const [allParticipantsData, setAllParticipantsData] = useState([]);
   const [addingParticipantModal, setAddingParticipantModal] = useState(false);
-  const [noOneParticipant, setNoOneParticipant] = useState(true);
   const [delParticipantModal, setDelParticipantModal] = useState(false);
   const [participantForDeleting, setParticipantForDeleting] = useState("");
-  const [arrayOfParticipants, setArrayOfParticipants] = useState([]);
   const { t } = useTranslation();
-  const currentEmail = auth.currentUser.email;
+  const currentEmail = user?.email;
 
   useEffect(() => {
     const unsub = onSnapshot(doc(db, "Participants", currentEmail), (snapshot) => {
@@ -50,8 +50,6 @@ export default memo(function AddingParticipant({ updateParticipants, participant
       setAllParticipantsData(newArr);
     } catch (err) {
       console.log("Ошибка при загрузке данных участников:", err.message);
-    } finally {
-      setLoadingData(false);
     }
   };
 

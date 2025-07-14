@@ -38,6 +38,7 @@ export default function ModalAddNewParticipant({
   };
 
   const delParticipantFromOrder = async (participantForDeleting) => {
+    console.log(participantForDeleting);
     if (participantForDeleting === currentUserEmail) {
       return Alert.alert(t("OrderScreenAlertDelMyself"));
     }
@@ -64,6 +65,10 @@ export default function ModalAddNewParticipant({
   const sendPersonalMessage = async (email) => {
     const docSnap = await getDoc(doc(db, "users", email));
     const pushToken = docSnap.data().pushToken;
+    if (!pushToken) {
+      console.warn("No push token found for", email);
+      return;
+    }
     try {
       const message = {
         to: pushToken,
@@ -132,10 +137,14 @@ export default function ModalAddNewParticipant({
         <View style={styles.participantList}>
           <Text style={styles.participantTitle}>{t("OrderScreenAlredyParticipate")}</Text>
           <FlatList
+            style={{ maxHeight: 250 }}
             data={orders.participants}
             accessibilityLabel="Already participate"
             renderItem={({ item }) => (
-              <TouchableOpacity onPress={() => (isOrderCreator ? delParticipantFromOrder(item) : null)}>
+              <TouchableOpacity
+                disabled={!isOrderCreator}
+                onPress={() => isOrderCreator && delParticipantFromOrder(item)}
+              >
                 <Text style={styles.participantText}>{item}</Text>
               </TouchableOpacity>
             )}

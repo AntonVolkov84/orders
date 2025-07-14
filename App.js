@@ -1,16 +1,16 @@
-import { StyleSheet, Alert, Text, View, AppRegistry } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import RegistrationScreen from "./screens/RegistrationScreen";
 import LoginScreen from "./screens/LoginScreen";
 import { useState, createContext, useEffect, useRef } from "react";
 import DashboardScreen from "./screens/DashboardScreen.jsx";
-import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { onAuthStateChanged } from "firebase/auth";
 import OrderScreen from "./screens/OrderScreen.jsx";
 import MessagingScreen from "./screens/MessagingScreen.jsx";
 import * as Notifications from "expo-notifications";
 import { registerForPushNotificationsAsync } from "./notifications.js";
 import mobileAds from "react-native-google-mobile-ads";
+import { auth } from "./firebaseConfig.js";
 
 mobileAds()
   .initialize()
@@ -29,23 +29,29 @@ const Stack = createNativeStackNavigator();
 export const AppContext = createContext(null);
 
 export default function App() {
-  const [user, setUser] = useState("");
-  const auth = getAuth();
+  const [user, setUser] = useState(null);
   const [notification, setNotification] = useState(null);
   const notificationListener = useRef();
   const responseListener = useRef();
   const [expoPushToken, setExpoPushToken] = useState("");
 
-  onAuthStateChanged(auth, (user) => {
-    if (user && auth.currentUser.emailVerified) {
-      setUser(user);
-    } else {
-      setUser("");
-    }
-  });
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user && user.emailVerified) {
+        setUser(user);
+      } else {
+        setUser("");
+      }
+    });
+    return unsubscribe;
+  }, []);
 
   useEffect(() => {
-    registerForPushNotificationsAsync().then((token) => setExpoPushToken(token));
+    registerForPushNotificationsAsync()
+      .then((token) => setExpoPushToken(token))
+      .catch((error) => {
+        console.log("ExpoNotification in App.js", error);
+      });
     notificationListener.current = Notifications.addNotificationReceivedListener((notification) => {
       setNotification(notification);
     });
@@ -53,15 +59,19 @@ export default function App() {
       console.log(response);
     });
     return () => {
-      Notifications.removeNotificationSubscription(notificationListener.current);
-      Notifications.removeNotificationSubscription(responseListener.current);
+      if (notificationListener.current) {
+        notificationListener.current.remove();
+      }
+      if (responseListener.current) {
+        responseListener.current.remove();
+      }
     };
   }, []);
 
   if (!user) {
     return (
       <NavigationContainer>
-        <AppContext.Provider value={expoPushToken}>
+        <AppContext.Provider value={{ user, expoPushToken }}>
           <Stack.Navigator initialRouteName="Login">
             <Stack.Screen
               name="Login"
@@ -85,29 +95,31 @@ export default function App() {
 
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Dashboard">
-        <Stack.Screen
-          name="Dashboard"
-          component={DashboardScreen}
-          options={{
-            headerShown: false,
-          }}
-        />
-        <Stack.Screen
-          name="OrderScreen"
-          component={OrderScreen}
-          options={{
-            headerShown: false,
-          }}
-        />
-        <Stack.Screen
-          name="Messaging"
-          component={MessagingScreen}
-          options={{
-            headerShown: false,
-          }}
-        />
-      </Stack.Navigator>
+      <AppContext.Provider value={{ user, expoPushToken }}>
+        <Stack.Navigator initialRouteName="Dashboard">
+          <Stack.Screen
+            name="Dashboard"
+            component={DashboardScreen}
+            options={{
+              headerShown: false,
+            }}
+          />
+          <Stack.Screen
+            name="OrderScreen"
+            component={OrderScreen}
+            options={{
+              headerShown: false,
+            }}
+          />
+          <Stack.Screen
+            name="Messaging"
+            component={MessagingScreen}
+            options={{
+              headerShown: false,
+            }}
+          />
+        </Stack.Navigator>
+      </AppContext.Provider>
     </NavigationContainer>
   );
 }

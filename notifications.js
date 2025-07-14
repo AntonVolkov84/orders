@@ -2,6 +2,10 @@ import { Platform } from "react-native";
 import * as Notifications from "expo-notifications";
 
 export async function sendPushNotification(expoPushToken, bodyText) {
+  if (!expoPushToken) {
+    console.warn("Отправка пуша отменена: нет expoPushToken");
+    return;
+  }
   try {
     const message = {
       to: expoPushToken,
