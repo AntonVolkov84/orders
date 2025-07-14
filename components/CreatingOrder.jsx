@@ -18,6 +18,7 @@ import { collection, addDoc, serverTimestamp, doc, getDoc } from "firebase/fires
 import { db, auth } from "../firebaseConfig";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { useTranslation } from "react-i18next";
+import { sendPushNotification } from "../notifications";
 
 const screenHeight = Dimensions.get("screen").height;
 
@@ -56,34 +57,15 @@ export default memo(function CreatingOrder({ participants, setCreateOrderModal, 
     setOrders(newOrders);
   };
 
-  const sendNotificationWhithNewOrders = async (arrOfParicipantsEmail, orders) => {
+  const sendNotificationWhithNewOrders = async (arrOfParicipantsEmail) => {
     const arrOfReseiver = [];
     if (arrOfParicipantsEmail.length < 2) return;
-
     for (let i = 1; i < arrOfParicipantsEmail.length; i++) {
       const docSnap = await getDoc(doc(db, "users", arrOfParicipantsEmail[i]));
       arrOfReseiver.push(docSnap.data().pushToken);
     }
-
     try {
-      const message = {
-        to: arrOfReseiver,
-        sound: "default",
-        title: `New ORDER ${nameOfOrder}`,
-        body: "Do not forget to complete me!!!",
-        data: { someData: orders },
-      };
-
-      await fetch("https://exp.host/--/api/v2/push/send", {
-        method: "POST",
-        headers: {
-          host: "exp.host",
-          Accept: "application/json",
-          "Accept-encoding": "gzip, deflate",
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(message),
-      });
+      await sendPushNotification(arrOfReseiver, "Do not forget to complete me!!!", `New ORDER ${nameOfOrder}`);
     } catch (error) {
       console.log(error);
     }
@@ -92,7 +74,7 @@ export default memo(function CreatingOrder({ participants, setCreateOrderModal, 
     const currentEmail = auth.currentUser.email;
     const arrOfParicipantsEmail = [currentEmail];
     participants.map((e) => arrOfParicipantsEmail.push(e.email));
-    sendNotificationWhithNewOrders(arrOfParicipantsEmail, orders);
+    sendNotificationWhithNewOrders(arrOfParicipantsEmail);
     try {
       const order = {
         timestamp: serverTimestamp(),

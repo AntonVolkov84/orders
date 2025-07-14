@@ -1,7 +1,7 @@
 import { Platform } from "react-native";
 import * as Notifications from "expo-notifications";
 
-export async function sendPushNotification(expoPushToken, bodyText) {
+export async function sendPushNotification(expoPushToken, bodyText, title) {
   if (!expoPushToken) {
     console.warn("Отправка пуша отменена: нет expoPushToken");
     return;
@@ -10,10 +10,10 @@ export async function sendPushNotification(expoPushToken, bodyText) {
     const message = {
       to: expoPushToken,
       sound: "default",
-      title: "Startling",
+      title: title,
       body: bodyText,
       data: { someData: "goes here" },
-      largeIcon: require("./assets/smileWithHand.png"),
+      largeIcon: require("./assets/OrdersNotification.png"),
     };
 
     await fetch("https://exp.host/--/api/v2/push/send", {

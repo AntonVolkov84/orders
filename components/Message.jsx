@@ -21,6 +21,7 @@ const styles = StyleSheet.create({
     justifyContent: "flex-start",
     alignItems: "center",
     marginTop: 3,
+    marginLeft: 3,
   },
   authorAvatar: {
     width: "70%",
@@ -96,7 +97,7 @@ export default memo(function Message({ message, setMessageUpdate }) {
   const deleteMessage = async () => {
     try {
       if (message.type === "image") {
-        deleteImageFromStorage(message.staragePath);
+        await deleteImageFromStorage(message.staragePath);
       }
       await deleteDoc(doc(db, "messages", message.parentId, "conversation", message.docId));
     } catch (error) {

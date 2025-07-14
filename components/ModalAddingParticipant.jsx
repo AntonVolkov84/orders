@@ -6,6 +6,7 @@ import Button from "./Button";
 import { db } from "../firebaseConfig";
 import { useTranslation } from "react-i18next";
 import * as colors from "../variables/colors";
+import { auth } from "../firebaseConfig";
 
 const styles = StyleSheet.create({
   modal: {
@@ -41,10 +42,9 @@ const styles = StyleSheet.create({
 const ModalAddingParticipant = ({ setAddingParticipantModal }) => {
   const [inputEmail, setInputEmail] = useState("");
   const { t } = useTranslation();
-  const auth = getAuth();
+  const currentEmail = auth.currentUser.email;
 
   const isParticipantExists = async (emailToCheck) => {
-    const currentEmail = auth.currentUser.email;
     const docRef = doc(db, "Participants", currentEmail);
     try {
       const docSnap = await getDoc(docRef);
@@ -90,7 +90,6 @@ const ModalAddingParticipant = ({ setAddingParticipantModal }) => {
   };
 
   const addToParticipantsRefactor = async (email) => {
-    const currentEmail = auth.currentUser.email;
     try {
       await setDoc(
         doc(db, "Participants", currentEmail),
@@ -99,6 +98,8 @@ const ModalAddingParticipant = ({ setAddingParticipantModal }) => {
         },
         { merge: true }
       );
+      setInputEmail("");
+      setAddingParticipantModal(false);
     } catch (error) {
       console.log("addToParticipantsRefactor", error.message);
     }
@@ -129,8 +130,6 @@ const ModalAddingParticipant = ({ setAddingParticipantModal }) => {
           accessible={true}
           onPress={() => {
             VerificationMailDublicate(inputEmail);
-            setAddingParticipantModal(false);
-            setInputEmail("");
           }}
           style={styles.modalButtonBtn}
         >

@@ -6,6 +6,7 @@ import { doc, updateDoc, arrayUnion, arrayRemove, getDoc } from "firebase/firest
 import { Ionicons } from "@expo/vector-icons";
 import { useTranslation } from "react-i18next";
 import AddingParticipant from "./AddingParticipant";
+import { sendPushNotification } from "../notifications";
 
 const screenHeight = Dimensions.get("screen").height;
 
@@ -70,24 +71,7 @@ export default function ModalAddNewParticipant({
       return;
     }
     try {
-      const message = {
-        to: pushToken,
-        sound: "default",
-        title: `New ORDER with name ${nameOfOrder}`,
-        body: "Do not forget to complete me!!!",
-        data: { someData: item },
-      };
-
-      await fetch("https://exp.host/--/api/v2/push/send", {
-        method: "POST",
-        headers: {
-          host: "exp.host",
-          Accept: "application/json",
-          "Accept-encoding": "gzip, deflate",
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(message),
-      });
+      await sendPushNotification(pushToken, "Do not forget to complete me!!!", `New ORDER ${nameOfOrder}`);
     } catch (error) {
       console.log(error);
     }
