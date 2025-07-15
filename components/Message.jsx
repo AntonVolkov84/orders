@@ -1,11 +1,12 @@
 import { View, Text, Image, TouchableOpacity, StyleSheet, Dimensions } from "react-native";
 import { useState, useEffect, memo } from "react";
-import { doc, onSnapshot, deleteDoc } from "firebase/firestore";
+import { doc, onSnapshot } from "firebase/firestore";
 import { auth, db } from "../firebaseConfig";
 import * as colors from "../variables/colors";
 import { useTranslation } from "react-i18next";
+import { remove, ref as dbRef } from "firebase/database";
 import { getStorage, ref, deleteObject } from "firebase/storage";
-import { app } from "../firebaseConfig";
+import { app, database } from "../firebaseConfig";
 
 const screenHeight = Dimensions.get("screen").height;
 
@@ -75,7 +76,7 @@ const styles = StyleSheet.create({
   },
 });
 
-export default memo(function Message({ message, setMessageUpdate }) {
+export default memo(function Message({ message, setMessageUpdate, conversationId }) {
   const [loaded, setLoaded] = useState(false);
   const [author, setAuthor] = useState(null);
   const [modalMessage, setModalMessage] = useState(false);
@@ -99,9 +100,9 @@ export default memo(function Message({ message, setMessageUpdate }) {
       if (message.type === "image") {
         await deleteImageFromStorage(message.staragePath);
       }
-      await deleteDoc(doc(db, "messages", message.parentId, "conversation", message.docId));
+      await remove(dbRef(database, `messages/${conversationId}/${message.messageId}`));
     } catch (error) {
-      console.log("deleteMessage", error.message);
+      console.log("deleteMessage error:", error);
     }
   };
 
@@ -127,9 +128,7 @@ export default memo(function Message({ message, setMessageUpdate }) {
                   style={styles.modalBtn}
                   onPress={() => {
                     setMessageUpdate({
-                      messageText: message.messageText,
-                      parentId: message.parentId,
-                      docId: message.docId,
+                      ...message,
                     });
                     setModalMessage(false);
                   }}

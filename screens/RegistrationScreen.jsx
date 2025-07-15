@@ -4,9 +4,9 @@ import { LinearGradient } from "expo-linear-gradient";
 import * as colors from "../variables/colors";
 import { StatusBar } from "expo-status-bar";
 import * as NavigationBar from "expo-navigation-bar";
-import { db } from "../firebaseConfig";
+import { db, auth } from "../firebaseConfig";
 import { doc, setDoc, serverTimestamp } from "firebase/firestore";
-import { getAuth, signOut, sendEmailVerification, createUserWithEmailAndPassword } from "firebase/auth";
+import { signOut, sendEmailVerification, createUserWithEmailAndPassword } from "firebase/auth";
 import { AppContext } from "../App.js";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 
@@ -54,7 +54,7 @@ const styles = StyleSheet.create({
   eye: {
     position: "absolute",
     right: 10,
-    top: screenHeight < 760 ? 10 : 20,
+    top: screenHeight < 760 ? 12 : 22,
     justifyContent: "center",
     alignItems: "center",
   },
@@ -76,7 +76,6 @@ export default function RegistrationScreen({ navigation }) {
   const [password, setPassword] = useState("");
   const [nikname, setNikname] = useState("");
   const [secureText, setSecureText] = useState(true);
-  const auth = getAuth();
   const expoPushToken = useContext(AppContext);
 
   const addToUsers = async (userId) => {
@@ -119,6 +118,9 @@ export default function RegistrationScreen({ navigation }) {
             })
             .then(() => {
               signOut(auth);
+            })
+            .then(() => {
+              navigation.navigate("Login");
             })
             .catch((error) => {
               if (error.code === "auth/too-many-requests") {
@@ -186,7 +188,7 @@ export default function RegistrationScreen({ navigation }) {
           </TouchableOpacity>
         </View>
 
-        <TextInput style={styles.inputField} placeholder="Type your Nikname" onChangeText={setNikname} />
+        <TextInput style={styles.inputField} placeholder="Type your nikname" onChangeText={setNikname} />
       </View>
 
       <TouchableOpacity style={styles.registerButton} onPress={() => handleRegister(email, password)}>

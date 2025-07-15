@@ -10,18 +10,9 @@ import FontAwesome from "@expo/vector-icons/FontAwesome";
 import Fontisto from "@expo/vector-icons/Fontisto";
 import * as ImagePicker from "expo-image-picker";
 import { getStorage, ref as storageRef, uploadBytesResumable, getDownloadURL } from "firebase/storage";
-import { ref as dbRef, set } from "firebase/database";
-import {
-  collection,
-  query,
-  orderBy,
-  onSnapshot,
-  updateDoc,
-  arrayRemove,
-  doc,
-  addDoc,
-  getDoc,
-} from "firebase/firestore";
+import { ref as dbRef, set, onValue, off, update } from "firebase/database";
+import { sendPushNotification } from "../notifications";
+import { updateDoc, arrayRemove, doc, getDoc } from "firebase/firestore";
 import { useTranslation } from "react-i18next";
 import { BannerAd, BannerAdSize } from "react-native-google-mobile-ads";
 
@@ -60,19 +51,27 @@ export default function MessagingScreen({ route, navigation }) {
   }, [messageUpdate]);
 
   useEffect(() => {
-    const q = query(collection(db, "messages", conversationId, "conversation"), orderBy("timestamp", "asc"));
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const messages = snapshot.docs.map((doc) => ({
-        docId: doc.id,
-        parentId: doc.ref.parent.parent.id,
-        timestamp: doc.data().timestamp,
-        ...doc.data(),
-      }));
-      setFetchedMessages(messages);
-      setLoaded(true);
-    });
+    if (!conversationId) {
+      console.warn("⚠️ conversationId is missing");
+      return;
+    }
+    const messagesRef = dbRef(database, `messages/${conversationId}`);
+    const callback = (snapshot) => {
+      const data = snapshot.val();
+      if (data) {
+        const messages = Object.entries(data)
+          .map(([messageId, msg]) => ({ ...msg, messageId }))
+          .sort((a, b) => a.timestamp.localeCompare(b.timestamp));
+        setFetchedMessages(messages);
+      } else {
+        setFetchedMessages([]);
+      }
 
-    return () => unsubscribe();
+      setLoaded(true);
+    };
+
+    onValue(messagesRef, callback);
+    return () => off(messagesRef, "value", callback);
   }, [conversationId]);
 
   useEffect(() => {
@@ -157,7 +156,7 @@ export default function MessagingScreen({ route, navigation }) {
         timestamp: new Date().toISOString(),
       };
       await set(dbRef(database, `messages/${conversationId}/${data.messageId}`), data);
-      await addDoc(collection(db, "messages", conversationId, "conversation"), data);
+      setMessage("");
       const orderRef = doc(db, "orders", conversationId);
       await updateDoc(orderRef, {
         doNotReadBy: recipients,
@@ -170,25 +169,12 @@ export default function MessagingScreen({ route, navigation }) {
         }
       }
       if (pushTokens.length) {
-        const pushMessage = {
-          to: pushTokens,
-          sound: "default",
-          title: `${nameOfOrder} ${auth.currentUser.displayName || currentEmail}`,
-          body: message,
-        };
-        await fetch("https://exp.host/--/api/v2/push/send", {
-          method: "POST",
-          headers: {
-            host: "exp.host",
-            Accept: "application/json",
-            "Accept-encoding": "gzip, deflate",
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(pushMessage),
-        });
+        await sendPushNotification(
+          pushTokens,
+          message,
+          `${nameOfOrder} ${auth.currentUser.displayName || currentEmail}`
+        );
       }
-
-      setMessage("");
     } catch (error) {
       console.log("sendMessage error:", error);
     }
@@ -196,9 +182,8 @@ export default function MessagingScreen({ route, navigation }) {
 
   const updateMessage = async () => {
     try {
-      await updateDoc(doc(db, "messages", messageUpdate.parentId, "conversation", messageUpdate.docId), {
-        messageText: message,
-      });
+      const messagePath = `messages/${conversationId}/${messageUpdate.messageId}`;
+      await update(dbRef(database, messagePath), { messageText: message });
       setMessageUpdate("");
       setMessage("");
     } catch (error) {
@@ -244,7 +229,9 @@ export default function MessagingScreen({ route, navigation }) {
               accessible={true}
               data={fetchedMessages}
               ref={flatList}
-              renderItem={({ item }) => <Message setMessageUpdate={setMessageUpdate} message={item} />}
+              renderItem={({ item }) => (
+                <Message conversationId={conversationId} setMessageUpdate={setMessageUpdate} message={item} />
+              )}
               keyExtractor={(item) => item.docId}
               inverted
             />

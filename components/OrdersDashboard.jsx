@@ -1,12 +1,13 @@
 import { View, Text, TouchableOpacity, Image, Alert, StyleSheet, Dimensions } from "react-native";
 import { useState, useEffect, memo } from "react";
 import * as colors from "../variables/colors";
-import { db, app } from "../firebaseConfig";
-import { getDoc, doc, deleteDoc, addDoc, collection, getDocs } from "firebase/firestore";
+import { db, app, database } from "../firebaseConfig";
+import { getDoc, doc, deleteDoc } from "firebase/firestore";
 import Button from "./Button";
 import { useTranslation } from "react-i18next";
 import * as Device from "expo-device";
 import { getStorage, ref, deleteObject } from "firebase/storage";
+import { remove, ref as dbRef } from "firebase/database";
 
 const screenHeight = Dimensions.get("screen").height;
 
@@ -117,19 +118,8 @@ const OrdersDashboard = memo(function OrdersDashboard({ item, navigation }) {
       const validationCloseAllPosition = data.order.some((e) => e.made !== true);
       if (!validationCloseAllPosition) {
         await deleteDoc(doc(db, "orders", docId));
+        await remove(dbRef(database, `messages/${docId}`));
         Alert.alert(`${t("OrderDashboardAlertClose")}`);
-        const arr = [];
-        const delMessages = await getDocs(collection(db, "messages", docId, "conversation"));
-        delMessages.forEach((doc) => {
-          arr.push(doc.id);
-          if (doc.data().type === "image") {
-            console.log(doc.data().staragePath);
-            deleteImageFromStorage(doc.data().staragePath);
-          }
-        });
-        arr.forEach(async (id) => {
-          await deleteDoc(doc(db, "messages", docId, "conversation", id));
-        });
       } else {
         return Alert.alert(`${t("OrderDashboardAlertNotClose")}`);
       }

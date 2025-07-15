@@ -1,12 +1,12 @@
 import { View, Alert, Text, TouchableOpacity, TextInput, StyleSheet, Dimensions } from "react-native";
 import { useState, useEffect, useContext, memo } from "react";
-import { getAuth, GoogleAuthProvider, signInWithCredential, signInWithEmailAndPassword } from "firebase/auth";
+import { GoogleAuthProvider, signInWithCredential, signInWithEmailAndPassword } from "firebase/auth";
 import { LinearGradient } from "expo-linear-gradient";
 import { StatusBar } from "expo-status-bar";
 import * as NavigationBar from "expo-navigation-bar";
 import * as colors from "../variables/colors.js";
 import { GoogleSignin, GoogleSigninButton } from "@react-native-google-signin/google-signin";
-import { db } from "../firebaseConfig";
+import { db, auth } from "../firebaseConfig";
 import { doc, setDoc, serverTimestamp, getDoc, updateDoc } from "firebase/firestore";
 import { AppContext } from "../App.js";
 
@@ -73,25 +73,33 @@ const styles = StyleSheet.create({
 export default memo(function LoginScreen({ navigation }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const auth = getAuth();
   const expoPushToken = useContext(AppContext);
 
-  const loginUser = () => {
-    signInWithEmailAndPassword(auth, email, password)
-      .catch((error) => {
-        console.log("error in loginUser", error.code, error.message);
-        Alert.alert("Wrong email or password");
-      })
-      .then(async () => {
-        if (!auth.currentUser.emailVerified) {
-          Alert.alert("Mail is not Verified");
-          logOut();
-        }
-        const firebaseRef = doc(db, "users", email);
-        await updateDoc(firebaseRef, {
-          pushToken: expoPushToken,
+  const loginUser = async () => {
+    try {
+      if (!email || !password) {
+        Alert.alert("Please enter email and password");
+        return;
+      }
+      await signInWithEmailAndPassword(auth, email, password)
+        .catch((error) => {
+          console.log("error in loginUser", error.code, error.message);
+          Alert.alert("Wrong email or password");
+        })
+        .then(async () => {
+          if (!auth.currentUser.emailVerified) {
+            Alert.alert("Email is not verified");
+            auth.signOut();
+            return;
+          }
+          const firebaseRef = doc(db, "users", email);
+          await updateDoc(firebaseRef, {
+            pushToken: expoPushToken,
+          });
         });
-      });
+    } catch (error) {
+      console.log("loginUser", error.message);
+    }
   };
 
   const addToUsers = async (nikname, photoURL, email, userId, displayName) => {
@@ -134,12 +142,12 @@ export default memo(function LoginScreen({ navigation }) {
 
       if (docSnap.exists()) {
         const firebaseRef = doc(db, "users", user.data.user.email);
+        await signInWithCredential(auth, googleCredential);
         await updateDoc(firebaseRef, {
           pushToken: expoPushToken,
         });
-        signInWithCredential(auth, googleCredential);
       } else {
-        signInWithCredential(auth, googleCredential).then((result) => {
+        await signInWithCredential(auth, googleCredential).then((result) => {
           const currentUser = result.user;
           const nikname = result._tokenResponse.firstName;
           const photoURL = currentUser.photoURL;
@@ -172,8 +180,8 @@ export default memo(function LoginScreen({ navigation }) {
       <View style={styles.blockInput}>
         <TextInput
           style={styles.inputField}
-          inputMode={email}
-          keyboardType={email}
+          inputMode="email"
+          keyboardType="email-address"
           placeholder="Type your email"
           onChangeText={setEmail}
         />

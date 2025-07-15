@@ -26,6 +26,7 @@ export default memo(function DashboardScreen({ navigation }) {
   const { t } = useTranslation();
 
   useEffect(() => {
+    if (!currentEmail) return;
     const unsub = onSnapshot(
       query(
         collection(db, "orders"),
@@ -40,7 +41,7 @@ export default memo(function DashboardScreen({ navigation }) {
     return () => {
       unsub();
     };
-  }, []);
+  }, [currentEmail]);
 
   return (
     <LinearGradient
@@ -103,7 +104,7 @@ export default memo(function DashboardScreen({ navigation }) {
           </TouchableOpacity>
         </>
       )}
-      <View style={{ position: "absolute", bottom: 0, paddingleft: "1%", zIndex: 10 }}>
+      <View style={{ position: "absolute", bottom: 0, paddingLeft: "1%", zIndex: 10 }}>
         <BannerAd
           unitId="ca-app-pub-9267417700367649/6433322697"
           onAdFailedToLoad={(error) => console.log(error)}

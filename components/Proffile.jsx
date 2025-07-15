@@ -49,7 +49,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     marginTop: "3%",
     backgroundColor: colors.menuProfile,
-    top: "11%",
+    top: "10%",
     marginLeft: "1%",
     zIndex: 2,
   },
@@ -401,11 +401,7 @@ export default function DashboardScreen({ navigation }) {
       )}
 
       {visibilityMenu && (
-        <TouchableOpacity
-          style={styles.blockProfile}
-          accessibilityLabel="Block whith information about user"
-          accessible={true}
-        >
+        <View style={styles.blockProfile} accessibilityLabel="Block whith information about user" accessible={true}>
           <View style={styles.blockProfileSectionEmail}>
             <Text style={styles.blockProfileTextEmail}>{t("ProffileEmail")}</Text>
             <Text style={styles.blockProfileTextEmail1} numberOfLines={1}>
@@ -479,7 +475,7 @@ export default function DashboardScreen({ navigation }) {
           >
             <Text style={styles.buttonLogoutText}>{t("ProffileLogout")}</Text>
           </TouchableOpacity>
-        </TouchableOpacity>
+        </View>
       )}
 
       {changeLanguageModal && (
