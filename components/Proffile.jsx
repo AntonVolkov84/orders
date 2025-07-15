@@ -12,9 +12,9 @@ import {
 } from "react-native";
 import { useEffect, useState, memo } from "react";
 import * as colors from "../variables/colors";
-import { getAuth, signOut } from "firebase/auth";
+import { signOut } from "firebase/auth";
 import * as NavigationBar from "expo-navigation-bar";
-import { db, app } from "../firebaseConfig";
+import { db, app, auth } from "../firebaseConfig";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import { doc, setDoc, onSnapshot } from "firebase/firestore";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
@@ -27,7 +27,6 @@ import { LanguageResources } from "../i18next";
 import languageList from "../locales/languagesList.json";
 
 const screenHeight = Dimensions.get("screen").height;
-const auth = getAuth();
 
 const styles = StyleSheet.create({
   blockMenuProfile: {
@@ -224,7 +223,7 @@ const styles = StyleSheet.create({
   },
 });
 
-export default memo(function DashboardScreen({ navigation }) {
+export default function DashboardScreen({ navigation }) {
   const [userProfileData, setUserProfileData] = useState(null);
   const [loadingUserProfileData, setLoadingUserProfileData] = useState(true);
   const [visibilityMenu, setVisibilityMenu] = useState(false);
@@ -513,4 +512,4 @@ export default memo(function DashboardScreen({ navigation }) {
       )}
     </>
   );
-});
+}

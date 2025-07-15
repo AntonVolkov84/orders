@@ -1,4 +1,13 @@
-import { View, Text, TextInput, TouchableOpacity, Dimensions, Alert, StyleSheet } from "react-native";
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  KeyboardAvoidingView,
+  Dimensions,
+  Alert,
+  StyleSheet,
+} from "react-native";
 import { useState } from "react";
 import Button from "../components/Button";
 import * as colors from "../variables/colors";

@@ -116,7 +116,6 @@ const OrdersDashboard = memo(function OrdersDashboard({ item, navigation }) {
       const data = docSnap.data();
       const validationCloseAllPosition = data.order.some((e) => e.made !== true);
       if (!validationCloseAllPosition) {
-        await addDoc(collection(db, "closed orders", orderCreatorProfile.email, "personal closed orders"), data);
         await deleteDoc(doc(db, "orders", docId));
         Alert.alert(`${t("OrderDashboardAlertClose")}`);
         const arr = [];
