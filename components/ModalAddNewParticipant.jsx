@@ -28,9 +28,11 @@ export default function ModalAddNewParticipant({
       {
         text: t("OrderScreenAlertAdd"),
         onPress: async () => {
+          const publicKey = await getParticipantsPublicKeys([email]);
           const firebaseRef = doc(db, "orders", documentId);
           await updateDoc(firebaseRef, {
             participants: arrayUnion(email),
+            publicKeys: arrayUnion(publicKey[0]),
           });
           sendPersonalMessage(email);
         },
@@ -39,11 +41,9 @@ export default function ModalAddNewParticipant({
   };
 
   const delParticipantFromOrder = async (participantForDeleting) => {
-    console.log(participantForDeleting);
     if (participantForDeleting === currentUserEmail) {
       return Alert.alert(t("OrderScreenAlertDelMyself"));
     }
-
     Alert.alert(t("OrderScreenConfirmDeleteTitle"), `${participantForDeleting} ${t("OrderScreenConfirmDeleteText")}`, [
       { text: t("ProffileCancel"), style: "cancel" },
       {
@@ -52,8 +52,17 @@ export default function ModalAddNewParticipant({
         onPress: async () => {
           try {
             const firebaseRef = doc(db, "orders", documentId);
+            const orderSnap = await getDoc(firebaseRef);
+            if (!orderSnap.exists()) {
+              return console.warn("Order not found");
+            }
+            const orderData = orderSnap.data();
+            const updatedPublicKeys = (orderData.publicKeys || []).filter(
+              (item) => item.email !== participantForDeleting
+            );
             await updateDoc(firebaseRef, {
               participants: arrayRemove(participantForDeleting),
+              publicKeys: updatedPublicKeys,
             });
           } catch (error) {
             console.log("delParticipantFromOrder", error.message);
@@ -62,7 +71,28 @@ export default function ModalAddNewParticipant({
       },
     ]);
   };
-
+  const getParticipantsPublicKeys = async (emails) => {
+    const result = [];
+    for (const email of emails) {
+      try {
+        const userRef = doc(db, "users", email);
+        const userSnap = await getDoc(userRef);
+        if (userSnap.exists()) {
+          const data = userSnap.data();
+          if (data.publicKey) {
+            result.push({ email, publicKey: data.publicKey });
+          } else {
+            console.warn(`🔐 У пользователя ${email} нет publicKey`);
+          }
+        } else {
+          console.warn(`❌ Пользователь ${email} не найден`);
+        }
+      } catch (error) {
+        console.error(`🔥 Ошибка при получении ключа пользователя ${email}:`, error);
+      }
+    }
+    return result;
+  };
   const sendPersonalMessage = async (email) => {
     const docSnap = await getDoc(doc(db, "users", email));
     const pushToken = docSnap.data().pushToken;

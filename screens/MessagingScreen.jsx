@@ -14,7 +14,9 @@ import { ref as dbRef, set, onValue, off, update } from "firebase/database";
 import { sendPushNotification } from "../notifications";
 import { updateDoc, arrayRemove, doc, getDoc } from "firebase/firestore";
 import { useTranslation } from "react-i18next";
+import naclUtil from "tweetnacl-util";
 import { BannerAd, BannerAdSize } from "react-native-google-mobile-ads";
+import { generateKeyPairIfNeeded, encryptMessage, decryptMessage, getStoredKeyPair } from "../crypto/e2ee";
 
 const screenHeight = Dimensions.get("screen").height;
 
@@ -51,25 +53,63 @@ export default function MessagingScreen({ route, navigation }) {
   }, [messageUpdate]);
 
   useEffect(() => {
-    if (!conversationId) {
-      console.warn("⚠️ conversationId is missing");
-      return;
-    }
+    if (!conversationId) return;
     const messagesRef = dbRef(database, `messages/${conversationId}`);
-    const callback = (snapshot) => {
+    const toUint8Array = (arr) => {
+      if (arr instanceof Uint8Array) return arr;
+      if (Array.isArray(arr)) return new Uint8Array(arr);
+      throw new Error("Invalid key format");
+    };
+    const callback = async (snapshot) => {
       const data = snapshot.val();
-      if (data) {
-        const messages = Object.entries(data)
-          .map(([messageId, msg]) => ({ ...msg, messageId }))
-          .sort((a, b) => a.timestamp.localeCompare(b.timestamp));
-        setFetchedMessages(messages);
-      } else {
+      if (!data) {
         setFetchedMessages([]);
+        setLoaded(true);
+        return;
       }
+      const keyPair = await generateKeyPairIfNeeded();
+      const decodedPrivateKey = toUint8Array(keyPair.privateKey);
+      const lookupKey = currentEmail.replace(/\./g, "(dot)");
+      const messages = (
+        await Promise.all(
+          Object.entries(data).map(async ([messageId, msg]) => {
+            const userKey = msg.encryptedMessages?.[lookupKey];
+            if (!userKey && msg.author !== currentEmail) {
+              return null;
+            }
+            let messageText = "";
+            if (!userKey && msg.author === currentEmail) {
+              messageText = msg.messageText || "";
+            } else if (userKey) {
+              let senderPublicKey;
+              if (msg.author === currentEmail) {
+                senderPublicKey = toUint8Array(keyPair.publicKey);
+              } else if (typeof msg.publicKeyOfAuthor === "string") {
+                senderPublicKey = naclUtil.decodeBase64(msg.publicKeyOfAuthor);
+              } else if (Array.isArray(msg.publicKeyOfAuthor)) {
+                senderPublicKey = toUint8Array(msg.publicKeyOfAuthor);
+              } else {
+                return null;
+              }
+              try {
+                const ciphertextUint8 = naclUtil.decodeBase64(userKey.ciphertext);
+                const nonceUint8 = naclUtil.decodeBase64(userKey.nonce);
+                messageText = decryptMessage(ciphertextUint8, nonceUint8, decodedPrivateKey, senderPublicKey);
+              } catch (e) {
+                console.warn("Ошибка при расшифровке:", e);
+                return null;
+              }
+            }
 
+            return { ...msg, messageId, messageText };
+          })
+        )
+      )
+        .filter(Boolean)
+        .sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+      setFetchedMessages(messages);
       setLoaded(true);
     };
-
     onValue(messagesRef, callback);
     return () => off(messagesRef, "value", callback);
   }, [conversationId]);
@@ -139,25 +179,37 @@ export default function MessagingScreen({ route, navigation }) {
       console.log("uploadImageToStorage error:", error);
     }
   };
-
   const sendMessage = async (type = "text", uri = "", storagePath = "") => {
     if (!message && type === "text") return;
     try {
+      const { publicKey, privateKey } = await generateKeyPairIfNeeded();
+      const orderRef = doc(db, "orders", conversationId);
+      const orderDoc = await getDoc(orderRef);
+      const orderData = orderDoc.data();
+      const allKeys = orderData.publicKeys;
+      const encryptedMessages = {};
+      for (const { email, publicKey: base64Key } of allKeys) {
+        const sanitizedEmail = email.replace(/\./g, "(dot)");
+        const theirPublicKey = naclUtil.decodeBase64(base64Key);
+        const { ciphertext, nonce } = encryptMessage(message, theirPublicKey, privateKey);
+        encryptedMessages[sanitizedEmail] = { ciphertext, nonce };
+      }
+
       const recipients = item.participants.filter((email) => email !== currentEmail);
       const data = {
         participants: item.participants,
         messageId: Date.now(),
         type,
         uri,
-        staragePath: storagePath,
+        storagePath: storagePath,
         doNotReadBy: recipients,
-        messageText: message || "",
+        encryptedMessages,
+        publicKeyOfAuthor: naclUtil.encodeBase64(publicKey),
         author: currentEmail,
         timestamp: new Date().toISOString(),
       };
       await set(dbRef(database, `messages/${conversationId}/${data.messageId}`), data);
       setMessage("");
-      const orderRef = doc(db, "orders", conversationId);
       await updateDoc(orderRef, {
         doNotReadBy: recipients,
       });
@@ -182,8 +234,23 @@ export default function MessagingScreen({ route, navigation }) {
 
   const updateMessage = async () => {
     try {
+      const { publicKey, privateKey } = await generateKeyPairIfNeeded();
+      const orderRef = doc(db, "orders", conversationId);
+      const orderDoc = await getDoc(orderRef);
+      const orderData = orderDoc.data();
+      const allKeys = orderData.publicKeys;
+      const encryptedMessages = {};
+      for (const { email, publicKey: base64Key } of allKeys) {
+        const sanitizedEmail = email.replace(/\./g, "(dot)");
+        const theirPublicKey = naclUtil.decodeBase64(base64Key);
+        const { ciphertext, nonce } = encryptMessage(message, theirPublicKey, privateKey);
+        encryptedMessages[sanitizedEmail] = { ciphertext, nonce };
+      }
       const messagePath = `messages/${conversationId}/${messageUpdate.messageId}`;
-      await update(dbRef(database, messagePath), { messageText: message });
+      await update(dbRef(database, messagePath), {
+        encryptedMessages,
+        publicKeyOfAuthor: naclUtil.encodeBase64(publicKey),
+      });
       setMessageUpdate("");
       setMessage("");
     } catch (error) {
@@ -232,7 +299,7 @@ export default function MessagingScreen({ route, navigation }) {
               renderItem={({ item }) => (
                 <Message conversationId={conversationId} setMessageUpdate={setMessageUpdate} message={item} />
               )}
-              keyExtractor={(item) => item.docId}
+              keyExtractor={(item) => item.messageId}
               inverted
             />
           </View>

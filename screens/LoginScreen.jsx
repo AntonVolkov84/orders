@@ -9,6 +9,7 @@ import { GoogleSignin, GoogleSigninButton } from "@react-native-google-signin/go
 import { db, auth } from "../firebaseConfig";
 import { doc, setDoc, serverTimestamp, getDoc, updateDoc } from "firebase/firestore";
 import { AppContext } from "../App.js";
+import { getEncodedPublicKey } from "../crypto/e2ee";
 
 const screenHeight = Dimensions.get("screen").height;
 
@@ -74,6 +75,7 @@ export default memo(function LoginScreen({ navigation }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const expoPushToken = useContext(AppContext);
+  const pushTokenForBase = expoPushToken.expoPushToken;
 
   const loginUser = async () => {
     try {
@@ -94,7 +96,7 @@ export default memo(function LoginScreen({ navigation }) {
           }
           const firebaseRef = doc(db, "users", email);
           await updateDoc(firebaseRef, {
-            pushToken: expoPushToken,
+            pushToken: pushTokenForBase,
           });
         });
     } catch (error) {
@@ -103,15 +105,17 @@ export default memo(function LoginScreen({ navigation }) {
   };
 
   const addToUsers = async (nikname, photoURL, email, userId, displayName) => {
+    const publicKey = await getEncodedPublicKey();
     try {
       const user = {
         language: "en",
         timestamp: serverTimestamp(),
         nikname: nikname,
         photoURL: photoURL,
+        publicKey,
         email: email,
         userId: userId,
-        pushToken: expoPushToken,
+        pushToken: pushTokenForBase,
         displayName: displayName || "",
       };
       await setDoc(doc(db, "users", email), user);

@@ -70,10 +70,33 @@ export default memo(function CreatingOrder({ participants, setCreateOrderModal, 
       console.log(error);
     }
   };
+  const getParticipantsPublicKeys = async (emails) => {
+    const result = [];
+    for (const email of emails) {
+      try {
+        const userRef = doc(db, "users", email);
+        const userSnap = await getDoc(userRef);
+        if (userSnap.exists()) {
+          const data = userSnap.data();
+          if (data.publicKey) {
+            result.push({ email, publicKey: data.publicKey });
+          } else {
+            console.warn(`🔐 У пользователя ${email} нет publicKey`);
+          }
+        } else {
+          console.warn(`❌ Пользователь ${email} не найден`);
+        }
+      } catch (error) {
+        console.error(`🔥 Ошибка при получении ключа пользователя ${email}:`, error);
+      }
+    }
+    return result;
+  };
   const fetchOrders = async () => {
     const currentEmail = auth.currentUser.email;
     const arrOfParicipantsEmail = [currentEmail];
     participants.map((e) => arrOfParicipantsEmail.push(e.email));
+    const publicKeys = await getParticipantsPublicKeys(arrOfParicipantsEmail);
     sendNotificationWhithNewOrders(arrOfParicipantsEmail);
     try {
       const order = {
@@ -83,6 +106,7 @@ export default memo(function CreatingOrder({ participants, setCreateOrderModal, 
         participants: arrOfParicipantsEmail,
         order: [...orders],
         orderId: Date.parse(new Date()),
+        publicKeys,
       };
       await addDoc(collection(db, "orders"), order);
     } catch (error) {

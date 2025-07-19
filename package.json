@@ -39,10 +39,13 @@
     "react-dom": "19.0.0",
     "react-i18next": "^15.1.1",
     "react-native": "0.79.5",
+    "react-native-get-random-values": "^1.11.0",
     "react-native-google-mobile-ads": "^14.8.0",
     "react-native-safe-area-context": "5.4.0",
     "react-native-screens": "~4.11.1",
-    "react-native-swipe-list-view": "^3.2.9"
+    "react-native-swipe-list-view": "^3.2.9",
+    "tweetnacl": "^1.0.3",
+    "tweetnacl-util": "^0.15.1"
   },
   "devDependencies": {
     "@babel/core": "^7.24.0"

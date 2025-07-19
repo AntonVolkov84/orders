@@ -9,6 +9,7 @@ import { doc, setDoc, serverTimestamp } from "firebase/firestore";
 import { signOut, sendEmailVerification, createUserWithEmailAndPassword } from "firebase/auth";
 import { AppContext } from "../App.js";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
+import { getEncodedPublicKey } from "../crypto/e2ee";
 
 const screenHeight = Dimensions.get("screen").height;
 
@@ -77,21 +78,24 @@ export default function RegistrationScreen({ navigation }) {
   const [nikname, setNikname] = useState("");
   const [secureText, setSecureText] = useState(true);
   const expoPushToken = useContext(AppContext);
+  const pushTokenForBase = expoPushToken.expoPushToken;
 
   const addToUsers = async (userId) => {
     const emailInLowerCase = email.toLowerCase();
+    const publicKey = await getEncodedPublicKey();
     try {
       const user = {
         language: "en",
         displayName: "",
         timestamp: serverTimestamp(),
         nikname: nikname,
+        publicKey,
         photoURL:
           "https://firebasestorage.googleapis.com/v0/b/orders-78c1c.appspot.com/o/avatar%2FComponent%203.png?alt=media&token=9365bf71-bcfd-44d3-adb5-28bdbf7e0bf4",
         email: emailInLowerCase,
         userId: userId,
         file: "",
-        pushToken: expoPushToken,
+        pushToken: pushTokenForBase,
       };
       await setDoc(doc(db, "users", emailInLowerCase), user);
     } catch (error) {

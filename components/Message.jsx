@@ -86,7 +86,6 @@ export default memo(function Message({ message, setMessageUpdate, conversationId
   const isValide = email === messageAuthor;
   const { t } = useTranslation();
   const storage = getStorage(app);
-
   const deleteImageFromStorage = async (path) => {
     const imageRef = ref(storage, `images/${path}`);
     try {
@@ -98,7 +97,7 @@ export default memo(function Message({ message, setMessageUpdate, conversationId
   const deleteMessage = async () => {
     try {
       if (message.type === "image") {
-        await deleteImageFromStorage(message.staragePath);
+        await deleteImageFromStorage(message.storagePath);
       }
       await remove(dbRef(database, `messages/${conversationId}/${message.messageId}`));
     } catch (error) {
