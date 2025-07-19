@@ -78,11 +78,11 @@ export default function RegistrationScreen({ navigation }) {
   const [nikname, setNikname] = useState("");
   const [secureText, setSecureText] = useState(true);
   const expoPushToken = useContext(AppContext);
-  const pushTokenForBase = expoPushToken.expoPushToken;
 
   const addToUsers = async (userId) => {
     const emailInLowerCase = email.toLowerCase();
     const publicKey = await getEncodedPublicKey();
+    const pushTokenForBase = expoPushToken.expoPushToken;
     try {
       const user = {
         language: "en",
@@ -103,44 +103,38 @@ export default function RegistrationScreen({ navigation }) {
     }
   };
 
-  const handleRegister = (email, password) => {
+  const handleRegister = async (email, password) => {
     if (password.length < 6) {
-      return Alert.alert("Your password should be no less then 6 symbols");
+      return Alert.alert("Your password should be no less than 6 symbols");
     }
     if (nikname.length < 1) {
-      return Alert.alert("Your nikname should be no less then 1 symbols");
+      return Alert.alert("Your nikname should be no less than 1 symbol");
     }
-    createUserWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        const user = userCredential.user;
-        const userId = user.uid;
-        if (user.uid) {
-          addToUsers(userId);
-          sendEmailVerification(auth.currentUser)
-            .then(() => {
-              Alert.alert("You may received a mail with link for authorization");
-            })
-            .then(() => {
-              signOut(auth);
-            })
-            .then(() => {
-              navigation.navigate("Login");
-            })
-            .catch((error) => {
-              if (error.code === "auth/too-many-requests") {
-                Alert.alert("Слишком много запросов", "Подождите перед повторной отправкой письма.");
-              } else if (error.code === "auth/user-not-found") {
-                Alert.alert("Пользователь не найден", "Проверьте email.");
-              } else {
-                Alert.alert("Ошибка", error.message);
-              }
-            });
-          navigation.navigate("Login");
-        }
-      })
-      .catch((error) => {
-        console.log("handleRegister", error);
-      });
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+      if (!user?.uid) {
+        throw new Error("User ID not available after registration");
+      }
+      await addToUsers(user.uid);
+      const currentUser = auth.currentUser;
+      if (!currentUser) {
+        throw new Error("User not authenticated for email verification");
+      }
+      await sendEmailVerification(currentUser);
+      Alert.alert("Check your inbox", "You may have received a verification email.");
+      await signOut(auth);
+      navigation.navigate("Login");
+    } catch (error) {
+      console.log("handleRegister error:", error);
+      if (error.code === "auth/too-many-requests") {
+        Alert.alert("Слишком много запросов", "Подождите перед повторной отправкой письма.");
+      } else if (error.code === "auth/email-already-in-use") {
+        Alert.alert("Email already in use", "Try logging in instead.");
+      } else {
+        Alert.alert("Registration Error", error.message || "Something went wrong.");
+      }
+    }
   };
 
   const customNavigationBar = async () => {

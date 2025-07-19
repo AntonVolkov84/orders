@@ -1,7 +1,6 @@
 import {
   View,
   Text,
-  Button,
   TouchableOpacity,
   Image,
   TextInput,
@@ -10,7 +9,7 @@ import {
   StyleSheet,
   Dimensions,
 } from "react-native";
-import { useEffect, useState, memo } from "react";
+import { useEffect, useState } from "react";
 import * as colors from "../variables/colors";
 import { signOut } from "firebase/auth";
 import * as NavigationBar from "expo-navigation-bar";
@@ -325,8 +324,13 @@ export default function DashboardScreen({ navigation }) {
 
   useEffect(() => {
     const unsub = onSnapshot(doc(db, "users", auth.currentUser.email), (snapshot) => {
-      setUserProfileData(snapshot.data());
-      i18next.changeLanguage(snapshot.data().language);
+      const data = setUserProfileData(snapshot.data());
+      if (data) {
+        setUserProfileData(data);
+        if (data.language) {
+          i18next.changeLanguage(data.language);
+        }
+      }
     });
     setLoadingUserProfileData(false);
     customNavigationBar();
@@ -358,7 +362,8 @@ export default function DashboardScreen({ navigation }) {
   return (
     <>
       <TouchableOpacity
-        style={styles.blockMenuProfile}
+        style={[styles.blockMenuProfile, loadingUserProfileData && { opacity: 0.5 }]}
+        disabled={loadingUserProfileData}
         accessibilityLabel="Button which toggle to open or close profile menu"
         accessible={true}
         onPress={() => setVisibilityMenu(!visibilityMenu)}

@@ -22,7 +22,7 @@ export default memo(function DashboardScreen({ navigation }) {
   const [participants, setParticipants] = useState([]);
   const [fetchedOrders, setFetchedOrders] = useState([]);
   const [isLoaded, setIsLoaded] = useState(false);
-  const currentEmail = auth.currentUser.email;
+  const currentEmail = auth.currentUser?.email;
   const { t } = useTranslation();
 
   useEffect(() => {

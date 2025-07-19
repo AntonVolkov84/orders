@@ -52,5 +52,6 @@
   "CreatingOrderMakeOrder": "Create",
   "SiteText": "To visit our site or contact us click here",
   "messageModalUpdate": "Update",
-  "messageModalDelete": "Delete"
+  "messageModalDelete": "Delete",
+  "messagescreenNewMessage": "New message"
 }

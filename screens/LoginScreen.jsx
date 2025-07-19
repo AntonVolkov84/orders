@@ -142,23 +142,25 @@ export default memo(function LoginScreen({ navigation }) {
       const user = await GoogleSignin.signIn();
       const idToken = user.data.idToken;
       const googleCredential = GoogleAuthProvider.credential(idToken);
-      const docSnap = await getDoc(doc(db, "users", user.data.user.email));
-
+      const currentEmail = user.data.user.email;
+      const docSnap = await getDoc(doc(db, "users", currentEmail));
       if (docSnap.exists()) {
-        const firebaseRef = doc(db, "users", user.data.user.email);
+        const firebaseRef = doc(db, "users", currentEmail);
+        const publicKey = await getEncodedPublicKey();
         await signInWithCredential(auth, googleCredential);
         await updateDoc(firebaseRef, {
-          pushToken: expoPushToken,
+          pushToken: pushTokenForBase,
+          publicKey,
         });
       } else {
-        await signInWithCredential(auth, googleCredential).then((result) => {
+        await signInWithCredential(auth, googleCredential).then(async (result) => {
           const currentUser = result.user;
           const nikname = result._tokenResponse.firstName;
           const photoURL = currentUser.photoURL;
           const email = currentUser.email;
           const userId = currentUser.uid;
           const displayName = currentUser.displayName;
-          addToUsers(nikname, photoURL, email, userId, displayName);
+          await addToUsers(nikname, photoURL, email, userId, displayName);
         });
       }
     } catch (error) {

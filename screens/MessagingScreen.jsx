@@ -221,9 +221,10 @@ export default function MessagingScreen({ route, navigation }) {
         }
       }
       if (pushTokens.length) {
+        const newMessage = `${t("messagescreenNewMessage")}`;
         await sendPushNotification(
           pushTokens,
-          message,
+          newMessage,
           `${nameOfOrder} ${auth.currentUser.displayName || currentEmail}`
         );
       }

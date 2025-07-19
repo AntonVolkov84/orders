@@ -52,5 +52,6 @@
   "CreatingOrderMakeOrder": "Utwórzyć",
   "SiteText": "Odwiedź stronę lub skontaktuj się z nami",
   "messageModalUpdate": "Zmiana",
-  "messageModalDelete": "Usuwać"
+  "messageModalDelete": "Usuwać",
+  "messagescreenNewMessage": "Nowa wiadomość"
 }

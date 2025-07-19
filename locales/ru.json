@@ -52,5 +52,6 @@
   "CreatingOrderMakeOrder": "Создать",
   "SiteText": "Посетить сайт или связаться с нами",
   "messageModalUpdate": "Изменить",
-  "messageModalDelete": "Удалить"
+  "messageModalDelete": "Удалить",
+  "messagescreenNewMessage": "Новое сообщение"
 }
