@@ -1,6 +1,6 @@
 import { View, Text, Image, TouchableOpacity, StyleSheet, Dimensions } from "react-native";
 import { useState, useEffect, memo } from "react";
-import { doc, onSnapshot } from "firebase/firestore";
+import { doc, onSnapshot, getDoc } from "firebase/firestore";
 import { auth, db } from "../firebaseConfig";
 import * as colors from "../variables/colors";
 import { useTranslation } from "react-i18next";
@@ -76,7 +76,13 @@ const styles = StyleSheet.create({
   },
 });
 
-export default memo(function Message({ message, setMessageUpdate, conversationId }) {
+export default memo(function Message({
+  message,
+  updateParticipantsData,
+  setMessageUpdate,
+  conversationId,
+  participantsData,
+}) {
   const [loaded, setLoaded] = useState(false);
   const [author, setAuthor] = useState(null);
   const [modalMessage, setModalMessage] = useState(false);
@@ -86,6 +92,33 @@ export default memo(function Message({ message, setMessageUpdate, conversationId
   const isValide = email === messageAuthor;
   const { t } = useTranslation();
   const storage = getStorage(app);
+
+  useEffect(() => {
+    const fetchMissingAuthor = async () => {
+      if (!participantsData?.[messageAuthor]) {
+        try {
+          const docRef = doc(db, "users", messageAuthor);
+          const snap = await getDoc(docRef);
+          if (snap.exists()) {
+            const newAuthor = snap.data();
+            setAuthor(newAuthor);
+            setLoaded(true);
+            if (typeof updateParticipantsData === "function") {
+              updateParticipantsData(messageAuthor, newAuthor);
+            }
+          }
+        } catch (err) {
+          console.warn("Ошибка загрузки участника:", err);
+        }
+      } else {
+        setAuthor(participantsData[messageAuthor]);
+        setLoaded(true);
+      }
+    };
+
+    if (messageAuthor) fetchMissingAuthor();
+  }, [participantsData, messageAuthor]);
+
   const deleteImageFromStorage = async (path) => {
     const imageRef = ref(storage, `images/${path}`);
     try {
@@ -104,14 +137,6 @@ export default memo(function Message({ message, setMessageUpdate, conversationId
       console.log("deleteMessage error:", error);
     }
   };
-
-  useEffect(() => {
-    const unsub = onSnapshot(doc(db, "users", messageAuthor), (snapshot) => {
-      setAuthor(snapshot.data());
-      setLoaded(true);
-    });
-    return () => unsub();
-  }, [messageAuthor]);
 
   return (
     <>
@@ -162,7 +187,10 @@ export default memo(function Message({ message, setMessageUpdate, conversationId
               ]}
             >
               <View style={styles.blockForMessageAuthor}>
-                <Image style={styles.authorAvatar} source={{ uri: author.photoURL }} />
+                <Image
+                  style={styles.authorAvatar}
+                  source={author?.photoURL ? { uri: author.photoURL } : require("../assets/Orders3.png")}
+                />
                 <Text style={styles.authorName}>{author.nikname}</Text>
               </View>
               {message.type === "image" ? (

@@ -35,6 +35,7 @@ export default function MessagingScreen({ route, navigation }) {
   const [message, setMessage] = useState("");
   const [messageUpdate, setMessageUpdate] = useState("");
   const [fetchedMessages, setFetchedMessages] = useState([]);
+  const [participantsData, setParticipantsData] = useState([]);
   const [loaded, setLoaded] = useState(false);
   const [keyboardOffset, setKeyboardOffset] = useState(10);
   const conversationId = item.docId;
@@ -45,7 +46,11 @@ export default function MessagingScreen({ route, navigation }) {
   const storage = getStorage(app);
   const { t } = useTranslation();
   const nameOfOrder = item.nameOfOrder;
+  const orderParticipants = item.participants;
 
+  useEffect(() => {
+    fetchParticipantsData();
+  }, []);
   useEffect(() => {
     if (!conversationId) return;
     const statusDocRef = doc(db, "Orders status", conversationId);
@@ -145,12 +150,27 @@ export default function MessagingScreen({ route, navigation }) {
 
   useEffect(() => {
     markMessagesAsRead();
-
     if (isScrolledToBottom.current && flatList.current) {
       flatList.current.scrollToOffset({ offset: 0, animated: true });
     }
   }, [fetchedMessages]);
-
+  const fetchParticipantsData = async () => {
+    try {
+      const promises = orderParticipants.map(async (email) => {
+        const ref = doc(db, "users", email);
+        const snap = await getDoc(ref);
+        return snap.exists() ? { email, ...snap.data() } : null;
+      });
+      const results = await Promise.all(promises);
+      const participantsMap = {};
+      results.forEach((user) => {
+        participantsMap[user.email] = user;
+      });
+      setParticipantsData(participantsMap);
+    } catch (error) {
+      console.error("Error fetching participants data:", error);
+    }
+  };
   const markMessagesAsRead = async () => {
     try {
       const orderRef = doc(db, "orders", conversationId);
@@ -160,6 +180,12 @@ export default function MessagingScreen({ route, navigation }) {
     } catch (error) {
       console.log("markMessagesAsRead error:", error);
     }
+  };
+  const updateParticipantsData = (email, newData) => {
+    setParticipantsData((prev) => ({
+      ...prev,
+      [email]: newData,
+    }));
   };
 
   const pickImage = async () => {
@@ -327,7 +353,13 @@ export default function MessagingScreen({ route, navigation }) {
               data={fetchedMessages}
               ref={flatList}
               renderItem={({ item }) => (
-                <Message conversationId={conversationId} setMessageUpdate={setMessageUpdate} message={item} />
+                <Message
+                  updateParticipantsData={updateParticipantsData}
+                  participantsData={participantsData}
+                  conversationId={conversationId}
+                  setMessageUpdate={setMessageUpdate}
+                  message={item}
+                />
               )}
               keyExtractor={(item) => item.messageId}
               inverted
