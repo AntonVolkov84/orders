@@ -146,11 +146,9 @@ export default memo(function LoginScreen({ navigation }) {
       const docSnap = await getDoc(doc(db, "users", currentEmail));
       if (docSnap.exists()) {
         const firebaseRef = doc(db, "users", currentEmail);
-        const publicKey = await getEncodedPublicKey();
         await signInWithCredential(auth, googleCredential);
         await updateDoc(firebaseRef, {
           pushToken: pushTokenForBase,
-          publicKey,
         });
       } else {
         await signInWithCredential(auth, googleCredential).then(async (result) => {

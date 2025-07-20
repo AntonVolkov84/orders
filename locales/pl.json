@@ -53,5 +53,6 @@
   "SiteText": "Odwiedź stronę lub skontaktuj się z nami",
   "messageModalUpdate": "Zmiana",
   "messageModalDelete": "Usuwać",
-  "messagescreenNewMessage": "Nowa wiadomość"
+  "messagescreenNewMessage": "Nowa wiadomość",
+  "messagescreenCloseOrder": "Zamówienie zostało zamknięte. To zamówienie nie jest już dostępne."
 }

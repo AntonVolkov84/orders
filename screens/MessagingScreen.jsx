@@ -1,5 +1,15 @@
-import React, { useState, useEffect, useRef } from "react";
-import { Keyboard, View, Text, FlatList, Dimensions, TextInput, TouchableOpacity, StyleSheet } from "react-native";
+import { useState, useEffect, useRef } from "react";
+import {
+  Keyboard,
+  View,
+  Text,
+  FlatList,
+  Dimensions,
+  TextInput,
+  Alert,
+  TouchableOpacity,
+  StyleSheet,
+} from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { StatusBar } from "expo-status-bar";
 import * as colors from "../variables/colors";
@@ -12,11 +22,11 @@ import * as ImagePicker from "expo-image-picker";
 import { getStorage, ref as storageRef, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { ref as dbRef, set, onValue, off, update } from "firebase/database";
 import { sendPushNotification } from "../notifications";
-import { updateDoc, arrayRemove, doc, getDoc } from "firebase/firestore";
+import { updateDoc, arrayRemove, doc, getDoc, onSnapshot } from "firebase/firestore";
 import { useTranslation } from "react-i18next";
 import naclUtil from "tweetnacl-util";
 import { BannerAd, BannerAdSize } from "react-native-google-mobile-ads";
-import { generateKeyPairIfNeeded, encryptMessage, decryptMessage, getStoredKeyPair } from "../crypto/e2ee";
+import { generateKeyPairIfNeeded, encryptMessage, decryptMessage } from "../crypto/e2ee";
 
 const screenHeight = Dimensions.get("screen").height;
 
@@ -35,6 +45,25 @@ export default function MessagingScreen({ route, navigation }) {
   const storage = getStorage(app);
   const { t } = useTranslation();
   const nameOfOrder = item.nameOfOrder;
+
+  useEffect(() => {
+    if (!conversationId) return;
+    const statusDocRef = doc(db, "Orders status", conversationId);
+    const unsubscribe = onSnapshot(statusDocRef, (docSnap) => {
+      if (!docSnap.exists()) {
+        navigation.replace("Dashboard");
+        Alert.alert(`${t("messagescreenCloseOrder")}`);
+        return;
+      }
+      const data = docSnap.data();
+      if (data.isClosed) {
+        navigation.replace("Dashboard");
+        Alert.alert(`${t("messagescreenCloseOrder")}`);
+      }
+    });
+
+    return () => unsubscribe();
+  }, [conversationId]);
 
   useEffect(() => {
     const showSubscription = Keyboard.addListener("keyboardDidShow", () => setKeyboardOffset(85));

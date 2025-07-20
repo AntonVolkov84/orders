@@ -14,7 +14,7 @@ import * as colors from "../variables/colors";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import Button from "../components/Button";
 import Feather from "@expo/vector-icons/Feather";
-import { collection, addDoc, serverTimestamp, doc, getDoc } from "firebase/firestore";
+import { collection, addDoc, serverTimestamp, doc, getDoc, setDoc } from "firebase/firestore";
 import { db, auth } from "../firebaseConfig";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { useTranslation } from "react-i18next";
@@ -108,7 +108,9 @@ export default memo(function CreatingOrder({ participants, setCreateOrderModal, 
         orderId: Date.parse(new Date()),
         publicKeys,
       };
-      await addDoc(collection(db, "orders"), order);
+      const res = await addDoc(collection(db, "orders"), order);
+      const docId = res.id;
+      await setDoc(doc(db, "Orders status", docId), { isClosed: false });
     } catch (error) {
       console.log("add to users", error);
     }

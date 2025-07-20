@@ -53,5 +53,6 @@
   "SiteText": "Відвідати сайт чи зв'язатися з нами",
   "messageModalUpdate": "Змінити",
   "messageModalDelete": "Видалити",
-  "messagescreenNewMessage": "Нове повідомлення"
+  "messagescreenNewMessage": "Нове повідомлення",
+  "messagescreenCloseOrder": "Заказ закрито. Він більше не існує!"
 }

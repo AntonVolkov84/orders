@@ -78,6 +78,7 @@ export default function App() {
               component={LoginScreen}
               options={{
                 headerShown: false,
+                animation: "none",
               }}
             />
             <Stack.Screen
@@ -85,6 +86,7 @@ export default function App() {
               component={RegistrationScreen}
               options={{
                 headerShown: false,
+                animation: "none",
               }}
             />
           </Stack.Navigator>
@@ -102,6 +104,7 @@ export default function App() {
             component={DashboardScreen}
             options={{
               headerShown: false,
+              animation: "none",
             }}
           />
           <Stack.Screen
@@ -109,6 +112,7 @@ export default function App() {
             component={OrderScreen}
             options={{
               headerShown: false,
+              animation: "none",
             }}
           />
           <Stack.Screen
@@ -116,6 +120,7 @@ export default function App() {
             component={MessagingScreen}
             options={{
               headerShown: false,
+              animation: "none",
             }}
           />
         </Stack.Navigator>

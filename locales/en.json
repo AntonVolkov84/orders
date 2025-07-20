@@ -53,5 +53,6 @@
   "SiteText": "To visit our site or contact us click here",
   "messageModalUpdate": "Update",
   "messageModalDelete": "Delete",
-  "messagescreenNewMessage": "New message"
+  "messagescreenNewMessage": "New message",
+  "messagescreenCloseOrder": "Order was closed. This order is no longer available."
 }

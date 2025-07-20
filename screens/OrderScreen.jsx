@@ -47,6 +47,11 @@ export default memo(function OrderScreen({ route, navigation }) {
 
   useEffect(() => {
     const unsub = onSnapshot(doc(db, "orders", documentId), (snapshot) => {
+      if (!snapshot.exists()) {
+        navigation.replace("Dashboard");
+        Alert.alert(`${t("messagescreenCloseOrder")}`);
+        return;
+      }
       setOrders(snapshot.data());
       setOrdersLoaded(true);
     });
