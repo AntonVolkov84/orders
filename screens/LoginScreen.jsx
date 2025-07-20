@@ -95,9 +95,16 @@ export default memo(function LoginScreen({ navigation }) {
             return;
           }
           const firebaseRef = doc(db, "users", email);
+          const userSnap = await getDoc(firebaseRef);
           await updateDoc(firebaseRef, {
             pushToken: pushTokenForBase,
           });
+          if (userSnap.exists() && !userSnap.data().publicKey) {
+            const publicKey = await getEncodedPublicKey();
+            await updateDoc(firebaseRef, {
+              publicKey,
+            });
+          }
         });
     } catch (error) {
       console.log("loginUser", error.message);
@@ -150,6 +157,13 @@ export default memo(function LoginScreen({ navigation }) {
         await updateDoc(firebaseRef, {
           pushToken: pushTokenForBase,
         });
+        const userData = docSnap.data();
+        if (!userData.publicKey) {
+          const publicKey = await getEncodedPublicKey();
+          await updateDoc(firebaseRef, {
+            publicKey,
+          });
+        }
       } else {
         await signInWithCredential(auth, googleCredential).then(async (result) => {
           const currentUser = result.user;

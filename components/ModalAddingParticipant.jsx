@@ -129,7 +129,7 @@ const ModalAddingParticipant = ({ setAddingParticipantModal }) => {
           accessibilityLabel="Button adding participant to global list"
           accessible={true}
           onPress={() => {
-            VerificationMailDublicate(inputEmail);
+            VerificationMailDublicate(inputEmail.toLowerCase());
           }}
           style={styles.modalButtonBtn}
         >

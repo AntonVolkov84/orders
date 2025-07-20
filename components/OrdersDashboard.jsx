@@ -117,7 +117,7 @@ const OrdersDashboard = memo(function OrdersDashboard({ item, navigation }) {
       const data = docSnap.data();
       const validationCloseAllPosition = data.order.some((e) => e.made !== true);
       if (!validationCloseAllPosition) {
-        await updateDoc(docRef, {
+        await updateDoc(doc(db, "Orders status", docId), {
           isClosed: true,
         });
         const messagesRef = dbRef(database, `messages/${docId}`);
@@ -132,6 +132,7 @@ const OrdersDashboard = memo(function OrdersDashboard({ item, navigation }) {
         }
         await remove(messagesRef);
         await deleteDoc(docRef);
+        await deleteDoc(doc(db, "Orders status", docId));
         Alert.alert(`${t("OrderDashboardAlertClose")}`);
       } else {
         return Alert.alert(`${t("OrderDashboardAlertNotClose")}`);
