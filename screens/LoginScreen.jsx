@@ -10,6 +10,7 @@ import { db, auth } from "../firebaseConfig";
 import { doc, setDoc, serverTimestamp, getDoc, updateDoc } from "firebase/firestore";
 import { AppContext } from "../App.js";
 import { getEncodedPublicKey } from "../crypto/e2ee";
+import { syncPublicKeyWithFirestore } from "../crypto/syncKeys.js";
 
 const screenHeight = Dimensions.get("screen").height;
 
@@ -95,16 +96,10 @@ export default memo(function LoginScreen({ navigation }) {
             return;
           }
           const firebaseRef = doc(db, "users", email);
-          const userSnap = await getDoc(firebaseRef);
           await updateDoc(firebaseRef, {
             pushToken: pushTokenForBase,
           });
-          if (userSnap.exists() && !userSnap.data().publicKey) {
-            const publicKey = await getEncodedPublicKey();
-            await updateDoc(firebaseRef, {
-              publicKey,
-            });
-          }
+          await syncPublicKeyWithFirestore(email);
         });
     } catch (error) {
       console.log("loginUser", error.message);
@@ -154,16 +149,10 @@ export default memo(function LoginScreen({ navigation }) {
       if (docSnap.exists()) {
         const firebaseRef = doc(db, "users", currentEmail);
         await signInWithCredential(auth, googleCredential);
+        await syncPublicKeyWithFirestore(currentEmail);
         await updateDoc(firebaseRef, {
           pushToken: pushTokenForBase,
         });
-        const userData = docSnap.data();
-        if (!userData.publicKey) {
-          const publicKey = await getEncodedPublicKey();
-          await updateDoc(firebaseRef, {
-            publicKey,
-          });
-        }
       } else {
         await signInWithCredential(auth, googleCredential).then(async (result) => {
           const currentUser = result.user;

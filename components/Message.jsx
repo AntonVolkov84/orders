@@ -92,7 +92,7 @@ export default memo(function Message({
   const isValide = email === messageAuthor;
   const { t } = useTranslation();
   const storage = getStorage(app);
-
+  console.log(message);
   useEffect(() => {
     const fetchMissingAuthor = async () => {
       if (!participantsData?.[messageAuthor]) {
