@@ -26,7 +26,7 @@ import { updateDoc, arrayRemove, doc, getDoc, onSnapshot } from "firebase/firest
 import { useTranslation } from "react-i18next";
 import naclUtil from "tweetnacl-util";
 import { BannerAd, BannerAdSize } from "react-native-google-mobile-ads";
-import { generateKeyPairIfNeeded, encryptMessage, decryptMessage } from "../crypto/e2ee";
+import { generateKeyPairIfNeeded, encryptMessage, decryptMessage, getStoredKeyPair } from "../crypto/e2ee";
 
 const screenHeight = Dimensions.get("screen").height;
 
@@ -128,6 +128,7 @@ export default function MessagingScreen({ route, navigation }) {
               try {
                 const ciphertextUint8 = naclUtil.decodeBase64(userKey.ciphertext);
                 const nonceUint8 = naclUtil.decodeBase64(userKey.nonce);
+
                 messageText = decryptMessage(ciphertextUint8, nonceUint8, decodedPrivateKey, senderPublicKey);
               } catch (e) {
                 console.warn("Ошибка при расшифровке:", e);
@@ -154,6 +155,7 @@ export default function MessagingScreen({ route, navigation }) {
       flatList.current.scrollToOffset({ offset: 0, animated: true });
     }
   }, [fetchedMessages]);
+
   const fetchParticipantsData = async () => {
     try {
       const promises = orderParticipants.map(async (email) => {
@@ -161,16 +163,36 @@ export default function MessagingScreen({ route, navigation }) {
         const snap = await getDoc(ref);
         return snap.exists() ? { email, ...snap.data() } : null;
       });
+
       const results = await Promise.all(promises);
       const participantsMap = {};
       results.forEach((user) => {
-        participantsMap[user.email] = user;
+        if (user) participantsMap[user.email] = user;
       });
+
       setParticipantsData(participantsMap);
+      const updatedKeys = Object.entries(participantsMap).map(([email, user]) => ({
+        email,
+        publicKey: user.publicKey,
+      }));
+
+      const oldKeys = item.publicKeys || [];
+      const hasChanges =
+        updatedKeys.length !== oldKeys.length ||
+        updatedKeys.some((newKey) => {
+          const old = oldKeys.find((oldKey) => oldKey.email === newKey.email);
+          return !old || old.publicKey !== newKey.publicKey;
+        });
+      if (hasChanges) {
+        await updateDoc(doc(db, "orders", item.docId), {
+          publicKeys: updatedKeys,
+        });
+      }
     } catch (error) {
       console.error("Error fetching participants data:", error);
     }
   };
+
   const markMessagesAsRead = async () => {
     try {
       const orderRef = doc(db, "orders", conversationId);

@@ -9,15 +9,14 @@ const PRIVATE_KEY_STORAGE = "@e2ee_private_key";
 export const generateKeyPairIfNeeded = async () => {
   const existingPub = await AsyncStorage.getItem(PUBLIC_KEY_STORAGE);
   const existingPriv = await AsyncStorage.getItem(PRIVATE_KEY_STORAGE);
+
   if (existingPub && existingPriv) {
     return {
       publicKey: naclUtil.decodeBase64(existingPub),
       privateKey: naclUtil.decodeBase64(existingPriv),
     };
   }
-
   const keyPair = nacl.box.keyPair();
-
   await AsyncStorage.setItem(PUBLIC_KEY_STORAGE, naclUtil.encodeBase64(keyPair.publicKey));
   await AsyncStorage.setItem(PRIVATE_KEY_STORAGE, naclUtil.encodeBase64(keyPair.secretKey));
 
