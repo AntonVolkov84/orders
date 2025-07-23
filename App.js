@@ -11,6 +11,7 @@ import * as Notifications from "expo-notifications";
 import { registerForPushNotificationsAsync } from "./notifications.js";
 import mobileAds from "react-native-google-mobile-ads";
 import { auth } from "./firebaseConfig.js";
+import { syncPublicKeyWithFirestore } from "./crypto/syncKeys.js";
 
 mobileAds()
   .initialize()
@@ -36,9 +37,14 @@ export default function App() {
   const [expoPushToken, setExpoPushToken] = useState("");
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user && user.emailVerified) {
         setUser(user);
+        try {
+          await syncPublicKeyWithFirestore(user.email);
+        } catch (err) {
+          console.warn("Не удалось синхронизировать ключи:", err);
+        }
       } else {
         setUser("");
       }

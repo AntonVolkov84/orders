@@ -10,7 +10,6 @@ import { db, auth } from "../firebaseConfig";
 import { doc, setDoc, serverTimestamp, getDoc, updateDoc } from "firebase/firestore";
 import { AppContext } from "../App.js";
 import { getEncodedPublicKey } from "../crypto/e2ee";
-import { syncPublicKeyWithFirestore } from "../crypto/syncKeys.js";
 
 const screenHeight = Dimensions.get("screen").height;
 
@@ -99,7 +98,6 @@ export default memo(function LoginScreen({ navigation }) {
           await updateDoc(firebaseRef, {
             pushToken: pushTokenForBase,
           });
-          await syncPublicKeyWithFirestore(email);
         });
     } catch (error) {
       console.log("loginUser", error.message);
@@ -149,7 +147,6 @@ export default memo(function LoginScreen({ navigation }) {
       if (docSnap.exists()) {
         const firebaseRef = doc(db, "users", currentEmail);
         await signInWithCredential(auth, googleCredential);
-        await syncPublicKeyWithFirestore(currentEmail);
         await updateDoc(firebaseRef, {
           pushToken: pushTokenForBase,
         });
