@@ -159,7 +159,9 @@ export default function ModalAddNewParticipant({
                 disabled={!isOrderCreator}
                 onPress={() => isOrderCreator && delParticipantFromOrder(item)}
               >
-                <Text style={styles.participantText}>{item}</Text>
+                <Text style={[styles.participantText, item === currentUserEmail && { color: "#ae1fd1" }]}>
+                  {item === currentUserEmail ? `Admin - ${item}` : item}
+                </Text>
               </TouchableOpacity>
             )}
             keyExtractor={(item) => item}
